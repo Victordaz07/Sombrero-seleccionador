@@ -33,6 +33,13 @@ Opciones útiles:
     --rehacer        vuelve a generar audios que ya existen (por ejemplo, si cambiaste una frase)
     --solo prueba    genera solo las claves indicadas (para probar voces antes de gastar)
     --efecto         usa ffmpeg para hacer la voz un poco más grave y con eco de salón
+
+Ajustes de actuación de los discursos (ElevenLabs):
+    --modelo eleven_v3     o eleven_v4
+    --velocidad 1.15       de 0.7 (lento) a 1.2 (rápido)
+    --estabilidad 0.0      0.0 = Creativo (más expresivo), 0.5 = Natural, 1.0 = Robusto
+    --pausa-maxima 0.3     recorta los silencios a este máximo (en segundos) para más ritmo
+    --acelerar 1.1         acelera el audio terminado sin cambiar el tono (1.1 = 10% más rápido)
 """
 
 import argparse
@@ -205,6 +212,10 @@ def generar_openai(frase, voz):
     return audio, None
 
 
+# Actuación de los discursos; se pueden cambiar con --modelo, --velocidad y --estabilidad.
+ACTUACION = {"modelo": "eleven_v3", "velocidad": 1.15, "estabilidad": 0.0}
+
+
 def generar_elevenlabs(frase, voz):
     """Devuelve (audio_mp3, inicios). En discursos pide los tiempos de cada letra."""
     clave = os.environ.get("ELEVENLABS_API_KEY") or sys.exit("Falta la variable ELEVENLABS_API_KEY")
@@ -215,8 +226,12 @@ def generar_elevenlabs(frase, voz):
     formato = "?output_format=mp3_44100_128"
 
     if frase.es_discurso:
-        # Eleven v3 actúa las etiquetas de emoción. Estabilidad 0.5 = "Natural".
-        cuerpo = {"text": frase.texto, "model_id": "eleven_v3", "voice_settings": {"stability": 0.5}}
+        # Eleven v3/v4 actúan las etiquetas de emoción ([excited], [laughs], [shouting]...).
+        cuerpo = {
+            "text": frase.texto,
+            "model_id": ACTUACION["modelo"],
+            "voice_settings": {"stability": ACTUACION["estabilidad"], "speed": ACTUACION["velocidad"]},
+        }
         try:
             datos = json.loads(pedir(f"{base}/with-timestamps{formato}", cuerpo, {"xi-api-key": clave}, False))
         except ErrorServicio as e:
@@ -282,6 +297,51 @@ def aplicar_efecto(ruta):
     shutil.move(salida, ruta)
 
 
+def acortar_pausas(ruta, inicios, maximo):
+    """Recorta los silencios más largos que `maximo` segundos y corrige los tiempos de cada frase."""
+    if not shutil.which("ffmpeg"):
+        sys.exit("--pausa-maxima necesita ffmpeg instalado")
+    analisis = subprocess.run(
+        ["ffmpeg", "-i", str(ruta), "-af", f"silencedetect=n=-40dB:d={maximo}", "-f", "null", "-"],
+        capture_output=True, text=True,
+    ).stderr
+    comienzos = [float(x) for x in re.findall(r"silence_start: ([0-9.]+)", analisis)]
+    finales = [float(x) for x in re.findall(r"silence_end: ([0-9.]+)", analisis)]
+    # De cada silencio largo se quita el centro y se deja `maximo` (mitad a cada lado).
+    cortes = [(a + maximo / 2, b - maximo / 2) for a, b in zip(comienzos, finales) if b - a > maximo]
+    if not cortes:
+        return inicios
+
+    with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp:
+        salida = Path(tmp.name)
+    quitar = "+".join(f"between(t,{a:.3f},{b:.3f})" for a, b in cortes)
+    subprocess.run(
+        ["ffmpeg", "-y", "-loglevel", "error", "-i", str(ruta),
+         "-af", f"aselect='not({quitar})',asetpts=N/SR/TB", "-b:a", "128k", str(salida)],
+        check=True,
+    )
+    shutil.move(salida, ruta)
+
+    def nuevo_tiempo(t):
+        return t - sum(min(b, max(a, t)) - a for a, b in cortes)
+
+    return [round(nuevo_tiempo(t), 3) for t in inicios] if inicios else inicios
+
+
+def acelerar(ruta, inicios, factor):
+    """Acelera el audio sin cambiar el tono de la voz y ajusta los tiempos de cada frase."""
+    if not shutil.which("ffmpeg"):
+        sys.exit("--acelerar necesita ffmpeg instalado")
+    with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp:
+        salida = Path(tmp.name)
+    subprocess.run(
+        ["ffmpeg", "-y", "-loglevel", "error", "-i", str(ruta), "-af", f"atempo={factor}", "-b:a", "128k", str(salida)],
+        check=True,
+    )
+    shutil.move(salida, ruta)
+    return [round(t / factor, 3) for t in inicios] if inicios else inicios
+
+
 def main():
     p = argparse.ArgumentParser(description="Genera las voces del sombrero.")
     p.add_argument("--proveedor", choices=["openai", "elevenlabs"], default="openai")
@@ -293,7 +353,15 @@ def main():
     p.add_argument("--simular", action="store_true", help="muestra qué se generaría, sin gastar créditos")
     p.add_argument("--efecto", action="store_true", help="voz más grave + eco (requiere ffmpeg)")
     p.add_argument("--solo-lista", action="store_true", help="solo actualiza GUION_GRABACION.md")
+    p.add_argument("--modelo", default=ACTUACION["modelo"], help="modelo de ElevenLabs para discursos")
+    p.add_argument("--velocidad", type=float, default=ACTUACION["velocidad"], help="0.7 a 1.2")
+    p.add_argument("--estabilidad", type=float, default=ACTUACION["estabilidad"], help="0.0, 0.5 o 1.0")
+    p.add_argument("--salida", type=Path, help="carpeta donde guardar (por defecto, la de la app)")
+    p.add_argument("--pausa-maxima", type=float, metavar="SEG", help="recorta silencios a este máximo (ej. 0.3)")
+    p.add_argument("--acelerar", type=float, metavar="X", help="acelera sin cambiar el tono (ej. 1.1)")
     args = p.parse_args()
+    ACTUACION.update(modelo=args.modelo, velocidad=args.velocidad, estabilidad=args.estabilidad)
+    carpeta = args.salida or CARPETA_VOZ
 
     frases = cargar_frases(json.loads(FRASES.read_text(encoding="utf-8")))
     escribir_guion(frases)
@@ -306,7 +374,7 @@ def main():
         f for f in sorted(frases, key=prioridad)
         if (not args.solo or f.clave in args.solo)
         and (not args.discursos or f.es_discurso)
-        and (args.rehacer or not (CARPETA_VOZ / f"{f.clave}.mp3").exists())
+        and (args.rehacer or not (carpeta / f"{f.clave}.mp3").exists())
     ][: args.limite]
     caracteres = sum(len(f.texto) for f in pendientes)
     print(f"Por generar: {len(pendientes)} audios, {caracteres} caracteres")
@@ -316,20 +384,24 @@ def main():
         return
 
     generar = generar_openai if args.proveedor == "openai" else generar_elevenlabs
-    CARPETA_VOZ.mkdir(parents=True, exist_ok=True)
+    carpeta.mkdir(parents=True, exist_ok=True)
     for n, f in enumerate(pendientes, 1):
         print(f"🎙  [{n}/{len(pendientes)}] {f.clave}")
         audio, inicios = generar(f, args.voz)
-        ruta = CARPETA_VOZ / f"{f.clave}.mp3"
+        ruta = carpeta / f"{f.clave}.mp3"
         ruta.write_bytes(audio)
-        tiempos = CARPETA_VOZ / f"{f.clave}.json"
+        if args.pausa_maxima:
+            inicios = acortar_pausas(ruta, inicios, args.pausa_maxima)
+        if args.acelerar:
+            inicios = acelerar(ruta, inicios, args.acelerar)
+        tiempos = carpeta / f"{f.clave}.json"
         if inicios:
             tiempos.write_text(json.dumps({"inicios": inicios}) + "\n", encoding="utf-8")
         elif tiempos.exists():
             tiempos.unlink()  # tiempos viejos de otra grabación: la app estimará
         if args.efecto:
             aplicar_efecto(ruta)
-    print(f"Listo: {len(pendientes)} audios nuevos en {CARPETA_VOZ.relative_to(RAIZ)}")
+    print(f"Listo: {len(pendientes)} audios nuevos en {carpeta}")
 
 
 if __name__ == "__main__":

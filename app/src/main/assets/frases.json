@@ -4,126 +4,117 @@
   "discursos": {
     "gryffindor": [
       [
-        "[curious] Mmm... ¡vaya, vaya!",
-        "[whispers] Aquí arriba se siente un calorcito...",
-        "[chuckles] como si tu cabeza estuviera hecha de fuego.",
-        "[impressed] Nunca te quedas sin hacer nada cuando algo está mal.",
-        "[excited] Tu lugar está en...",
+        "[excited] ¡Ajá! ¡Pero qué tenemos aquí!",
+        "[mischievously] Valor, coraje... ¡y un corazón que NO se rinde!",
+        "[laughs] ¡Esta cabeza está que arde!",
+        "[excited] ¡No hay duda! Tu lugar está en...",
         "{ANUNCIO}"
       ],
       [
-        "[thoughtful] Hmm... qué cabeza tan inquieta.",
-        "[whispers] Ganas de aventura... de explorar el bosque más oscuro.",
-        "[surprised] ¡Y proteges a los más pequeños!",
-        "[excited] Sin duda... perteneces a...",
+        "[curious] Hmm, hmm, hmm... ¡a ver!",
+        "[excited] ¡Aventura! ¡Retos! ¡Ganas de comerte el mundo!",
+        "[impressed] Y siempre defiendes a los demás...",
+        "[excited] ¡Ya sé! ¡Ya sé a dónde vas!",
         "{ANUNCIO}"
       ],
       [
-        "[softly] Tranquilidad... siento tus nervios.",
-        "[whispers] ¿Sabes un secreto?",
-        "[thoughtful] El valor es seguir adelante aunque tengas miedo...",
-        "[chuckles] y tú siempre das el paso.",
+        "[laughs] ¡Ja! ¿Nervios? ¡Pero si aquí adentro hay un león!",
+        "[excited] ¡Das el paso aunque tengas miedo!",
+        "[mischievously] Eso... eso es justo lo que yo busco.",
         "[excited] Te envío a...",
         "{ANUNCIO}"
       ],
       [
-        "[laughs] ¡Ja! Esta sí me la sé.",
-        "[mischievously] Lo supe en cuanto me pusieron en tu cabeza.",
-        "[impressed] Corazón noble... y la verdad siempre por delante.",
-        "[inhales deeply] [excited] Tu casa será...",
+        "[excited] ¡Oh, oh, oh! ¡Esta me la sé!",
+        "[mischievously] Corazón noble, palabra firme... ¡y mucho, MUCHO valor!",
+        "[excited] ¡Ni lo pienso dos veces!",
         "{ANUNCIO}"
       ]
     ],
     "hufflepuff": [
       [
-        "[thoughtful] Mmm...",
-        "[softly] qué paz se siente aquí dentro.",
-        "[whispers] Ni prisa, ni envidia... solo un corazón enorme.",
-        "[warmly] Tus amigos saben que contigo siempre pueden contar.",
-        "[excited] Tu lugar está en...",
+        "[curious] Hmm... ¡a ver, a ver!",
+        "[surprised] ¡Oh! ¡Qué corazón tan grande!",
+        "[excited] Leal, amable... ¡y trabajas como nadie!",
+        "[excited] ¡Ya lo tengo! Tu lugar está en...",
         "{ANUNCIO}"
       ],
       [
-        "[curious] A ver, a ver... ¿qué tenemos aquí?",
-        "[surprised] ¡Oh!",
-        "[chuckles] Compartes tus dulces de Halloween... ¡hasta el último chocolate!",
-        "[impressed] Eso es bondad de verdad.",
-        "[excited] Perteneces a...",
+        "[laughs] ¡Ja, ja! ¡Compartes tus dulces de Halloween!",
+        "[impressed] ¿Hasta el último chocolate? ¡Eso es bondad de verdad!",
+        "[excited] ¡Está clarísimo! Perteneces a...",
         "{ANUNCIO}"
       ],
       [
-        "[thoughtful] Hmm... por un momento pensé en otra casa...",
-        "[whispers] pero miré más profundo.",
-        "[warmly] Un corazón leal, de los que no abandonan a nadie.",
-        "[inhales deeply] [excited] Ya está decidido...",
+        "[curious] Mmm... ¿astucia? ¿valor?",
+        "[mischievously] ¡No, no, no! Hay que mirar más profundo...",
+        "[excited] ¡Un corazón leal que NUNCA abandona a nadie!",
+        "[excited] ¡Ya está!",
         "{ANUNCIO}"
       ],
       [
-        "[inhales deeply] ¡Ah!",
-        "[chuckles] Esta cabeza huele a pan recién horneado.",
-        "[warmly] Haces que todos se sientan en casa... y trabajas duro aunque nadie te mire.",
-        "[excited] No hay duda... tu casa es...",
+        "[excited] ¡Ah, qué maravilla!",
+        "[laughs] ¡Esta cabeza huele a pan recién horneado!",
+        "[impressed] Haces que todos se sientan en casa... ¡y nunca te rindes!",
+        "[excited] Tu casa es...",
         "{ANUNCIO}"
       ]
     ],
     "ravenclaw": [
       [
-        "[curious] Mmm... ¡cuántas preguntas hay aquí dentro!",
-        "[whispers] ¿Por qué el cielo es azul? ¿Cómo vuelan los murciélagos?",
-        "[impressed] Una mente que nunca deja de aprender.",
-        "[excited] Tu lugar está en...",
+        "[excited] ¡Vaya! ¡Cuántas preguntas!",
+        "[curious] ¿Por qué el cielo es azul? ¿Cómo vuelan los murciélagos?",
+        "[impressed] ¡Una mente que nunca se apaga!",
+        "[excited] ¡Lo sé! Tu lugar está en...",
         "{ANUNCIO}"
       ],
       [
-        "[thoughtful] Hmm... interesante.",
-        "[whispers] Muy, muy interesante.",
-        "[impressed] Escuchas antes de hablar... y ves soluciones donde otros ven problemas.",
-        "[inhales deeply] [excited] Te envío a...",
+        "[curious] Hmm, hmm... ¡interesante!",
+        "[impressed] Escuchas, observas... ¡y encuentras soluciones donde nadie las ve!",
+        "[mischievously] Podría mandarte con los valientes... pero no.",
+        "[excited] Te envío a...",
         "{ANUNCIO}"
       ],
       [
-        "[surprised] ¡Oh!",
-        "[chuckles] Cuidado, que me vas a hacer pensar de más.",
-        "[curious] Esta cabeza está llena de colores, de historias... de mundos inventados.",
-        "[excited] ¡Creatividad pura! Perteneces a...",
+        "[surprised] ¡Uy! ¡Cuidado, que me haces pensar de más!",
+        "[excited] Colores, historias, inventos... ¡mundos enteros aquí adentro!",
+        "[laughs] ¡Creatividad pura!",
+        "[excited] Perteneces a...",
         "{ANUNCIO}"
       ],
       [
-        "[softly] Mmm... calma... claridad...",
-        "[whispers] Mientras todos corren, tú te detienes a pensar.",
-        "[impressed] Y casi siempre tienes razón.",
-        "[excited] La sabiduría te llama... tu casa es...",
+        "[mischievously] Ajá... mientras todos corren, tú piensas.",
+        "[impressed] ¡Y casi siempre tienes razón!",
+        "[excited] ¡Sabiduría! ¡Ingenio! ¡No hay ninguna duda!",
         "{ANUNCIO}"
       ]
     ],
     "slytherin": [
       [
-        "[mischievously] Hmm... aquí hay grandes planes.",
-        "[whispers] Enormes.",
-        "[impressed] Cuando te propones algo, nada te detiene... y los demás te siguen.",
+        "[mischievously] ¡Ajá! ¡Aquí hay grandes planes!",
+        "[excited] ¡Enormes! Cuando te propones algo... ¡NADA te detiene!",
+        "[impressed] Y los demás te siguen...",
         "[excited] Tu lugar está en...",
         "{ANUNCIO}"
       ],
       [
-        "[chuckles] Ah... una mente astuta.",
-        "[mischievously] Ya te vi pensando cómo convencerme.",
-        "[thoughtful] Planeas cada paso, como en una partida de ajedrez.",
-        "[sighs] Muy bien... no me dejas opción.",
-        "[excited] Te envío a...",
+        "[laughs] ¡Ja! ¡Ya te vi pensando cómo convencerme!",
+        "[mischievously] ¡Qué mente tan astuta!",
+        "[impressed] Planeas cada paso, como en el ajedrez...",
+        "[excited] ¡Muy bien, me convenciste!",
         "{ANUNCIO}"
       ],
       [
-        "[thoughtful] Mmm... dudé un momento...",
-        "[whispers] también veo un gran corazón.",
-        "[impressed] Pero esta voluntad de hierro... cuando caes, te levantas con más fuerza.",
-        "[excited] Ya lo decidí. Perteneces a...",
+        "[curious] Hmm... ¿un gran corazón? Sí, sí...",
+        "[excited] ¡Pero qué voluntad de hierro!",
+        "[impressed] Te caes... ¡y te levantas con más fuerza!",
+        "[excited] ¡Decidido! Perteneces a...",
         "{ANUNCIO}"
       ],
       [
-        "[laughs] ¡Ja, ja! Ideas brillantes...",
-        "[mischievously] y un poquito traviesas.",
-        "[impressed] Organizas el juego, inventas las reglas... y cuidas a los tuyos.",
-        "[excited] Un verdadero líder... tu casa es...",
+        "[laughs] ¡Ja, ja! ¡Ideas brillantes... y un poquito traviesas!",
+        "[mischievously] Organizas el juego, pones las reglas... ¡y cuidas a los tuyos!",
+        "[excited] ¡Un líder nato! Tu casa es...",
         "{ANUNCIO}"
       ]
     ]
