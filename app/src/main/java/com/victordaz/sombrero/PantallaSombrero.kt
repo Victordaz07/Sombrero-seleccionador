@@ -1,65 +1,49 @@
 package com.victordaz.sombrero
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.PI
@@ -67,248 +51,276 @@ import kotlin.math.abs
 import kotlin.math.sin
 import kotlin.random.Random
 
-private val Dorado = Color(0xFFE8C15A)
-private val NocheArriba = Color(0xFF0B0820)
-private val NocheAbajo = Color(0xFF2A1650)
+internal val Dorado = Color(0xFFE8C15A)
+internal val Pergamino = Color(0xFFFFEED2)
+internal val Tinta = Color(0xFF0C101B)
 
 @Composable
 fun PantallaSombrero(vm: SombreroViewModel) {
-    val estado = vm.estado
-    val casa = estado.casa
-    var mostrarAjustes by rememberSaveable { mutableStateOf(false) }
-    val haptico = LocalHapticFeedback.current
-
-    LaunchedEffect(casa) {
-        if (casa != null) haptico.performHapticFeedback(HapticFeedbackType.LongPress)
-    }
-
-    val arriba by animateColorAsState(casa?.colorPrincipal ?: NocheArriba, tween(900), label = "arriba")
-    val abajo by animateColorAsState(
-        casa?.colorPrincipal?.let { lerpNegro(it) } ?: NocheAbajo, tween(900), label = "abajo",
-    )
-
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(arriba, abajo)))
-            .clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) {
-                vm.alTocar()
-            },
-    ) {
-        Estrellas(Modifier.fillMaxSize(), color = casa?.colorSecundario ?: Color.White)
-
-        Column(
-            Modifier
-                .fillMaxSize()
-                .safeDrawingPadding()
-                .padding(horizontal = 24.dp, vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Encabezado(estado, casa)
-            Spacer(Modifier.weight(1f))
-            SombreroAnimado(estado)
-            Spacer(Modifier.height(16.dp))
-            Subtitulo(estado)
-            Spacer(Modifier.weight(1f))
-            PiePagina(estado)
-        }
-
-        IconButton(
-            onClick = { if (estado.fase != Fase.PENSANDO) mostrarAjustes = true },
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .safeDrawingPadding()
-                .padding(4.dp),
-        ) {
-            Icon(Icons.Filled.Settings, contentDescription = "Ajustes", tint = Color.White.copy(alpha = 0.35f))
-        }
-    }
-
-    if (mostrarAjustes) {
-        AjustesDialogo(vm, alCerrar = { mostrarAjustes = false })
+    MaterialTheme(colorScheme = darkColorScheme(
+        primary = Dorado, onPrimary = Tinta,
+        secondary = Pergamino, background = Tinta,
+        surface = Color(0xFF171A24), onSurface = Pergamino,
+    )) {
+        ContenidoSombrero(vm)
     }
 }
 
 @Composable
-private fun Encabezado(estado: EstadoUi, casa: Casa?) {
-    Box(Modifier.fillMaxWidth().height(190.dp), contentAlignment = Alignment.Center) {
-        AnimatedContent(
-            targetState = casa,
-            transitionSpec = { (fadeIn(tween(600)) + scaleIn(initialScale = 0.4f, animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy))) togetherWith fadeOut(tween(300)) },
-            label = "encabezado",
-        ) { c ->
-            if (c == null) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        "El Sombrero\nSeleccionador",
-                        color = Dorado, fontFamily = FontFamily.Serif, fontWeight = FontWeight.Bold,
-                        fontSize = 38.sp, lineHeight = 42.sp, textAlign = TextAlign.Center,
-                    )
-                    if (estado.vozLista == false) {
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            "⚠ No se encontró voz en español. Instala \"Servicios de voz de Google\" y su paquete en español.",
-                            color = Color(0xFFFFB4A0), fontSize = 13.sp, textAlign = TextAlign.Center,
-                        )
+private fun ContenidoSombrero(vm: SombreroViewModel) {
+    val estado = vm.estado
+    val casa = estado.casa
+    var mostrarAjustes by rememberSaveable { mutableStateOf(false) }
+    val haptico = LocalHapticFeedback.current
+    LaunchedEffect(casa) {
+        if (casa != null) haptico.performHapticFeedback(HapticFeedbackType.LongPress)
+    }
+    val tinte by animateColorAsState(
+        casa?.colorPrincipal?.copy(alpha = 0.55f) ?: Color.Transparent,
+        tween(1100), label = "color de la casa",
+    )
+    Box(Modifier.fillMaxSize().background(Tinta).clickable(
+        interactionSource = remember { MutableInteractionSource() }, indication = null,
+        enabled = estado.fase != Fase.PENSANDO,
+        onClickLabel = if (estado.fase == Fase.REVELADO) "Siguiente participante" else "Comenzar selección",
+        onClick = vm::alTocar,
+    )) {
+        Image(painterResource(R.drawable.fondo_noche), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+        Box(Modifier.fillMaxSize().background(tinte))
+        // Keep the hall visible while protecting text contrast in every house.
+        Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(
+            Tinta.copy(alpha = 0.76f), Tinta.copy(alpha = 0.15f), Tinta.copy(alpha = 0.92f),
+        ))))
+        Estrellas(Modifier.fillMaxSize(), color = acento(casa))
+
+        BoxWithConstraints(Modifier.fillMaxSize().safeDrawingPadding()) {
+            val horizontal = maxWidth > maxHeight && maxWidth >= 600.dp
+            val alto = maxHeight
+            if (horizontal) {
+                Row(
+                    Modifier.fillMaxSize().padding(24.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(24.dp),
+                ) {
+                    Column(
+                        Modifier.weight(1f).verticalScroll(rememberScrollState()),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Encabezado(estado)
+                        SombreroAnimado(estado, (alto * 0.55f).coerceIn(160.dp, 350.dp))
+                    }
+                    Column(
+                        Modifier.weight(1f).verticalScroll(rememberScrollState()),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(18.dp),
+                    ) {
+                        Subtitulo(estado)
+                        Accion(estado, vm::alTocar)
+                        PiePagina(estado, vm.estadoAjustes.casasActivas)
                     }
                 }
             } else {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Escudo(c, Modifier.size(96.dp))
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        c.nombre.uppercase(),
-                        color = c.colorSecundario, fontFamily = FontFamily.Serif, fontWeight = FontWeight.Black,
-                        fontSize = 44.sp, letterSpacing = 3.sp, textAlign = TextAlign.Center,
-                    )
-                    Text(c.lema, color = Color.White.copy(alpha = 0.9f), fontSize = 15.sp, textAlign = TextAlign.Center)
+                Column(
+                    Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
+                        .heightIn(min = alto).padding(horizontal = 24.dp, vertical = 26.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Encabezado(estado)
+                    SombreroAnimado(estado, minOf(maxWidth - 32.dp,
+                        (alto * if (casa == null) 0.43f else 0.32f).coerceIn(180.dp, 390.dp)))
+                    Column(
+                        Modifier.widthIn(max = 520.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Subtitulo(estado)
+                        Accion(estado, vm::alTocar)
+                        PiePagina(estado, vm.estadoAjustes.casasActivas)
+                    }
                 }
+            }
+        }
+        IconButton(
+            onClick = { mostrarAjustes = true }, enabled = estado.fase != Fase.PENSANDO,
+            modifier = Modifier.align(Alignment.TopEnd).safeDrawingPadding().padding(6.dp)
+                .background(Tinta.copy(alpha = 0.7f), CircleShape),
+        ) {
+            Icon(Icons.Filled.Settings, "Ajustes", tint = Pergamino.copy(alpha = if (estado.fase == Fase.PENSANDO) 0.3f else 0.9f))
+        }
+    }
+    if (mostrarAjustes) AjustesDialogo(vm, alCerrar = { mostrarAjustes = false })
+}
+
+@Composable
+private fun Encabezado(estado: EstadoUi) {
+    AnimatedContent(
+        targetState = estado.casa,
+        transitionSpec = { (fadeIn(tween(650)) + scaleIn(initialScale = 0.85f, animationSpec = tween(650))) togetherWith fadeOut(tween(200)) },
+        label = "revelación",
+    ) { casa ->
+        Column(
+            Modifier.fillMaxWidth().padding(horizontal = 22.dp, vertical = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(if (casa == null) "LA CEREMONIA" else "TU CASA ES", color = Pergamino.copy(alpha = 0.8f),
+                fontSize = 11.sp, letterSpacing = 3.sp, textAlign = TextAlign.Center)
+            Spacer(Modifier.height(10.dp))
+            if (casa != null) Escudo(casa, Modifier.size(88.dp))
+            Text(
+                casa?.nombre?.uppercase() ?: "El Sombrero\nSeleccionador",
+                color = acento(casa), fontFamily = FontFamily.Serif,
+                fontWeight = FontWeight.Bold, fontSize = if (casa == null) 34.sp else 29.sp,
+                lineHeight = 38.sp, textAlign = TextAlign.Center,
+                style = TextStyle(shadow = Shadow(Color.Black, Offset(0f, 3f), 12f)),
+            )
+            Spacer(Modifier.height(8.dp))
+            if (casa == null) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    HorizontalDivider(Modifier.width(42.dp), color = Dorado.copy(alpha = 0.5f))
+                    Text("✦", color = Dorado, fontSize = 12.sp)
+                    HorizontalDivider(Modifier.width(42.dp), color = Dorado.copy(alpha = 0.5f))
+                }
+            } else {
+                Text(casa.lema, color = Pergamino, fontSize = 14.sp, textAlign = TextAlign.Center)
+            }
+            if (estado.vozLista == false) {
+                Text("No se encontró voz en español. Instala Servicios de voz de Google y su paquete en español.",
+                    Modifier.padding(top = 8.dp), color = Color(0xFFFFB4A0), fontSize = 13.sp, textAlign = TextAlign.Center)
             }
         }
     }
 }
 
 @Composable
-private fun SombreroAnimado(estado: EstadoUi) {
+private fun SombreroAnimado(estado: EstadoUi, tamano: Dp) {
     val infinita = rememberInfiniteTransition(label = "sombrero")
     val pensando = estado.fase == Fase.PENSANDO
-
-    // Balanceo: suave en reposo, más marcado mientras piensa.
-    val fase by infinita.animateFloat(
-        0f, 1f, infiniteRepeatable(tween(2600, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "balanceo",
-    )
-    val amplitud by animateFloatAsState(if (pensando) 7f else 2.5f, tween(600), label = "amplitud")
-
-    // Boca: se abre y cierra rápido mientras habla.
-    val movBoca by infinita.animateFloat(
-        0f, 1f, infiniteRepeatable(tween(900), RepeatMode.Restart), label = "boca",
-    )
+    val fase by infinita.animateFloat(0f, 1f,
+        infiniteRepeatable(tween(2600, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "balanceo")
+    val amplitud by animateFloatAsState(if (pensando) 5f else 1.8f, tween(600), label = "amplitud")
+    // Same speaking signal and timing as the original app: no changes to TTS or ViewModel.
+    val movBoca by infinita.animateFloat(0f, 1f,
+        infiniteRepeatable(tween(900), RepeatMode.Restart), label = "boca")
     val abierta = if (estado.hablando) 0.2f + 0.8f * abs(sin(movBoca * 5f * PI.toFloat())) else 0f
     val boca by animateFloatAsState(abierta, tween(70), label = "bocaSuave")
     val cejas by animateFloatAsState(if (estado.hablando) 1f else 0f, tween(300), label = "cejas")
-
-    // Brillo mágico detrás del sombrero.
-    val pulso by infinita.animateFloat(
-        0.6f, 1f, infiniteRepeatable(tween(1200), RepeatMode.Reverse), label = "pulso",
-    )
-    val brillo by animateFloatAsState(if (pensando || estado.casa != null) 1f else 0.35f, tween(800), label = "brillo")
-    val colorBrillo = estado.casa?.colorSecundario ?: Dorado
-
-    Box(Modifier.size(300.dp), contentAlignment = Alignment.Center) {
+    val pulso by infinita.animateFloat(0.6f, 1f,
+        infiniteRepeatable(tween(1200), RepeatMode.Reverse), label = "pulso")
+    val brillo by animateFloatAsState(if (pensando || estado.casa != null) 1f else 0.4f, tween(800), label = "brillo")
+    val color = acento(estado.casa)
+    Box(Modifier.size(tamano), contentAlignment = Alignment.Center) {
         Canvas(Modifier.fillMaxSize()) {
-            drawCircle(
-                Brush.radialGradient(
-                    listOf(colorBrillo.copy(alpha = 0.45f * brillo * pulso), Color.Transparent),
-                    center = center, radius = size.minDimension / 2f,
-                ),
-            )
+            drawCircle(Brush.radialGradient(listOf(color.copy(alpha = 0.35f * brillo * pulso), Color.Transparent),
+                center = center, radius = size.minDimension / 2f))
         }
-        SombreroDibujo(
-            boca = boca,
-            cejas = cejas,
-            modifier = Modifier
-                .size(270.dp)
-                .graphicsLayer {
-                    rotationZ = (fase - 0.5f) * 2f * amplitud
-                    transformOrigin = TransformOrigin(0.5f, 0.85f)
-                },
-        )
+        SombreroDibujo(boca, cejas, Modifier.fillMaxSize().padding(10.dp).graphicsLayer {
+            rotationZ = (fase - 0.5f) * 2f * amplitud
+            translationY = (fase - 0.5f) * 8.dp.toPx()
+            transformOrigin = TransformOrigin(0.5f, 0.85f)
+        })
     }
 }
 
 @Composable
 private fun Subtitulo(estado: EstadoUi) {
-    val texto = when {
-        estado.subtitulo.isNotEmpty() -> estado.subtitulo
-        estado.fase == Fase.ESPERANDO -> "Siéntate... y toca el sombrero"
-        else -> ""
+    val texto = estado.subtitulo.ifEmpty {
+        if (estado.fase == Fase.ESPERANDO) "Siéntate… y toca el sombrero" else "Hmm… veamos qué hay en ti…"
     }
-    val parpadeo by rememberInfiniteTransition(label = "pista").animateFloat(
-        0.4f, 1f, infiniteRepeatable(tween(1400), RepeatMode.Reverse), label = "alfa",
-    )
-    Box(Modifier.fillMaxWidth().height(120.dp), contentAlignment = Alignment.TopCenter) {
-        AnimatedContent(texto, transitionSpec = { fadeIn(tween(300)) togetherWith fadeOut(tween(200)) }, label = "sub") { t ->
-            val esPista = estado.subtitulo.isEmpty()
-            Text(
-                t,
-                color = Color.White.copy(alpha = if (esPista) parpadeo else 1f),
-                fontFamily = FontFamily.Serif,
-                fontStyle = if (esPista) FontStyle.Italic else null,
-                fontSize = if (estado.casa != null && t == "¡${estado.casa.nombre.uppercase()}!") 34.sp else 22.sp,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center,
-                lineHeight = 30.sp,
-            )
+    Column(
+        Modifier.fillMaxWidth().background(Tinta.copy(alpha = 0.78f), RoundedCornerShape(18.dp))
+            .border(1.dp, Dorado.copy(alpha = 0.22f), RoundedCornerShape(18.dp)).padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(when {
+            estado.hablando -> "EL SOMBRERO HABLA"
+            estado.fase == Fase.PENSANDO -> "EL SOMBRERO ESTÁ PENSANDO"
+            estado.fase == Fase.REVELADO -> "BIENVENIDO A TU CASA"
+            else -> "TU HISTORIA COMIENZA AQUÍ"
+        }, color = Dorado, fontSize = 10.sp, letterSpacing = 1.5.sp, textAlign = TextAlign.Center)
+        Spacer(Modifier.height(8.dp))
+        AnimatedContent(texto, transitionSpec = { fadeIn(tween(250)) togetherWith fadeOut(tween(150)) }, label = "subtitulo") { t ->
+            Text(t, color = Pergamino, fontFamily = FontFamily.Serif, fontStyle = FontStyle.Italic,
+                fontSize = 20.sp, lineHeight = 27.sp, textAlign = TextAlign.Center)
         }
     }
 }
 
 @Composable
-private fun PiePagina(estado: EstadoUi) {
+private fun Accion(estado: EstadoUi, alTocar: () -> Unit) {
+    val disponible = estado.fase != Fase.PENSANDO && !estado.hablando
+    OutlinedButton(
+        onClick = alTocar, enabled = disponible,
+        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
+        shape = RoundedCornerShape(28.dp),
+        border = BorderStroke(1.dp, Dorado.copy(alpha = if (disponible) 0.85f else 0.25f)),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = Color(0xFF35291B).copy(alpha = 0.8f), contentColor = Pergamino,
+            disabledContainerColor = Tinta.copy(alpha = 0.6f), disabledContentColor = Pergamino.copy(alpha = 0.65f),
+        ),
+    ) {
+        Text(when {
+            estado.fase == Fase.PENSANDO || estado.hablando -> "Escucha al sombrero…"
+            estado.fase == Fase.REVELADO -> "Siguiente participante"
+            else -> "Comenzar selección"
+        }, fontFamily = FontFamily.Serif, fontSize = 18.sp, textAlign = TextAlign.Center)
+    }
+}
+
+@Composable
+private fun PiePagina(estado: EstadoUi, activas: Set<String>) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        AnimatedVisibility(estado.fase == Fase.REVELADO && !estado.hablando, enter = fadeIn(), exit = fadeOut()) {
-            Text(
-                "Toca para la siguiente persona",
-                color = Color.White.copy(alpha = 0.7f), fontSize = 14.sp,
-                modifier = Modifier.padding(bottom = 10.dp),
-            )
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text("LAS CUATRO CASAS", color = Pergamino.copy(alpha = 0.65f), fontSize = 10.sp, letterSpacing = 2.sp)
+        Spacer(Modifier.height(8.dp))
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             CASAS.forEach { c ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(Modifier.size(10.dp).background(c.colorSecundario, CircleShape))
-                    Spacer(Modifier.width(4.dp))
-                    Text(
-                        "${estado.conteo[c.id] ?: 0}",
-                        color = Color.White.copy(alpha = 0.55f), fontSize = 13.sp,
-                    )
+                Column(
+                    Modifier.weight(1f).graphicsLayer { alpha = if (c.id in activas) 1f else 0.4f }
+                        .semantics(mergeDescendants = true) {
+                            contentDescription = "${c.nombre}: ${estado.conteo[c.id] ?: 0} participantes" +
+                                if (c.id in activas) "" else ", no participa"
+                        },
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Escudo(c, Modifier.size(48.dp), describir = false)
+                    Text("${estado.conteo[c.id] ?: 0}", color = Pergamino, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
     }
 }
 
-/** Escudo sencillo con los colores de la casa y su inicial. */
 @Composable
-fun Escudo(casa: Casa, modifier: Modifier = Modifier) {
-    Box(modifier, contentAlignment = Alignment.Center) {
-        Canvas(Modifier.fillMaxSize()) {
-            val w = size.width
-            val h = size.height
-            val forma = Path().apply {
-                moveTo(w * 0.1f, h * 0.08f)
-                lineTo(w * 0.9f, h * 0.08f)
-                lineTo(w * 0.9f, h * 0.5f)
-                quadraticTo(w * 0.88f, h * 0.82f, w * 0.5f, h * 0.96f)
-                quadraticTo(w * 0.12f, h * 0.82f, w * 0.1f, h * 0.5f)
-                close()
-            }
-            drawPath(forma, Brush.verticalGradient(listOf(casa.colorPrincipal, lerpNegro(casa.colorPrincipal))))
-            drawPath(forma, casa.colorSecundario, style = Stroke(width = w * 0.06f))
-        }
-        Text(
-            casa.nombre.take(1),
-            color = casa.colorSecundario, fontFamily = FontFamily.Serif, fontWeight = FontWeight.Black,
-            fontSize = 44.sp, modifier = Modifier.padding(bottom = 8.dp),
-        )
+fun Escudo(casa: Casa, modifier: Modifier = Modifier, describir: Boolean = true) {
+    val recurso = when (casa.id) {
+        "gryffindor" -> R.drawable.escudo_gryffindor
+        "hufflepuff" -> R.drawable.escudo_hufflepuff
+        "ravenclaw" -> R.drawable.escudo_ravenclaw
+        "slytherin" -> R.drawable.escudo_slytherin
+        else -> return
     }
+    Image(painterResource(recurso), if (describir) "Escudo de ${casa.nombre}" else null,
+        modifier = modifier, contentScale = ContentScale.Fit)
 }
 
-/** Cielo con estrellas que titilan. */
+// Hufflepuff's secondary color is near-black: use pale gold for readable text/light.
+private fun acento(casa: Casa?): Color = when (casa?.id) {
+    "hufflepuff" -> Color(0xFFFFDC83)
+    "ravenclaw" -> Color(0xFFE6B981)
+    else -> casa?.colorSecundario ?: Dorado
+}
+
 @Composable
 private fun Estrellas(modifier: Modifier, color: Color) {
     val estrellas = remember {
-        List(70) { Triple(Offset(Random.nextFloat(), Random.nextFloat()), Random.nextFloat() * 2.2f + 0.8f, Random.nextFloat()) }
+        List(48) { Triple(Offset(Random.nextFloat(), Random.nextFloat()), Random.nextFloat() * 2.2f + 0.8f, Random.nextFloat()) }
     }
-    val t by rememberInfiniteTransition(label = "estrellas").animateFloat(
-        0f, 1f, infiniteRepeatable(tween(4000), RepeatMode.Restart), label = "t",
-    )
+    val t by rememberInfiniteTransition(label = "estrellas").animateFloat(0f, 1f,
+        infiniteRepeatable(tween(4000), RepeatMode.Restart), label = "destello")
     Canvas(modifier) {
         estrellas.forEach { (pos, radio, desfase) ->
-            val alfa = 0.25f + 0.6f * abs(sin((t + desfase) * 2f * PI.toFloat()))
-            drawCircle(color.copy(alpha = alfa), radius = radio.dp.toPx() / 2f, center = Offset(pos.x * size.width, pos.y * size.height))
+            val alfa = 0.15f + 0.5f * abs(sin((t + desfase) * 2f * PI.toFloat()))
+            drawCircle(color.copy(alpha = alfa), radio.dp.toPx() / 2f, Offset(pos.x * size.width, pos.y * size.height))
         }
     }
 }
-
-private fun lerpNegro(c: Color): Color = Color(c.red * 0.25f, c.green * 0.25f, c.blue * 0.25f, 1f)

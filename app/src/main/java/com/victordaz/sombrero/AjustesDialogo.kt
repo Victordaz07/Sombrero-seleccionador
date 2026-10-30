@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,11 +41,15 @@ fun AjustesDialogo(vm: SombreroViewModel, alCerrar: () -> Unit) {
     val conteo = vm.estado.conteo
     var confirmarReinicio by remember { mutableStateOf(false) }
 
-    MaterialTheme(colorScheme = darkColorScheme(primary = Color(0xFFE8C15A))) {
+    MaterialTheme(colorScheme = darkColorScheme(
+        primary = Dorado, onPrimary = Tinta, surface = Color(0xFF171A24),
+        onSurface = Pergamino, onSurfaceVariant = Color(0xFFD1C5B3),
+    )) {
         AlertDialog(
             onDismissRequest = alCerrar,
             confirmButton = { TextButton(onClick = alCerrar) { Text("Listo") } },
-            title = { Text("Ajustes del sombrero") },
+            title = { Text("Ajustes del sombrero", fontFamily = FontFamily.Serif, color = Dorado) },
+            containerColor = Color(0xFF171A24),
             text = {
                 Column(Modifier.verticalScroll(rememberScrollState())) {
                     Seccion("Voz")
@@ -76,8 +81,10 @@ fun AjustesDialogo(vm: SombreroViewModel, alCerrar: () -> Unit) {
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Checkbox(c.id in a.casasActivas, onCheckedChange = { vm.alternarCasa(c.id) })
+                            Escudo(c, Modifier.width(28.dp), describir = false)
+                            Spacer(Modifier.width(8.dp))
                             Text(c.nombre, Modifier.weight(1f))
-                            Text("${conteo[c.id] ?: 0} personas", fontSize = 13.sp, color = Color.Gray)
+                            Text("${conteo[c.id] ?: 0} personas", fontSize = 13.sp, color = Color(0xFFD1C5B3))
                         }
                     }
 
