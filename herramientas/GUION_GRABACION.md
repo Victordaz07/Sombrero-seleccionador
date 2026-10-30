@@ -1,9 +1,37 @@
 # Guion de grabación del sombrero
 
-Cada frase va en `app/src/main/assets/voz/<archivo>` en formato **MP3**.
-Si una frase no tiene audio, la app usa la voz del teléfono para esa frase.
+Cada audio va en `app/src/main/assets/voz/<archivo>` en formato **MP3**.
 
 Este archivo se genera solo con `python3 herramientas/generar_voces.py --solo-lista`.
+
+## Discursos completos (recomendado)
+
+4 por casa. Cada uno se graba **de corrido**, en un solo audio. La app los va rotando para que no se repitan.
+Haz una pausa de suspenso antes del nombre de la casa (en **negritas**) y grítalo con emoción.
+
+| Archivo | Discurso |
+|---|---|
+| `gryffindor_discurso_1.mp3` | Mmm... ¡vaya, vaya! Siento un calorcito aquí arriba... como si esta cabeza estuviera hecha de fuego. Veo a alguien que no se queda callado cuando algo está mal. Que se cae, se sacude el polvo... y lo vuelve a intentar. No hay duda. Tu valentía brilla más que todas las velas de este salón. Tu lugar está en... **¡Grífindor!** ¡Adelante, corazón valiente! |
+| `gryffindor_discurso_2.mp3` | Hmm... qué cabeza tan inquieta. ¡No dejas de moverte! Aquí dentro hay ganas de aventura... de subir al árbol más alto y explorar el bosque más oscuro. Pero veo algo todavía más importante: proteges a los más pequeños. Podría mandarte a otro lugar, sí... pero no. Tú naciste para los grandes retos. Así que te envío a... **¡Grífindor!** |
+| `gryffindor_discurso_3.mp3` | Ah... hay nervios aquí, ¿verdad? Puedo sentirlos. Tranquilidad... ¿Sabes un secreto? El valor no es no tener miedo... es seguir adelante aunque lo tengas. Y tú, aunque te tiemblen las rodillas, siempre das el paso. Eso es justo lo que busca una casa muy especial... **¡Grífindor!** ¡La casa de los valientes te recibe! |
+| `gryffindor_discurso_4.mp3` | ¡Ja! Esta sí me la sé. Lo supe en cuanto me pusieron sobre tu cabeza. Corazón noble, palabra firme... y unas ganas enormes de comerte el mundo. Dices la verdad aunque cueste. Y eso, créeme, es muy poco común. No necesito pensarlo más... **¡Grífindor!** |
+| `hufflepuff_discurso_1.mp3` | Mmm... qué paz se siente en esta cabeza. Aquí no hay prisa, ni envidia... solo un corazón enorme. Eres de los que llegan primero a ayudar... y se van al último, cuando todo está en orden. Tus amigos lo saben: contigo siempre se puede contar. Tu casa será... **¡Jáfelpaf!** ¡Donde la lealtad vale más que el oro! |
+| `hufflepuff_discurso_2.mp3` | A ver, a ver... ¿qué tenemos aquí? ¡Oh! Qué sorpresa tan bonita. Veo a alguien que comparte sus dulces de Halloween... ¡hasta el último chocolate! Paciencia con los demás, justicia con todos, y un trabajo constante como pocos. Algunos buscan aplausos... tú buscas que todos estén bien. Y por eso perteneces a... **¡Jáfelpaf!** |
+| `hufflepuff_discurso_3.mp3` | Hmm... por un momento pensé en otra casa... había algo de astucia por aquí. Pero luego miré más profundo... y encontré un corazón leal, de esos que no abandonan a nadie. Constancia, humildad, bondad... tesoros que no se ven, pero que lo cambian todo. Ya está decidido. **¡Jáfelpaf!** ¡Te van a recibir con los brazos abiertos! |
+| `hufflepuff_discurso_4.mp3` | ¡Ah! Esta cabeza huele a pan recién horneado y a abrazos de abuela. Haces que los demás se sientan en casa sin decir una sola palabra. Trabajas duro aunque nadie te esté mirando... y eso dice mucho de ti. Ninguna duda, ninguna. Tu lugar está en... **¡Jáfelpaf!** |
+| `ravenclaw_discurso_1.mp3` | Mmm... ¡cuántas preguntas hay aquí dentro! ¿Por qué el cielo es azul? ¿Cómo vuelan los murciélagos? Una mente curiosa que nunca se cansa de aprender. Veo libros, ideas, inventos... y una imaginación sin límites. Sí... sé exactamente a dónde perteneces. **¡Réivenclo!** ¡Que tu ingenio ilumine esta noche! |
+| `ravenclaw_discurso_2.mp3` | Hmm... interesante. Muy, muy interesante. Escuchas antes de hablar... y cuando hablas, tus palabras tienen sabiduría. Ves soluciones donde otros solo ven problemas. Podría enviarte con los valientes... pero tu verdadera fuerza está en tu mente. Te envío a... **¡Réivenclo!** |
+| `ravenclaw_discurso_3.mp3` | ¡Oh! Cuidado, que me vas a hacer pensar más de la cuenta. Esta cabeza está llena de colores, de historias... de mundos inventados. Creatividad pura... y una forma única de ver las cosas. No hay otra casa para alguien como tú. Tu lugar está en... **¡Réivenclo!** |
+| `ravenclaw_discurso_4.mp3` | Mmm... calma... claridad... paciencia... Mientras todos corren, tú te detienes a pensar. Y casi siempre tienes razón. Te encanta descubrir el porqué de todo... y compartir lo que aprendes. La sabiduría te llama por tu nombre... **¡Réivenclo!** ¡Bienvenida la mente más brillante de la noche! |
+| `slytherin_discurso_1.mp3` | Hmm... aquí hay grandes planes. ¡Enormes! Cuando te propones algo, nada ni nadie te detiene. Tienes madera de líder: los demás te siguen sin que se los pidas. Ambición, sí... pero de la buena: la de querer ser mejor cada día. Tu casa será... **¡Slíderin!** |
+| `slytherin_discurso_2.mp3` | Ah... una mente astuta. Ya te vi pensando en cómo convencerme. Ingenio para salir de cualquier aprieto... y determinación para llegar hasta el final. Planeas cada paso con cuidado, como en una partida de ajedrez. Muy bien... no me dejas opción. **¡Slíderin!** ¡Que tus sueños te lleven muy lejos! |
+| `slytherin_discurso_3.mp3` | Mmm... dudé un momento... también veo un gran corazón. Pero mira esto: una voluntad de hierro. Cuando caes, te levantas con más fuerza. Sueñas en grande... y trabajas con inteligencia para lograrlo. Ya lo decidí. Perteneces a... **¡Slíderin!** |
+| `slytherin_discurso_4.mp3` | ¡Ja, ja! Esta cabeza tiene ideas brillantes... y un poquito traviesas. Eres de los que organizan el juego, inventan las reglas... y ganan. Pero también cuidas a los tuyos, como todo buen líder. Determinación, liderazgo, grandes metas... está muy claro. **¡Slíderin!** ¡Que comience tu aventura! |
+
+## Frases sueltas (respaldo)
+
+Si una casa no tiene discursos grabados, el sombrero arma el discurso con estas frases.
+Si una frase no tiene audio, la app usa la voz del teléfono para esa frase.
 
 | Archivo | Frase |
 |---|---|

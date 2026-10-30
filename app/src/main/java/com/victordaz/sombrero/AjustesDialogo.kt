@@ -54,11 +54,14 @@ fun AjustesDialogo(vm: SombreroViewModel, alCerrar: () -> Unit) {
                 Column(Modifier.verticalScroll(rememberScrollState())) {
                     Seccion("Voz")
                     FilaSwitch(
-                        "Usar voces grabadas (${a.frasesGrabadas} de ${a.frasesTotales} frases tienen audio)",
+                        "Usar voces grabadas",
                         a.usarGrabaciones, vm::cambiarUsarGrabaciones,
                     )
                     Text(
-                        "Las frases sin audio usan la voz del teléfono:",
+                        "Discursos completos con audio: ${a.discursosGrabados} de ${a.discursosTotales}\n" +
+                            "Frases sueltas con audio: ${a.frasesGrabadas} de ${a.frasesTotales}\n" +
+                            "Si una casa no tiene discursos, se arma con frases sueltas; " +
+                            "las frases sin audio usan la voz del teléfono:",
                         fontSize = 12.sp, color = Color.Gray,
                     )
                     Text("Tono: ${"%.2f".format(a.tono)} (más bajo = más grave)", fontSize = 14.sp)

@@ -32,6 +32,8 @@ data class EstadoAjustes(
     val usarGrabaciones: Boolean,
     val frasesGrabadas: Int,
     val frasesTotales: Int,
+    val discursosGrabados: Int,
+    val discursosTotales: Int,
     val casasActivas: Set<String>,
 )
 
@@ -41,6 +43,10 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     private val frases = Frases.cargar(app)
     private val grabada = VozGrabada(app)
     private var trabajo: Job? = null
+
+    /** Discursos pendientes por casa: se reparten todos antes de repetir alguno. */
+    private val colaDiscursos = mutableMapOf<String, ArrayDeque<Discurso>>()
+    private val ultimoDiscurso = mutableMapOf<String, String>()
 
     private val voz = VozDelSombrero(app) { lista ->
         aplicarAjustesDeVoz()
@@ -77,20 +83,70 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         trabajo = viewModelScope.launch {
             estado = estado.copy(fase = Fase.PENSANDO, casa = null, subtitulo = "")
             delay(400)
-            for (linea in guion) {
-                if (linea.esAnuncio) {
-                    ajustes.sumar(casa.id)
-                    estado = estado.copy(fase = Fase.REVELADO, casa = casa, conteo = ajustes.conteo())
-                }
-                estado = estado.copy(
-                    subtitulo = if (linea.esAnuncio) "¡${casa.nombre.uppercase()}!" else linea.texto,
-                    hablando = true,
-                )
-                decir(linea)
-                estado = estado.copy(hablando = false)
-                delay(linea.pausaDespues)
+            val discurso = if (ajustes.usarGrabaciones) siguienteDiscurso(casa) else null
+            if (discurso != null) {
+                decirDiscurso(casa, discurso)
+            } else {
+                decirGuion(casa, guion)
             }
         }
+    }
+
+    private fun revelar(casa: Casa) {
+        if (estado.fase == Fase.REVELADO) return
+        ajustes.sumar(casa.id)
+        estado = estado.copy(fase = Fase.REVELADO, casa = casa, conteo = ajustes.conteo())
+    }
+
+    /** Respaldo: arma el discurso con frases sueltas (audio grabado o voz del teléfono). */
+    private suspend fun decirGuion(casa: Casa, guion: List<Linea>) {
+        for (linea in guion) {
+            if (linea.esAnuncio) revelar(casa)
+            estado = estado.copy(
+                subtitulo = if (linea.esAnuncio) "¡${casa.nombre.uppercase()}!" else linea.texto,
+                hablando = true,
+            )
+            decir(linea)
+            estado = estado.copy(hablando = false)
+            delay(linea.pausaDespues)
+        }
+    }
+
+    /** Reproduce un discurso completo y sincroniza subtítulos y revelación con el audio. */
+    private suspend fun decirDiscurso(casa: Casa, discurso: Discurso) {
+        val inicios = grabada.tiempos(discurso.clave)
+        var actual = -1
+        fun mostrar(i: Int) {
+            if (i <= actual) return
+            actual = i
+            if (i >= discurso.indiceAnuncio) revelar(casa)
+            estado = estado.copy(
+                subtitulo = if (i == discurso.indiceAnuncio) "¡${casa.nombre.uppercase()}!" else discurso.segmentos[i],
+            )
+        }
+        mostrar(0)
+        estado = estado.copy(hablando = true)
+        grabada.reproducir(discurso.clave) { posicion, duracion ->
+            mostrar(discurso.segmentoEn(posicion, duracion, inicios))
+        }
+        revelar(casa)
+        estado = estado.copy(hablando = false)
+    }
+
+    /** Elige un discurso grabado de la casa sin repetir hasta haber usado todos. */
+    private fun siguienteDiscurso(casa: Casa): Discurso? {
+        val grabados = frases.discursos[casa.id].orEmpty().filter { grabada.tiene(it.clave) }
+        if (grabados.isEmpty()) return null
+        val cola = colaDiscursos.getOrPut(casa.id) { ArrayDeque() }
+        if (cola.isEmpty()) {
+            val mezcla = grabados.shuffled().toMutableList()
+            // Que el primero de la nueva vuelta no sea el mismo que acaba de sonar.
+            if (mezcla.size > 1 && mezcla.first().clave == ultimoDiscurso[casa.id]) {
+                mezcla.add(mezcla.removeAt(0))
+            }
+            cola.addAll(mezcla)
+        }
+        return cola.removeFirst().also { ultimoDiscurso[casa.id] = it.clave }
     }
 
     /** Usa el audio grabado si existe; si no, la voz del teléfono. */
@@ -177,6 +233,8 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         usarGrabaciones = ajustes.usarGrabaciones,
         frasesGrabadas = frases.todas.count { grabada.tiene(it.clave) },
         frasesTotales = frases.todas.size,
+        discursosGrabados = frases.discursos.values.flatten().count { grabada.tiene(it.clave) },
+        discursosTotales = frases.discursos.values.sumOf { it.size },
         casasActivas = ajustes.casasActivas,
     )
 

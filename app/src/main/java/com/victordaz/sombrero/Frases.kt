@@ -17,6 +17,29 @@ data class Linea(
     val esAnuncio: Boolean = false,
 )
 
+/**
+ * Una actuación completa del sombrero para una casa, grabada en un solo audio.
+ * [segmentos] son las frases (para los subtítulos) y [indiceAnuncio] es donde grita la casa.
+ */
+class Discurso(val clave: String, val segmentos: List<String>, val indiceAnuncio: Int) {
+
+    /** Qué segmento se está diciendo en [posicionMs], con los tiempos exactos o estimando por largo del texto. */
+    fun segmentoEn(posicionMs: Int, duracionMs: Int, inicios: List<Double>?): Int {
+        val segundos = posicionMs / 1000.0
+        if (inicios != null && inicios.size == segmentos.size) {
+            return inicios.indexOfLast { it <= segundos }.coerceAtLeast(0)
+        }
+        if (duracionMs <= 0) return 0
+        val total = segmentos.sumOf { it.length + 1 }.toDouble()
+        var acumulado = 0.0
+        segmentos.forEachIndexed { i, s ->
+            acumulado += s.length + 1
+            if (posicionMs < duracionMs * acumulado / total) return i
+        }
+        return segmentos.lastIndex
+    }
+}
+
 /** Frases de una casa. */
 class FrasesCasa(val virtudes: List<Linea>, val dudas: List<Linea>, val anuncio: Linea)
 
@@ -41,6 +64,21 @@ class Frases(json: JSONObject) {
             dudas = lista(c.getJSONArray("dudas"), "${casa.id}_duda"),
             anuncio = Linea("${casa.id}_anuncio", c.getString("anuncio"), esAnuncio = true),
         )
+    }
+
+    /** 4 discursos completos por casa. Las claves son `gryffindor_discurso_1`, etc. */
+    val discursos: Map<String, List<Discurso>> = CASAS.associate { casa ->
+        val lista = json.optJSONObject("discursos")?.optJSONArray(casa.id) ?: JSONArray()
+        val anuncio = json.getJSONObject("casas").getJSONObject(casa.id).getString("anuncio")
+        casa.id to List(lista.length()) { i ->
+            val crudos = lista.getJSONArray(i)
+            val segmentos = List(crudos.length()) { crudos.getString(it) }
+            Discurso(
+                clave = "${casa.id}_discurso_${i + 1}",
+                segmentos = segmentos.map { if (it == ANUNCIO) anuncio else it },
+                indiceAnuncio = segmentos.indexOf(ANUNCIO),
+            )
+        }
     }
 
     /** Todas las frases posibles (sirve para contar cuántas tienen audio grabado). */
@@ -71,6 +109,9 @@ class Frases(json: JSONObject) {
     }
 
     companion object {
+        /** Marca, dentro de un discurso, el momento en que grita el nombre de la casa. */
+        const val ANUNCIO = "{ANUNCIO}"
+
         fun cargar(context: Context): Frases =
             Frases(JSONObject(context.assets.open("frases.json").bufferedReader().use { it.readText() }))
 

@@ -3,8 +3,11 @@ package com.victordaz.sombrero
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.MediaPlayer
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import java.util.concurrent.atomic.AtomicBoolean
+import org.json.JSONObject
 import kotlin.coroutines.resume
 
 /**
@@ -14,25 +17,32 @@ import kotlin.coroutines.resume
  */
 class VozGrabada(private val context: Context) {
 
-    private val disponibles: Set<String> =
-        runCatching { context.assets.list(CARPETA).orEmpty() }.getOrDefault(emptyArray())
-            .filter { it.endsWith(EXTENSION) }
-            .map { it.removeSuffix(EXTENSION) }
-            .toSet()
+    private val archivos: Set<String> =
+        runCatching { context.assets.list(CARPETA).orEmpty().toSet() }.getOrDefault(emptySet())
 
-    fun tiene(clave: String) = clave in disponibles
+    fun tiene(clave: String) = "$clave.mp3" in archivos
 
-    /** Reproduce el audio y espera (sin bloquear) hasta que termine. */
-    suspend fun reproducir(clave: String) = suspendCancellableCoroutine { cont ->
+    /**
+     * Segundo en que empieza cada segmento de un discurso, si el generador guardó
+     * `assets/voz/<clave>.json` (ElevenLabs lo da exacto). Si no existe, devuelve null.
+     */
+    fun tiempos(clave: String): List<Double>? {
+        if ("$clave.json" !in archivos) return null
+        return runCatching {
+            val texto = context.assets.open("$CARPETA/$clave.json").bufferedReader().use { it.readText() }
+            val inicios = JSONObject(texto).getJSONArray("inicios")
+            List(inicios.length()) { inicios.getDouble(it) }
+        }.getOrNull()
+    }
+
+    /**
+     * Reproduce el audio y espera (sin bloquear) hasta que termine.
+     * [alAvanzar] recibe la posición y la duración (en milisegundos) unas 10 veces por segundo.
+     */
+    suspend fun reproducir(clave: String, alAvanzar: ((posicionMs: Int, duracionMs: Int) -> Unit)? = null) {
         val reproductor = MediaPlayer()
-        val liberado = AtomicBoolean(false)
-        fun terminar() {
-            if (liberado.compareAndSet(false, true)) reproductor.release()
-            if (cont.isActive) cont.resume(Unit)
-        }
-        cont.invokeOnCancellation { if (liberado.compareAndSet(false, true)) reproductor.release() }
         try {
-            context.assets.openFd("$CARPETA/$clave$EXTENSION").use {
+            context.assets.openFd("$CARPETA/$clave.mp3").use {
                 reproductor.setDataSource(it.fileDescriptor, it.startOffset, it.length)
             }
             reproductor.setAudioAttributes(
@@ -41,17 +51,35 @@ class VozGrabada(private val context: Context) {
                     .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                     .build(),
             )
-            reproductor.setOnCompletionListener { terminar() }
-            reproductor.setOnErrorListener { _, _, _ -> terminar(); true }
             reproductor.prepare()
-            reproductor.start()
         } catch (e: Exception) {
-            terminar()
+            reproductor.release()
+            return
+        }
+
+        try {
+            coroutineScope {
+                val seguimiento = alAvanzar?.let { avisar ->
+                    launch {
+                        while (true) {
+                            avisar(reproductor.currentPosition, reproductor.duration)
+                            delay(100)
+                        }
+                    }
+                }
+                suspendCancellableCoroutine { cont ->
+                    reproductor.setOnCompletionListener { if (cont.isActive) cont.resume(Unit) }
+                    reproductor.setOnErrorListener { _, _, _ -> if (cont.isActive) cont.resume(Unit); true }
+                    reproductor.start()
+                }
+                seguimiento?.cancel()
+            }
+        } finally {
+            reproductor.release()
         }
     }
 
     private companion object {
         const val CARPETA = "voz"
-        const val EXTENSION = ".mp3"
     }
 }

@@ -34,9 +34,12 @@ Funciona **sin internet**: usa la voz de texto a voz que ya trae el teléfono.
 
 ## 🎙 Voz natural (recomendado)
 
-La voz del teléfono suena algo robótica. Para que el sombrero suene **natural y con personaje**, la app reproduce audios pregrabados: `app/src/main/assets/voz/<clave>.mp3`. Cada frase tiene su propio audio, y si a alguna le falta, esa frase se dice con la voz del teléfono. En ⚙ ves cuántas frases tienen audio.
+La voz del teléfono suena algo robótica. Para que el sombrero suene **natural y con personaje**, la app reproduce audios pregrabados en `app/src/main/assets/voz/`:
 
-Todo el guion son **61 frases y unos 3,200 caracteres**.
+1. **Discursos completos (recomendado):** 4 actuaciones distintas por casa (16 audios, unos 4,600 caracteres). Cada una se dice de corrido, así que suena como una sola actuación. La app las rota y no repite ninguna hasta usar las 4. Los subtítulos y la revelación de la casa se sincronizan con el audio (con ElevenLabs, al segundo exacto).
+2. **Frases sueltas (respaldo):** si una casa no tiene discursos, el sombrero arma uno con 61 frases sueltas. Las que no tienen audio usan la voz del teléfono.
+
+En ⚙ ves cuántos discursos y frases tienen audio.
 
 ### Opción A: generarlas con IA (script incluido)
 
@@ -51,15 +54,17 @@ export OPENAI_API_KEY="sk-..."
 python3 herramientas/generar_voces.py --proveedor openai --voz onyx --solo prueba   # probar 1 frase
 python3 herramientas/generar_voces.py --proveedor openai --voz onyx                # todas
 
-# ElevenLabs: busca en su "Voice Library" una voz tipo "old wizard" y copia su Voice ID
+# ElevenLabs (recomendado): crea la voz con Voice Design y copia su Voice ID
 export ELEVENLABS_API_KEY="..."
-python3 herramientas/generar_voces.py --proveedor elevenlabs --voz <voice_id> --limite 10
+python3 herramientas/generar_voces.py --proveedor elevenlabs --voz <voice_id> --discursos --limite 4  # 1 por casa
+python3 herramientas/generar_voces.py --proveedor elevenlabs --voz <voice_id> --discursos            # los 16
 ```
 
 | Opción | Para qué |
 |---|---|
+| `--discursos` | Generar solo los 16 discursos completos |
 | `--simular` | Ver la lista y los caracteres, sin gastar |
-| `--limite 10` | Generar solo 10 audios (empieza por los anuncios de casa, que son los que más se lucen). Puedes correrlo varias veces: no repite los que ya existen |
+| `--limite 4` | Generar solo 4 audios (empieza por un discurso de cada casa). Puedes correrlo varias veces: no repite los que ya existen |
 | `--solo prueba gryffindor_anuncio` | Generar solo esas frases |
 | `--rehacer` | Volver a generar audios que ya existen (por ejemplo, si cambiaste el texto o la voz) |
 | `--efecto` | Voz un poco más grave y con eco de salón (requiere `ffmpeg`) |
@@ -72,7 +77,7 @@ Alguien de la iglesia con voz grave puede grabar las frases con el celular. La l
 
 ### Cambiar lo que dice el sombrero
 
-Todas las frases están en `app/src/main/assets/frases.json`. Si cambias el texto de una frase, vuelve a generar su audio con `--rehacer --solo <clave>`. Si agregas o quitas frases, cambian las claves: corre `--solo-lista` para actualizar el guion.
+Todo está en `app/src/main/assets/frases.json`. En `discursos`, cada casa tiene 4 listas de frases y `{ANUNCIO}` marca dónde grita el nombre de la casa. Si cambias el texto de una frase o discurso, vuelve a generar su audio con `--rehacer --solo <clave>` (por ejemplo `--solo gryffindor_discurso_2`). Si agregas o quitas frases, cambian las claves: corre `--solo-lista` para actualizar el guion.
 
 ## Consejos para la fiesta
 
