@@ -75,7 +75,7 @@ class Frases(json: JSONObject) {
             val segmentos = List(crudos.length()) { crudos.getString(it) }
             Discurso(
                 clave = "${casa.id}_discurso_${i + 1}",
-                segmentos = segmentos.map { if (it == ANUNCIO) anuncio else it },
+                segmentos = segmentos.map { if (it == ANUNCIO) anuncio else sinEtiquetas(it) },
                 indiceAnuncio = segmentos.indexOf(ANUNCIO),
             )
         }
@@ -114,6 +114,9 @@ class Frases(json: JSONObject) {
 
         fun cargar(context: Context): Frases =
             Frases(JSONObject(context.assets.open("frases.json").bufferedReader().use { it.readText() }))
+
+        /** Quita las etiquetas de emoción de ElevenLabs ([whispers], [chuckles]...) para los subtítulos. */
+        private fun sinEtiquetas(texto: String) = texto.replace(Regex("""\[[^\]]*]\s*"""), "").trim()
 
         private fun lista(arr: JSONArray, prefijo: String): List<Linea> =
             List(arr.length()) { i -> Linea("${prefijo}_${i + 1}", arr.getString(i)) }

@@ -77,7 +77,7 @@ Alguien de la iglesia con voz grave puede grabar las frases con el celular. La l
 
 ### Cambiar lo que dice el sombrero
 
-Todo está en `app/src/main/assets/frases.json`. En `discursos`, cada casa tiene 4 listas de frases y `{ANUNCIO}` marca dónde grita el nombre de la casa. Si cambias el texto de una frase o discurso, vuelve a generar su audio con `--rehacer --solo <clave>` (por ejemplo `--solo gryffindor_discurso_2`). Si agregas o quitas frases, cambian las claves: corre `--solo-lista` para actualizar el guion.
+Todo está en `app/src/main/assets/frases.json`. En `discursos`, cada casa tiene 4 listas de frases y `{ANUNCIO}` marca dónde grita el nombre de la casa. Los discursos se generan con **Eleven v3**, que actúa las etiquetas de emoción entre corchetes (`[whispers]`, `[chuckles]`, `[thoughtful]`, `[excited]`...). Las etiquetas no se muestran en los subtítulos. Si cambias el texto de una frase o discurso, vuelve a generar su audio con `--rehacer --solo <clave>` (por ejemplo `--solo gryffindor_discurso_2`). Si agregas o quitas frases, cambian las claves: corre `--solo-lista` para actualizar el guion.
 
 ## Consejos para la fiesta
 

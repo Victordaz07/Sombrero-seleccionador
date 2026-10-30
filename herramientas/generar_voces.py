@@ -14,7 +14,8 @@ Hay dos tipos de audio:
 
 Uso (desde la carpeta del proyecto):
 
-    # ElevenLabs (recomendado)
+    # ElevenLabs (recomendado). Los discursos usan Eleven v3, que entiende las etiquetas
+    # de emoción como [whispers], [chuckles] o [shouting].
     export ELEVENLABS_API_KEY="..."
     python3 herramientas/generar_voces.py --proveedor elevenlabs --voz <voice_id> --discursos
 
@@ -38,6 +39,7 @@ import argparse
 import base64
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -52,6 +54,12 @@ FRASES = RAIZ / "app/src/main/assets/frases.json"
 CARPETA_VOZ = RAIZ / "app/src/main/assets/voz"
 GUION = RAIZ / "herramientas/GUION_GRABACION.md"
 ANUNCIO = "{ANUNCIO}"
+ETIQUETA = re.compile(r"\[[^\]]*\]\s*")
+
+
+def sin_etiquetas(texto):
+    """Quita las etiquetas de emoción ([whispers], [chuckles]...) que solo entiende ElevenLabs v3."""
+    return ETIQUETA.sub("", texto).strip()
 
 # Cómo debe "actuar" la voz (solo OpenAI lo usa).
 ESTILO = (
@@ -94,7 +102,8 @@ def cargar_frases(datos):
         for i, crudos in enumerate(lista):
             if crudos.count(ANUNCIO) != 1:
                 sys.exit(f"El discurso {i + 1} de {casa} debe tener {ANUNCIO} exactamente una vez")
-            segmentos = [anuncio if s == ANUNCIO else s for s in crudos]
+            # El anuncio se grita: "[shouting] ¡GRÍFINDOR!"
+            segmentos = [f"[shouting] {anuncio.upper()}" if s == ANUNCIO else s for s in crudos]
             frases.append(Frase(f"{casa}_discurso_{i + 1}", " ".join(segmentos), segmentos, crudos.index(ANUNCIO)))
 
     frases.append(Frase("prueba", datos["prueba"]))
@@ -159,7 +168,11 @@ def escribir_guion(frases):
     GUION.write_text("\n".join(lineas) + "\n", encoding="utf-8")
 
 
-def pedir(url, cuerpo, cabeceras):
+class ErrorServicio(Exception):
+    pass
+
+
+def pedir(url, cuerpo, cabeceras, salir_si_falla=True):
     req = urllib.request.Request(url, data=json.dumps(cuerpo).encode("utf-8"), method="POST")
     for k, v in cabeceras.items():
         req.add_header(k, v)
@@ -168,7 +181,10 @@ def pedir(url, cuerpo, cabeceras):
         with urllib.request.urlopen(req, timeout=180) as r:
             return r.read()
     except urllib.error.HTTPError as e:
-        sys.exit(f"Error {e.code} del servicio de voz: {e.read().decode('utf-8', 'replace')}")
+        mensaje = f"Error {e.code} del servicio de voz: {e.read().decode('utf-8', 'replace')}"
+        if salir_si_falla:
+            sys.exit(mensaje)
+        raise ErrorServicio(mensaje)
 
 
 def generar_openai(frase, voz):
@@ -180,7 +196,7 @@ def generar_openai(frase, voz):
         {
             "model": "gpt-4o-mini-tts",
             "voice": voz or "onyx",
-            "input": frase.texto,
+            "input": sin_etiquetas(frase.texto),
             "instructions": estilo,
             "response_format": "mp3",
         },
@@ -195,34 +211,33 @@ def generar_elevenlabs(frase, voz):
     if not voz:
         sys.exit("Con ElevenLabs indica el id de la voz: --voz <voice_id>")
 
-    if frase.es_discurso:
-        # Pausa de suspenso justo antes de gritar la casa.
-        partes = list(frase.segmentos)
-        partes[frase.indice_anuncio] = '<break time="1.2s" /> ' + partes[frase.indice_anuncio]
-        texto = " ".join(partes)
-        ajustes = {"stability": 0.4, "similarity_boost": 0.8, "style": 0.45}
-        url = f"https://api.elevenlabs.io/v1/text-to-speech/{voz}/with-timestamps?output_format=mp3_44100_128"
-    else:
-        texto = frase.texto
-        # Menos estabilidad = más expresivo; en el anuncio, más dramático todavía.
-        ajustes = {
-            "stability": 0.3 if frase.es_anuncio else 0.45,
-            "similarity_boost": 0.8,
-            "style": 0.6 if frase.es_anuncio else 0.35,
-        }
-        url = f"https://api.elevenlabs.io/v1/text-to-speech/{voz}?output_format=mp3_44100_128"
+    base = f"https://api.elevenlabs.io/v1/text-to-speech/{voz}"
+    formato = "?output_format=mp3_44100_128"
 
-    respuesta = pedir(
-        url,
-        {"text": texto, "model_id": "eleven_multilingual_v2", "voice_settings": ajustes},
+    if frase.es_discurso:
+        # Eleven v3 actúa las etiquetas de emoción. Estabilidad 0.5 = "Natural".
+        cuerpo = {"text": frase.texto, "model_id": "eleven_v3", "voice_settings": {"stability": 0.5}}
+        try:
+            datos = json.loads(pedir(f"{base}/with-timestamps{formato}", cuerpo, {"xi-api-key": clave}, False))
+        except ErrorServicio as e:
+            # Si no da tiempos, igual generamos el audio: la app los estima.
+            print(f"   (sin tiempos exactos: {e})")
+            return pedir(f"{base}{formato}", cuerpo, {"xi-api-key": clave}), None
+        audio = base64.b64decode(datos["audio_base64"])
+        return audio, inicios_de_segmentos(frase.segmentos, datos.get("alignment"))
+
+    # Frases sueltas: Multilingual v2. Menos estabilidad = más expresivo; en el anuncio, más todavía.
+    ajustes = {
+        "stability": 0.3 if frase.es_anuncio else 0.45,
+        "similarity_boost": 0.8,
+        "style": 0.6 if frase.es_anuncio else 0.35,
+    }
+    audio = pedir(
+        f"{base}{formato}",
+        {"text": sin_etiquetas(frase.texto), "model_id": "eleven_multilingual_v2", "voice_settings": ajustes},
         {"xi-api-key": clave},
     )
-    if not frase.es_discurso:
-        return respuesta, None
-
-    datos = json.loads(respuesta)
-    audio = base64.b64decode(datos["audio_base64"])
-    return audio, inicios_de_segmentos(frase.segmentos, datos.get("alignment"))
+    return audio, None
 
 
 def inicios_de_segmentos(segmentos, alineacion):
@@ -233,7 +248,11 @@ def inicios_de_segmentos(segmentos, alineacion):
     tiempos = alineacion["character_start_times_seconds"]
     inicios, cursor = [], 0
     for s in segmentos:
+        # La alineación puede traer las etiquetas de emoción o no: probamos de las dos formas.
         i = letras.find(s, cursor)
+        if i < 0:
+            s = sin_etiquetas(s)
+            i = letras.find(s, cursor)
         if i < 0:
             inicios.append(None)
         else:
