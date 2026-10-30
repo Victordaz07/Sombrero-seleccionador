@@ -79,10 +79,11 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
         casa?.colorPrincipal?.copy(alpha = 0.55f) ?: Color.Transparent,
         tween(1100), label = "color de la casa",
     )
+    val t = textos(estado.idioma)
     Box(Modifier.fillMaxSize().background(Tinta).clickable(
         interactionSource = remember { MutableInteractionSource() }, indication = null,
         enabled = estado.fase != Fase.PENSANDO,
-        onClickLabel = if (estado.fase == Fase.REVELADO) "Siguiente participante" else "Comenzar selección",
+        onClickLabel = if (estado.fase == Fase.REVELADO) t.botonSiguiente else t.botonComenzar,
         onClick = vm::alTocar,
     )) {
         Image(painterResource(R.drawable.fondo_noche), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
@@ -147,7 +148,7 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
             modifier = Modifier.align(Alignment.TopEnd).safeDrawingPadding().padding(6.dp)
                 .background(Tinta.copy(alpha = 0.7f), CircleShape),
         ) {
-            Icon(Icons.Filled.Settings, "Ajustes", tint = Pergamino.copy(alpha = if (estado.fase == Fase.PENSANDO) 0.3f else 0.9f))
+            Icon(Icons.Filled.Settings, t.ajustes, tint = Pergamino.copy(alpha = if (estado.fase == Fase.PENSANDO) 0.3f else 0.9f))
         }
     }
     if (mostrarAjustes) AjustesDialogo(vm, alCerrar = { mostrarAjustes = false })
@@ -155,6 +156,7 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
 
 @Composable
 private fun Encabezado(estado: EstadoUi) {
+    val t = textos(estado.idioma)
     AnimatedContent(
         targetState = estado.casa,
         transitionSpec = { (fadeIn(tween(650)) + scaleIn(initialScale = 0.85f, animationSpec = tween(650))) togetherWith fadeOut(tween(200)) },
@@ -164,12 +166,12 @@ private fun Encabezado(estado: EstadoUi) {
             Modifier.fillMaxWidth().padding(horizontal = 22.dp, vertical = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(if (casa == null) "LA CEREMONIA" else "TU CASA ES", color = Pergamino.copy(alpha = 0.8f),
+            Text(if (casa == null) t.etiquetaInicio else t.etiquetaCasa, color = Pergamino.copy(alpha = 0.8f),
                 fontSize = 11.sp, letterSpacing = 3.sp, textAlign = TextAlign.Center)
             Spacer(Modifier.height(10.dp))
-            if (casa != null) Escudo(casa, Modifier.size(88.dp))
+            if (casa != null) Escudo(casa, Modifier.size(88.dp), idioma = estado.idioma)
             Text(
-                casa?.nombre?.uppercase() ?: "El Sombrero\nSeleccionador",
+                casa?.nombre?.uppercase() ?: t.titulo,
                 color = acento(casa), fontFamily = FontFamily.Serif,
                 fontWeight = FontWeight.Bold, fontSize = if (casa == null) 34.sp else 29.sp,
                 lineHeight = 38.sp, textAlign = TextAlign.Center,
@@ -183,10 +185,10 @@ private fun Encabezado(estado: EstadoUi) {
                     HorizontalDivider(Modifier.width(42.dp), color = Dorado.copy(alpha = 0.5f))
                 }
             } else {
-                Text(casa.lema, color = Pergamino, fontSize = 14.sp, textAlign = TextAlign.Center)
+                Text(t.lema(casa, estado.idioma), color = Pergamino, fontSize = 14.sp, textAlign = TextAlign.Center)
             }
             if (estado.vozLista == false) {
-                Text("No se encontró voz en español. Instala Servicios de voz de Google y su paquete en español.",
+                Text(t.sinVoz,
                     Modifier.padding(top = 8.dp), color = Color(0xFFFFB4A0), fontSize = 13.sp, textAlign = TextAlign.Center)
             }
         }
@@ -225,8 +227,9 @@ private fun SombreroAnimado(estado: EstadoUi, tamano: Dp) {
 
 @Composable
 private fun Subtitulo(estado: EstadoUi) {
+    val t = textos(estado.idioma)
     val texto = estado.subtitulo.ifEmpty {
-        if (estado.fase == Fase.ESPERANDO) "Siéntate… y toca el sombrero" else "Hmm… veamos qué hay en ti…"
+        if (estado.fase == Fase.ESPERANDO) t.pistaEsperando else t.pistaPensando
     }
     Column(
         Modifier.fillMaxWidth().background(Tinta.copy(alpha = 0.78f), RoundedCornerShape(18.dp))
@@ -234,10 +237,10 @@ private fun Subtitulo(estado: EstadoUi) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(when {
-            estado.hablando -> "EL SOMBRERO HABLA"
-            estado.fase == Fase.PENSANDO -> "EL SOMBRERO ESTÁ PENSANDO"
-            estado.fase == Fase.REVELADO -> "BIENVENIDO A TU CASA"
-            else -> "TU HISTORIA COMIENZA AQUÍ"
+            estado.hablando -> t.estadoHablando
+            estado.fase == Fase.PENSANDO -> t.estadoPensando
+            estado.fase == Fase.REVELADO -> t.estadoRevelado
+            else -> t.estadoInicio
         }, color = Dorado, fontSize = 10.sp, letterSpacing = 1.5.sp, textAlign = TextAlign.Center)
         Spacer(Modifier.height(8.dp))
         AnimatedContent(texto, transitionSpec = { fadeIn(tween(250)) togetherWith fadeOut(tween(150)) }, label = "subtitulo") { t ->
@@ -249,6 +252,7 @@ private fun Subtitulo(estado: EstadoUi) {
 
 @Composable
 private fun Accion(estado: EstadoUi, alTocar: () -> Unit) {
+    val t = textos(estado.idioma)
     val disponible = estado.fase != Fase.PENSANDO && !estado.hablando
     OutlinedButton(
         onClick = alTocar, enabled = disponible,
@@ -261,29 +265,30 @@ private fun Accion(estado: EstadoUi, alTocar: () -> Unit) {
         ),
     ) {
         Text(when {
-            estado.fase == Fase.PENSANDO || estado.hablando -> "Escucha al sombrero…"
-            estado.fase == Fase.REVELADO -> "Siguiente participante"
-            else -> "Comenzar selección"
+            estado.fase == Fase.PENSANDO || estado.hablando -> t.botonEscuchar
+            estado.fase == Fase.REVELADO -> t.botonSiguiente
+            else -> t.botonComenzar
         }, fontFamily = FontFamily.Serif, fontSize = 18.sp, textAlign = TextAlign.Center)
     }
 }
 
 @Composable
 private fun PiePagina(estado: EstadoUi, activas: Set<String>) {
+    val t = textos(estado.idioma)
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("LAS CUATRO CASAS", color = Pergamino.copy(alpha = 0.65f), fontSize = 10.sp, letterSpacing = 2.sp)
+        Text(t.lasCuatroCasas, color = Pergamino.copy(alpha = 0.65f), fontSize = 10.sp, letterSpacing = 2.sp)
         Spacer(Modifier.height(8.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             CASAS.forEach { c ->
                 Column(
                     Modifier.weight(1f).graphicsLayer { alpha = if (c.id in activas) 1f else 0.4f }
                         .semantics(mergeDescendants = true) {
-                            contentDescription = "${c.nombre}: ${estado.conteo[c.id] ?: 0} participantes" +
-                                if (c.id in activas) "" else ", no participa"
+                            contentDescription = "${c.nombre}: ${estado.conteo[c.id] ?: 0} ${t.participantes}" +
+                                if (c.id in activas) "" else ", ${t.noParticipa}"
                         },
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Escudo(c, Modifier.size(48.dp), describir = false)
+                    Escudo(c, Modifier.size(48.dp), describir = false, idioma = estado.idioma)
                     Text("${estado.conteo[c.id] ?: 0}", color = Pergamino, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 }
             }
@@ -292,7 +297,7 @@ private fun PiePagina(estado: EstadoUi, activas: Set<String>) {
 }
 
 @Composable
-fun Escudo(casa: Casa, modifier: Modifier = Modifier, describir: Boolean = true) {
+fun Escudo(casa: Casa, modifier: Modifier = Modifier, describir: Boolean = true, idioma: Idioma = Idioma.ES) {
     val recurso = when (casa.id) {
         "gryffindor" -> R.drawable.escudo_gryffindor
         "hufflepuff" -> R.drawable.escudo_hufflepuff
@@ -300,7 +305,7 @@ fun Escudo(casa: Casa, modifier: Modifier = Modifier, describir: Boolean = true)
         "slytherin" -> R.drawable.escudo_slytherin
         else -> return
     }
-    Image(painterResource(recurso), if (describir) "Escudo de ${casa.nombre}" else null,
+    Image(painterResource(recurso), if (describir) "${textos(idioma).escudoDe} ${casa.nombre}" else null,
         modifier = modifier, contentScale = ContentScale.Fit)
 }
 

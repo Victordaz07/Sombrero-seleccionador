@@ -6,7 +6,7 @@ Este archivo se genera solo con `python3 herramientas/generar_voces.py --solo-li
 
 ## Discursos completos (recomendado)
 
-4 por casa. Cada uno se graba **de corrido**, en un solo audio. La app los va rotando para que no se repitan.
+4 por casa en español y 4 en inglés (los que terminan en `_en`). Cada uno se graba **de corrido**, en un solo audio. La app los va rotando para que no se repitan.
 Haz una pausa de suspenso antes del nombre de la casa (en **negritas**) y grítalo con emoción.
 
 | Archivo | Discurso |
@@ -27,6 +27,22 @@ Haz una pausa de suspenso antes del nombre de la casa (en **negritas**) y gríta
 | `slytherin_discurso_2.mp3` | [laughs] ¡JA! ¡Ya te vi pensando cómo convencerme! [mischievously] ¡Qué mente tan astuta! [impressed] Planeas cada paso, como en el ajedrez... [excited] ¡Muy bien, me CONVENCISTE! **[shouting] ¡SLÍDERIN!** |
 | `slytherin_discurso_3.mp3` | [curious] Hmm... ¿un gran corazón? Sí, sí... [excited] ¡Pero qué voluntad de HIERRO! [impressed] Te caes... ¡y te levantas con MÁS fuerza! [excited] ¡Decidido! Perteneces a... **[shouting] ¡SLÍDERIN!** |
 | `slytherin_discurso_4.mp3` | [laughs harder] ¡JA, JA! ¡Ideas brillantes... y un poquito traviesas! [mischievously] Organizas el juego, pones las reglas... ¡y cuidas a los tuyos! [excited] ¡Un líder NATO! Tu casa es... **[shouting] ¡SLÍDERIN!** |
+| `gryffindor_discurso_1_en.mp3` | [excited] AHA! Well, well, what do we have here! [mischievously] Courage... nerve... and a heart that NEVER gives up! [laughs harder] HA HA! This head is ON FIRE! [excited] No doubt about it! You belong in... **[shouting] GRYFFINDOR!** |
+| `gryffindor_discurso_2_en.mp3` | [curious] Hmm, hmm, hmm... let's see! [excited] ADVENTURE! CHALLENGES! You want to take on the whole world! [impressed] And you always stand up for others... [excited] I know! I KNOW where you're going! **[shouting] GRYFFINDOR!** |
+| `gryffindor_discurso_3_en.mp3` | [laughs] HA! Nervous? But there's a LION in here! [excited] You step forward even when you're scared! [mischievously] That... that's exactly what I'm looking for! [excited] I'm sending you to... **[shouting] GRYFFINDOR!** |
+| `gryffindor_discurso_4_en.mp3` | [excited] Oh, oh, OH! I know this one! [mischievously] A noble heart, a steady word... and loads and LOADS of courage! [excited] I won't even think twice! **[shouting] GRYFFINDOR!** |
+| `hufflepuff_discurso_1_en.mp3` | [curious] Hmm... let's see, let's see! [surprised] OH! What a BIG heart! [excited] Loyal, kind... and you work harder than ANYONE! [excited] Got it! You belong in... **[shouting] HUFFLEPUFF!** |
+| `hufflepuff_discurso_2_en.mp3` | [laughs] HA HA! You share your Halloween candy! [impressed] Down to the very last chocolate? Now THAT is real kindness! [excited] It's crystal clear! You belong to... **[shouting] HUFFLEPUFF!** |
+| `hufflepuff_discurso_3_en.mp3` | [curious] Hmm... cleverness? Courage? [mischievously] No, no, NO! Let's look deeper... [excited] A loyal heart that NEVER leaves anyone behind! [excited] That's it! **[shouting] HUFFLEPUFF!** |
+| `hufflepuff_discurso_4_en.mp3` | [excited] Ah, how WONDERFUL! [laughs] This head smells like fresh-baked bread! [impressed] You make everyone feel at home... and you NEVER give up! [excited] Your house is... **[shouting] HUFFLEPUFF!** |
+| `ravenclaw_discurso_1_en.mp3` | [excited] WOW! So many questions! [curious] Why is the sky blue? How do bats fly? [impressed] A mind that NEVER switches off! [excited] I know! You belong in... **[shouting] RAVENCLAW!** |
+| `ravenclaw_discurso_2_en.mp3` | [curious] Hmm, hmm... INTERESTING! [impressed] You listen, you observe... and you find answers where nobody else can! [mischievously] I could send you with the brave ones... but NO! [excited] I'm sending you to... **[shouting] RAVENCLAW!** |
+| `ravenclaw_discurso_3_en.mp3` | [surprised] OOH! Careful, you're making me think too hard! [excited] Colors, stories, inventions... WHOLE worlds in here! [laughs harder] Pure creativity! [excited] You belong to... **[shouting] RAVENCLAW!** |
+| `ravenclaw_discurso_4_en.mp3` | [mischievously] Aha... while everyone else rushes, you think. [impressed] And you're almost ALWAYS right! [excited] Wisdom! Wit! No doubt at all! **[shouting] RAVENCLAW!** |
+| `slytherin_discurso_1_en.mp3` | [mischievously] AHA! Big plans in here! [excited] HUGE! When you set your mind to something... NOTHING stops you! [impressed] And others follow you... [excited] You belong in... **[shouting] SLYTHERIN!** |
+| `slytherin_discurso_2_en.mp3` | [laughs] HA! I saw you trying to talk me into it! [mischievously] What a clever, crafty mind! [impressed] You plan every move, like a game of chess... [excited] Fine, you CONVINCED me! **[shouting] SLYTHERIN!** |
+| `slytherin_discurso_3_en.mp3` | [curious] Hmm... a big heart? Yes, yes... [excited] But what a will of IRON! [impressed] You fall... and you get back up STRONGER! [excited] Decided! You belong to... **[shouting] SLYTHERIN!** |
+| `slytherin_discurso_4_en.mp3` | [laughs harder] HA HA! Brilliant ideas... and a little bit mischievous! [mischievously] You organize the game, you make the rules... and you look after your own! [excited] A BORN leader! Your house is... **[shouting] SLYTHERIN!** |
 
 ## Frases sueltas (respaldo)
 

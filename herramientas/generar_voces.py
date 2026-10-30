@@ -83,6 +83,11 @@ ESTILO_DISCURSO = ESTILO + (
     " Haz una pausa de suspenso antes de decir el nombre de la casa, y grita ese nombre "
     "con mucha emoción, como anunciándolo a todo un salón lleno de gente."
 )
+ESTILO_DISCURSO_EN = (
+    "Speak in English. You are a centuries-old, wise and mischievous magical talking hat. "
+    "Lively, theatrical and full of energy; build suspense and SHOUT the house name at the end "
+    "with huge excitement, as if announcing it to a whole hall full of people."
+)
 
 
 @dataclass
@@ -97,6 +102,10 @@ class Frase:
         return self.segmentos is not None
 
     @property
+    def en_ingles(self):
+        return self.clave.endswith("_en")
+
+    @property
     def es_anuncio(self):
         return self.clave.endswith("_anuncio")
 
@@ -104,14 +113,17 @@ class Frase:
 def cargar_frases(datos):
     """Misma lógica de claves que Frases.kt. Si cambias una, cambia la otra."""
     frases = []
-    for casa, lista in datos.get("discursos", {}).items():
-        anuncio = datos["casas"][casa]["anuncio"]
-        for i, crudos in enumerate(lista):
-            if crudos.count(ANUNCIO) != 1:
-                sys.exit(f"El discurso {i + 1} de {casa} debe tener {ANUNCIO} exactamente una vez")
-            # El anuncio se grita: "[shouting] ¡GRÍFINDOR!"
-            segmentos = [f"[shouting] {anuncio.upper()}" if s == ANUNCIO else s for s in crudos]
-            frases.append(Frase(f"{casa}_discurso_{i + 1}", " ".join(segmentos), segmentos, crudos.index(ANUNCIO)))
+    # Español: gryffindor_discurso_1 ... / Inglés: gryffindor_discurso_1_en ...
+    for campo, campo_anuncio, sufijo in [("discursos", "anuncio", ""), ("discursos_en", "anuncio_en", "_en")]:
+        for casa, lista in datos.get(campo, {}).items():
+            anuncio = datos["casas"][casa][campo_anuncio]
+            for i, crudos in enumerate(lista):
+                if crudos.count(ANUNCIO) != 1:
+                    sys.exit(f"El discurso {i + 1}{sufijo} de {casa} debe tener {ANUNCIO} exactamente una vez")
+                # El anuncio se grita: "[shouting] ¡GRÍFINDOR!"
+                segmentos = [f"[shouting] {anuncio.upper()}" if s == ANUNCIO else s for s in crudos]
+                clave = f"{casa}_discurso_{i + 1}{sufijo}"
+                frases.append(Frase(clave, " ".join(segmentos), segmentos, crudos.index(ANUNCIO)))
 
     frases.append(Frase("prueba", datos["prueba"]))
     for campo, prefijo in [
@@ -131,7 +143,7 @@ def cargar_frases(datos):
 def prioridad(frase):
     """Primero un discurso de cada casa, luego el resto de discursos, luego frases sueltas."""
     if frase.es_discurso:
-        return (0, int(frase.clave.rsplit("_", 1)[1]))
+        return (0, int(frase.clave.split("_discurso_")[1].split("_")[0]))
     if frase.es_anuncio:
         return (1, 0)
     if frase.clave.startswith("preanuncio"):
@@ -151,7 +163,8 @@ def escribir_guion(frases):
         "",
         "## Discursos completos (recomendado)",
         "",
-        "4 por casa. Cada uno se graba **de corrido**, en un solo audio. La app los va rotando para que no se repitan.",
+        "4 por casa en español y 4 en inglés (los que terminan en `_en`). Cada uno se graba **de corrido**, "
+        "en un solo audio. La app los va rotando para que no se repitan.",
         "Haz una pausa de suspenso antes del nombre de la casa (en **negritas**) y grítalo con emoción.",
         "",
         "| Archivo | Discurso |",
@@ -197,7 +210,10 @@ def pedir(url, cuerpo, cabeceras, salir_si_falla=True):
 def generar_openai(frase, voz):
     """Devuelve (audio_mp3, inicios). OpenAI no da tiempos: la app los estima."""
     clave = os.environ.get("OPENAI_API_KEY") or sys.exit("Falta la variable OPENAI_API_KEY")
-    estilo = ESTILO_DISCURSO if frase.es_discurso else ESTILO_ANUNCIO if frase.es_anuncio else ESTILO
+    if frase.en_ingles:
+        estilo = ESTILO_DISCURSO_EN
+    else:
+        estilo = ESTILO_DISCURSO if frase.es_discurso else ESTILO_ANUNCIO if frase.es_anuncio else ESTILO
     audio = pedir(
         "https://api.openai.com/v1/audio/speech",
         {

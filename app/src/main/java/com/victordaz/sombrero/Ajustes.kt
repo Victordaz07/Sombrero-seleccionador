@@ -15,9 +15,17 @@ class Ajustes(context: Context) {
         get() = prefs.getFloat("velocidad", 0.85f)
         set(v) = prefs.edit().putFloat("velocidad", v).apply()
 
+    var idioma: Idioma
+        get() = Idioma.desdeCodigo(prefs.getString("idioma", null))
+        set(v) = prefs.edit().putString("idioma", v.codigo).apply()
+
+    /** Voz del teléfono elegida para el idioma actual (cada idioma recuerda la suya). */
     var voz: String?
-        get() = prefs.getString("voz", null)
-        set(v) = prefs.edit().putString("voz", v).apply()
+        get() = prefs.getString(claveVoz(), null)
+        set(v) = prefs.edit().putString(claveVoz(), v).apply()
+
+    // En español se conserva la clave original "voz" para no perder lo que ya estaba elegido.
+    private fun claveVoz() = if (idioma == Idioma.ES) "voz" else "voz_${idioma.codigo}"
 
     /** Si está activo, el sombrero reparte a la gente de forma pareja entre las casas. */
     var equilibrar: Boolean

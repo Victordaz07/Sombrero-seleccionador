@@ -56,6 +56,7 @@ class Frases(json: JSONObject) {
     private val preanuncios = lista(json.getJSONArray("preanuncios"), "preanuncio")
     private val cierres = lista(json.getJSONArray("cierres"), "cierre")
     val prueba = Linea("prueba", json.getString("prueba"))
+    val pruebaEn = Linea("prueba_en", json.optString("prueba_en", "Hmm... can you hear me? I am the Sorting Hat!"))
 
     private val casas: Map<String, FrasesCasa> = CASAS.associate { casa ->
         val c = json.getJSONObject("casas").getJSONObject(casa.id)
@@ -66,20 +67,16 @@ class Frases(json: JSONObject) {
         )
     }
 
-    /** 4 discursos completos por casa. Las claves son `gryffindor_discurso_1`, etc. */
-    val discursos: Map<String, List<Discurso>> = CASAS.associate { casa ->
-        val lista = json.optJSONObject("discursos")?.optJSONArray(casa.id) ?: JSONArray()
-        val anuncio = json.getJSONObject("casas").getJSONObject(casa.id).getString("anuncio")
-        casa.id to List(lista.length()) { i ->
-            val crudos = lista.getJSONArray(i)
-            val segmentos = List(crudos.length()) { crudos.getString(it) }
-            Discurso(
-                clave = "${casa.id}_discurso_${i + 1}",
-                segmentos = segmentos.map { if (it == ANUNCIO) anuncio else sinEtiquetas(it) },
-                indiceAnuncio = segmentos.indexOf(ANUNCIO),
-            )
-        }
-    }
+    /**
+     * 4 discursos completos por casa en cada idioma.
+     * Claves: `gryffindor_discurso_1` (español) y `gryffindor_discurso_1_en` (inglés).
+     */
+    val discursos: Map<Idioma, Map<String, List<Discurso>>> = mapOf(
+        Idioma.ES to leerDiscursos(json, "discursos", "anuncio", ""),
+        Idioma.EN to leerDiscursos(json, "discursos_en", "anuncio_en", "_en"),
+    )
+
+    fun prueba(idioma: Idioma) = if (idioma == Idioma.EN) pruebaEn else prueba
 
     /** Todas las frases posibles (sirve para contar cuántas tienen audio grabado). */
     val todas: List<Linea> =
@@ -117,6 +114,21 @@ class Frases(json: JSONObject) {
 
         /** Quita las etiquetas de emoción de ElevenLabs ([whispers], [chuckles]...) para los subtítulos. */
         private fun sinEtiquetas(texto: String) = texto.replace(Regex("""\[[^\]]*]\s*"""), "").trim()
+
+        private fun leerDiscursos(json: JSONObject, campo: String, campoAnuncio: String, sufijo: String) =
+            CASAS.associate { casa ->
+                val lista = json.optJSONObject(campo)?.optJSONArray(casa.id) ?: JSONArray()
+                val anuncio = json.getJSONObject("casas").getJSONObject(casa.id).optString(campoAnuncio, casa.nombre)
+                casa.id to List(lista.length()) { i ->
+                    val crudos = lista.getJSONArray(i)
+                    val segmentos = List(crudos.length()) { crudos.getString(it) }
+                    Discurso(
+                        clave = "${casa.id}_discurso_${i + 1}$sufijo",
+                        segmentos = segmentos.map { if (it == ANUNCIO) anuncio else sinEtiquetas(it) },
+                        indiceAnuncio = segmentos.indexOf(ANUNCIO),
+                    )
+                }
+            }
 
         private fun lista(arr: JSONArray, prefijo: String): List<Linea> =
             List(arr.length()) { i -> Linea("${prefijo}_${i + 1}", arr.getString(i)) }

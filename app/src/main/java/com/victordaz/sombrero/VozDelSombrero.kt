@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.resume
 
 /**
- * La voz del sombrero: usa el motor de texto a voz del teléfono en español,
+ * La voz del sombrero: usa el motor de texto a voz del teléfono (en español o inglés),
  * con un tono grave y lento para que suene "antiguo".
  */
 class VozDelSombrero(
@@ -29,6 +29,9 @@ class VozDelSombrero(
     private val pendientes = ConcurrentHashMap<String, CancellableContinuation<Unit>>()
 
     var lista = false
+        private set
+
+    var idioma = Idioma.ES
         private set
 
     var tono = 0.65f
@@ -44,7 +47,7 @@ class VozDelSombrero(
                 override fun onError(utteranceId: String, errorCode: Int) = terminar(utteranceId)
                 override fun onStop(utteranceId: String, interrupted: Boolean) = terminar(utteranceId)
             })
-            lista = elegirEspanol()
+            lista = elegirIdioma()
         }
         // Avisamos siempre en el hilo principal y después de terminar de construir todo.
         Handler(Looper.getMainLooper()).post { alEstarLista(lista) }
@@ -55,24 +58,34 @@ class VozDelSombrero(
         if (cont.isActive) cont.resume(Unit)
     }
 
-    private fun elegirEspanol(): Boolean {
-        val candidatos = listOf(
-            Locale("es", "US"), Locale("es", "MX"), Locale("es", "419"),
-            Locale("es", "ES"), Locale("es"),
-        )
+    /** Cambia el idioma de la voz; devuelve si hay voz instalada para ese idioma. */
+    fun cambiarIdioma(nuevo: Idioma): Boolean {
+        idioma = nuevo
+        if (!lista) return false
+        return elegirIdioma()
+    }
+
+    private fun elegirIdioma(): Boolean {
+        val candidatos = when (idioma) {
+            Idioma.ES -> listOf(
+                Locale("es", "US"), Locale("es", "MX"), Locale("es", "419"),
+                Locale("es", "ES"), Locale("es"),
+            )
+            Idioma.EN -> listOf(Locale.US, Locale.UK, Locale.ENGLISH)
+        }
         return candidatos.any { tts.setLanguage(it) >= TextToSpeech.LANG_AVAILABLE }
     }
 
-    /** Voces en español instaladas en el teléfono. */
-    fun vocesEnEspanol(): List<Voice> =
+    /** Voces del idioma actual instaladas en el teléfono. */
+    fun voces(): List<Voice> =
         runCatching { tts.voices.orEmpty() }.getOrDefault(emptySet())
-            .filter { it.locale.language == "es" }
+            .filter { it.locale.language == idioma.codigo }
             .sortedWith(compareBy({ it.isNetworkConnectionRequired }, { it.locale.toString() }, { it.name }))
 
     fun usarVoz(nombre: String?) {
         if (!lista) return
-        val voz = nombre?.let { n -> vocesEnEspanol().firstOrNull { it.name == n } }
-        if (voz != null) tts.voice = voz else elegirEspanol()
+        val voz = nombre?.let { n -> voces().firstOrNull { it.name == n } }
+        if (voz != null) tts.voice = voz else elegirIdioma()
     }
 
     /**

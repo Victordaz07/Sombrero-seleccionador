@@ -17,12 +17,14 @@ data class EstadoUi(
     val subtitulo: String = "",
     val casa: Casa? = null,
     val hablando: Boolean = false,
-    /** null = cargando, true = hay voz en español, false = no hay voz. */
+    /** null = cargando, true = hay voz del teléfono en el idioma, false = no hay voz. */
     val vozLista: Boolean? = null,
     val conteo: Map<String, Int> = emptyMap(),
+    val idioma: Idioma = Idioma.ES,
 )
 
 data class EstadoAjustes(
+    val idioma: Idioma,
     val tono: Float,
     val velocidad: Float,
     val voz: String?,
@@ -48,13 +50,14 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     private val colaDiscursos = mutableMapOf<String, ArrayDeque<Discurso>>()
     private val ultimoDiscurso = mutableMapOf<String, String>()
 
-    private val voz = VozDelSombrero(app) { lista ->
+    private val voz: VozDelSombrero = VozDelSombrero(app) {
+        val lista = voz.cambiarIdioma(ajustes.idioma)
         aplicarAjustesDeVoz()
         estado = estado.copy(vozLista = lista)
         refrescarAjustes()
     }
 
-    var estado by mutableStateOf(EstadoUi(conteo = ajustes.conteo()))
+    var estado by mutableStateOf(EstadoUi(conteo = ajustes.conteo(), idioma = ajustes.idioma))
         private set
 
     var estadoAjustes by mutableStateOf(leerAjustes())
@@ -84,10 +87,11 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
             estado = estado.copy(fase = Fase.PENSANDO, casa = null, subtitulo = "")
             delay(400)
             val discurso = if (ajustes.usarGrabaciones) siguienteDiscurso(casa) else null
-            if (discurso != null) {
-                decirDiscurso(casa, discurso)
-            } else {
-                decirGuion(casa, guion)
+            when {
+                discurso != null -> decirDiscurso(casa, discurso)
+                // En inglés no hay frases sueltas: la voz del teléfono lee un discurso completo.
+                estado.idioma == Idioma.EN -> decirDiscursoConVoz(casa, discursosDe(casa).random())
+                else -> decirGuion(casa, guion)
             }
         }
     }
@@ -103,7 +107,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         for (linea in guion) {
             if (linea.esAnuncio) revelar(casa)
             estado = estado.copy(
-                subtitulo = if (linea.esAnuncio) "¡${casa.nombre.uppercase()}!" else linea.texto,
+                subtitulo = if (linea.esAnuncio) anuncio(casa) else linea.texto,
                 hablando = true,
             )
             decir(linea)
@@ -121,7 +125,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
             actual = i
             if (i >= discurso.indiceAnuncio) revelar(casa)
             estado = estado.copy(
-                subtitulo = if (i == discurso.indiceAnuncio) "¡${casa.nombre.uppercase()}!" else discurso.segmentos[i],
+                subtitulo = if (i == discurso.indiceAnuncio) anuncio(casa) else discurso.segmentos[i],
             )
         }
         mostrar(0)
@@ -133,20 +137,38 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         estado = estado.copy(hablando = false)
     }
 
+    /** Sin audio grabado: la voz del teléfono lee el discurso frase por frase. */
+    private suspend fun decirDiscursoConVoz(casa: Casa, discurso: Discurso) {
+        discurso.segmentos.forEachIndexed { i, texto ->
+            val esAnuncio = i == discurso.indiceAnuncio
+            if (esAnuncio) revelar(casa)
+            estado = estado.copy(subtitulo = if (esAnuncio) anuncio(casa) else texto, hablando = true)
+            voz.hablar(texto, enfasis = esAnuncio)
+            estado = estado.copy(hablando = false)
+            delay(if (i == discurso.indiceAnuncio - 1) 900 else 250)
+        }
+        revelar(casa)
+    }
+
+    private fun discursosDe(casa: Casa) = frases.discursos.getValue(estado.idioma).getValue(casa.id)
+
+    private fun anuncio(casa: Casa) = textos(estado.idioma).anuncio(casa, estado.idioma)
+
     /** Elige un discurso grabado de la casa sin repetir hasta haber usado todos. */
     private fun siguienteDiscurso(casa: Casa): Discurso? {
-        val grabados = frases.discursos[casa.id].orEmpty().filter { grabada.tiene(it.clave) }
+        val grabados = discursosDe(casa).filter { grabada.tiene(it.clave) }
         if (grabados.isEmpty()) return null
-        val cola = colaDiscursos.getOrPut(casa.id) { ArrayDeque() }
+        val clave = "${estado.idioma.codigo}-${casa.id}"
+        val cola = colaDiscursos.getOrPut(clave) { ArrayDeque() }
         if (cola.isEmpty()) {
             val mezcla = grabados.shuffled().toMutableList()
             // Que el primero de la nueva vuelta no sea el mismo que acaba de sonar.
-            if (mezcla.size > 1 && mezcla.first().clave == ultimoDiscurso[casa.id]) {
+            if (mezcla.size > 1 && mezcla.first().clave == ultimoDiscurso[clave]) {
                 mezcla.add(mezcla.removeAt(0))
             }
             cola.addAll(mezcla)
         }
-        return cola.removeFirst().also { ultimoDiscurso[casa.id] = it.clave }
+        return cola.removeFirst().also { ultimoDiscurso[clave] = it.clave }
     }
 
     /** Usa el audio grabado si existe; si no, la voz del teléfono. */
@@ -173,9 +195,23 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         trabajo?.cancel()
         trabajo = viewModelScope.launch {
             estado = estado.copy(hablando = true)
-            decir(frases.prueba)
+            decir(frases.prueba(estado.idioma))
             estado = estado.copy(hablando = false)
         }
+    }
+
+    fun cambiarIdioma(nuevo: Idioma) {
+        if (nuevo == ajustes.idioma) return
+        trabajo?.cancel()
+        voz.callar()
+        ajustes.idioma = nuevo
+        val lista = voz.cambiarIdioma(nuevo)
+        aplicarAjustesDeVoz()
+        estado = estado.copy(
+            idioma = nuevo, vozLista = if (estado.vozLista == null) null else lista,
+            fase = Fase.ESPERANDO, casa = null, subtitulo = "", hablando = false,
+        )
+        refrescarAjustes()
     }
 
     fun cambiarTono(v: Float) {
@@ -221,10 +257,11 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private fun leerAjustes() = EstadoAjustes(
+        idioma = ajustes.idioma,
         tono = ajustes.tono,
         velocidad = ajustes.velocidad,
         voz = ajustes.voz,
-        voces = voz.vocesEnEspanol().map { v ->
+        voces = voz.voces().map { v ->
             val red = if (v.isNetworkConnectionRequired) " (internet)" else ""
             v.name to "${v.locale.displayName} · ${v.name}$red"
         },
@@ -233,8 +270,8 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         usarGrabaciones = ajustes.usarGrabaciones,
         frasesGrabadas = frases.todas.count { grabada.tiene(it.clave) },
         frasesTotales = frases.todas.size,
-        discursosGrabados = frases.discursos.values.flatten().count { grabada.tiene(it.clave) },
-        discursosTotales = frases.discursos.values.sumOf { it.size },
+        discursosGrabados = frases.discursos.getValue(ajustes.idioma).values.flatten().count { grabada.tiene(it.clave) },
+        discursosTotales = frases.discursos.getValue(ajustes.idioma).values.sumOf { it.size },
         casasActivas = ajustes.casasActivas,
     )
 

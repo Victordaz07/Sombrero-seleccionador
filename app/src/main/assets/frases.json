@@ -1,6 +1,7 @@
 {
-  "_ayuda": "Todo lo que dice el sombrero. 'discursos' son 4 actuaciones completas por casa (un audio cada una), escritas para ElevenLabs v3: las etiquetas entre corchetes como [whispers] o [chuckles] indican la emoción y no se muestran en pantalla. {ANUNCIO} es donde grita la casa (se genera como [shouting] ¡NOMBRE!). Las frases sueltas son el respaldo si falta algún discurso. Si cambias un texto, vuelve a generar su audio.",
+  "_ayuda": "Todo lo que dice el sombrero. 'discursos' (español) y 'discursos_en' (inglés) son 4 actuaciones completas por casa (un audio cada una), escritas para ElevenLabs v3/v4: las etiquetas entre corchetes como [laughs] o [excited] indican la emoción y no se muestran en pantalla. {ANUNCIO} es donde grita la casa ('anuncio' / 'anuncio_en'). Las frases sueltas (solo español) son el respaldo si falta algún discurso. Si cambias un texto, vuelve a generar su audio.",
   "prueba": "Hmm... ¿me escuchas bien? Soy el sombrero seleccionador.",
+  "prueba_en": "Hmm... can you hear me? I am the Sorting Hat!",
   "discursos": {
     "gryffindor": [
       [
@@ -119,6 +120,124 @@
       ]
     ]
   },
+  "discursos_en": {
+    "gryffindor": [
+      [
+        "[excited] AHA! Well, well, what do we have here!",
+        "[mischievously] Courage... nerve... and a heart that NEVER gives up!",
+        "[laughs harder] HA HA! This head is ON FIRE!",
+        "[excited] No doubt about it! You belong in...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[curious] Hmm, hmm, hmm... let's see!",
+        "[excited] ADVENTURE! CHALLENGES! You want to take on the whole world!",
+        "[impressed] And you always stand up for others...",
+        "[excited] I know! I KNOW where you're going!",
+        "{ANUNCIO}"
+      ],
+      [
+        "[laughs] HA! Nervous? But there's a LION in here!",
+        "[excited] You step forward even when you're scared!",
+        "[mischievously] That... that's exactly what I'm looking for!",
+        "[excited] I'm sending you to...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[excited] Oh, oh, OH! I know this one!",
+        "[mischievously] A noble heart, a steady word... and loads and LOADS of courage!",
+        "[excited] I won't even think twice!",
+        "{ANUNCIO}"
+      ]
+    ],
+    "hufflepuff": [
+      [
+        "[curious] Hmm... let's see, let's see!",
+        "[surprised] OH! What a BIG heart!",
+        "[excited] Loyal, kind... and you work harder than ANYONE!",
+        "[excited] Got it! You belong in...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[laughs] HA HA! You share your Halloween candy!",
+        "[impressed] Down to the very last chocolate? Now THAT is real kindness!",
+        "[excited] It's crystal clear! You belong to...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[curious] Hmm... cleverness? Courage?",
+        "[mischievously] No, no, NO! Let's look deeper...",
+        "[excited] A loyal heart that NEVER leaves anyone behind!",
+        "[excited] That's it!",
+        "{ANUNCIO}"
+      ],
+      [
+        "[excited] Ah, how WONDERFUL!",
+        "[laughs] This head smells like fresh-baked bread!",
+        "[impressed] You make everyone feel at home... and you NEVER give up!",
+        "[excited] Your house is...",
+        "{ANUNCIO}"
+      ]
+    ],
+    "ravenclaw": [
+      [
+        "[excited] WOW! So many questions!",
+        "[curious] Why is the sky blue? How do bats fly?",
+        "[impressed] A mind that NEVER switches off!",
+        "[excited] I know! You belong in...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[curious] Hmm, hmm... INTERESTING!",
+        "[impressed] You listen, you observe... and you find answers where nobody else can!",
+        "[mischievously] I could send you with the brave ones... but NO!",
+        "[excited] I'm sending you to...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[surprised] OOH! Careful, you're making me think too hard!",
+        "[excited] Colors, stories, inventions... WHOLE worlds in here!",
+        "[laughs harder] Pure creativity!",
+        "[excited] You belong to...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[mischievously] Aha... while everyone else rushes, you think.",
+        "[impressed] And you're almost ALWAYS right!",
+        "[excited] Wisdom! Wit! No doubt at all!",
+        "{ANUNCIO}"
+      ]
+    ],
+    "slytherin": [
+      [
+        "[mischievously] AHA! Big plans in here!",
+        "[excited] HUGE! When you set your mind to something... NOTHING stops you!",
+        "[impressed] And others follow you...",
+        "[excited] You belong in...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[laughs] HA! I saw you trying to talk me into it!",
+        "[mischievously] What a clever, crafty mind!",
+        "[impressed] You plan every move, like a game of chess...",
+        "[excited] Fine, you CONVINCED me!",
+        "{ANUNCIO}"
+      ],
+      [
+        "[curious] Hmm... a big heart? Yes, yes...",
+        "[excited] But what a will of IRON!",
+        "[impressed] You fall... and you get back up STRONGER!",
+        "[excited] Decided! You belong to...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[laughs harder] HA HA! Brilliant ideas... and a little bit mischievous!",
+        "[mischievously] You organize the game, you make the rules... and you look after your own!",
+        "[excited] A BORN leader! Your house is...",
+        "{ANUNCIO}"
+      ]
+    ]
+  },
   "aperturas": [
     "Mmm... veamos, veamos... ¿qué tenemos aquí?",
     "Ah... una cabeza nueva. No te muevas, que voy a mirar muy adentro.",
@@ -162,7 +281,8 @@
         "Aunque también veo mucha valentía... esto no será tan fácil.",
         "Pero espera... también hay un coraje enorme aquí. Hmm...",
         "Y por aquí encuentro un espíritu aventurero... ¡qué difícil decisión!"
-      ]
+      ],
+      "anuncio_en": "GRYFFINDOR!"
     },
     "hufflepuff": {
       "anuncio": "¡Jáfelpaf!",
@@ -178,7 +298,8 @@
         "Aunque también veo una lealtad a toda prueba... hmm.",
         "Pero espera... también hay mucha bondad en este corazón.",
         "Y por aquí encuentro un corazón enorme... ¡qué difícil decisión!"
-      ]
+      ],
+      "anuncio_en": "HUFFLEPUFF!"
     },
     "ravenclaw": {
       "anuncio": "¡Réivenclo!",
@@ -194,7 +315,8 @@
         "Aunque también veo una mente brillante... esto no será tan fácil.",
         "Pero espera... también hay mucha curiosidad aquí. Hmm...",
         "Y por aquí encuentro una creatividad sorprendente... ¡qué difícil decisión!"
-      ]
+      ],
+      "anuncio_en": "RAVENCLAW!"
     },
     "slytherin": {
       "anuncio": "¡Slíderin!",
@@ -210,7 +332,8 @@
         "Aunque también veo mucha determinación... hmm, interesante.",
         "Pero espera... también hay madera de líder aquí.",
         "Y por aquí encuentro metas muy grandes... ¡qué difícil decisión!"
-      ]
+      ],
+      "anuncio_en": "SLYTHERIN!"
     }
   }
 }

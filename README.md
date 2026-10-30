@@ -79,6 +79,18 @@ Alguien de la iglesia con voz grave puede grabar las frases con el celular. La l
 
 Todo está en `app/src/main/assets/frases.json`. En `discursos`, cada casa tiene 4 listas de frases y `{ANUNCIO}` marca dónde grita el nombre de la casa. Los discursos se generan con **Eleven v3**, que actúa las etiquetas de emoción entre corchetes (`[whispers]`, `[chuckles]`, `[thoughtful]`, `[excited]`...). Las etiquetas no se muestran en los subtítulos. Si cambias el texto de una frase o discurso, vuelve a generar su audio con `--rehacer --solo <clave>` (por ejemplo `--solo gryffindor_discurso_2`). Si agregas o quitas frases, cambian las claves: corre `--solo-lista` para actualizar el guion.
 
+## 🌎 Español / English
+
+En ⚙ → **Idioma / Language** cambias toda la ceremonia a inglés: textos de pantalla, lemas de las casas, subtítulos y discursos. Hay 16 discursos en inglés (`discursos_en` en `frases.json`, archivos `<casa>_discurso_<n>_en.mp3`). Si un discurso en inglés no tiene audio, la voz del teléfono lo lee en inglés.
+
+Para importar audios hechos a mano en ElevenLabs (los reconoce y sincroniza el grito aunque el archivo se llame distinto):
+
+```bash
+pip install faster-whisper
+python3 herramientas/importar_voces.py --casa gryffindor audios/*.mp3              # español
+python3 herramientas/importar_voces.py --idioma en --casa gryffindor audios/*.mp3  # inglés
+```
+
 ## Consejos para la fiesta
 
 - **Voz del teléfono (respaldo):** si suena en inglés o no suena, ve a *Ajustes del teléfono → Sistema → Idioma → Salida de texto a voz*, elige "Servicios de voz de Google" e instala la voz en **español**. Después, en la app, toca ⚙ y prueba las voces hasta encontrar la que más suene a sombrero. Un **tono de 0.5 a 0.7** y una **velocidad de 0.8** funcionan bien.

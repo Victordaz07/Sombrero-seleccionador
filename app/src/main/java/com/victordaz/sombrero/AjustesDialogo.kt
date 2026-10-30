@@ -52,6 +52,15 @@ fun AjustesDialogo(vm: SombreroViewModel, alCerrar: () -> Unit) {
             containerColor = Color(0xFF171A24),
             text = {
                 Column(Modifier.verticalScroll(rememberScrollState())) {
+                    Seccion("Idioma / Language")
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Idioma.entries.forEach { idioma ->
+                            OpcionRadio(idioma.nombre, a.idioma == idioma, Modifier.weight(1f)) {
+                                vm.cambiarIdioma(idioma)
+                            }
+                        }
+                    }
+
                     Seccion("Voz")
                     FilaSwitch(
                         "Usar voces grabadas",
@@ -129,8 +138,8 @@ private fun Seccion(titulo: String) {
 }
 
 @Composable
-private fun OpcionRadio(texto: String, seleccionada: Boolean, alElegir: () -> Unit) {
-    Row(Modifier.fillMaxWidth().clickable(onClick = alElegir), verticalAlignment = Alignment.CenterVertically) {
+private fun OpcionRadio(texto: String, seleccionada: Boolean, modifier: Modifier = Modifier, alElegir: () -> Unit) {
+    Row(modifier.fillMaxWidth().clickable(onClick = alElegir), verticalAlignment = Alignment.CenterVertically) {
         RadioButton(seleccionada, onClick = alElegir)
         Text(texto, fontSize = 13.sp)
     }

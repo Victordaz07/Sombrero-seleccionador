@@ -13,6 +13,7 @@ Necesita: pip install faster-whisper   (y ffmpeg)
 Uso:
     python3 herramientas/importar_voces.py audio1.mp3 audio2.mp3 ...
     python3 herramientas/importar_voces.py --casa hufflepuff *.mp3     # solo busca entre esa casa
+    python3 herramientas/importar_voces.py --idioma en *.mp3            # discursos en inglés
     python3 herramientas/importar_voces.py --simular *.mp3              # muestra qué haría
 """
 
@@ -48,8 +49,8 @@ def leer_audio(ruta):
     return np.frombuffer(crudo, np.int16).astype(np.float32) / 32768.0
 
 
-def transcribir(modelo, ruta):
-    segmentos, _ = modelo.transcribe(leer_audio(ruta), language="es", word_timestamps=True, vad_filter=False)
+def transcribir(modelo, ruta, idioma):
+    segmentos, _ = modelo.transcribe(leer_audio(ruta), language=idioma, word_timestamps=True, vad_filter=False)
     palabras = []
     for s in segmentos:
         for p in s.words or []:
@@ -100,20 +101,24 @@ def main():
     p = argparse.ArgumentParser(description="Importa audios de discursos hechos a mano.")
     p.add_argument("audios", nargs="+", type=Path)
     p.add_argument("--casa", help="solo compara con los discursos de esta casa")
+    p.add_argument("--idioma", choices=["es", "en"], default="es", help="idioma de los audios")
     p.add_argument("--modelo", default="small", help="modelo de Whisper: tiny, base, small, medium")
     p.add_argument("--simular", action="store_true", help="muestra qué haría, sin copiar nada")
     args = p.parse_args()
 
     from faster_whisper import WhisperModel
 
-    discursos = [f for f in cargar_frases(json.loads(FRASES.read_text(encoding="utf-8"))) if f.es_discurso]
+    discursos = [
+        f for f in cargar_frases(json.loads(FRASES.read_text(encoding="utf-8")))
+        if f.es_discurso and f.en_ingles == (args.idioma == "en")
+    ]
     if args.casa:
         discursos = [d for d in discursos if d.clave.startswith(f"{args.casa}_")]
     modelo = WhisperModel(args.modelo, device="cpu", compute_type="int8")
 
     usados = {}
     for ruta in args.audios:
-        palabras = transcribir(modelo, ruta)
+        palabras = transcribir(modelo, ruta, args.idioma)
         puntajes = sorted(((parecido(d, palabras), d) for d in discursos), key=lambda x: -x[0])
         puntaje, discurso = puntajes[0]
         oido = " ".join(p[0] for p in palabras)
