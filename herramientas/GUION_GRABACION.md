@@ -11,22 +11,22 @@ Haz una pausa de suspenso antes del nombre de la casa (en **negritas**) y gríta
 
 | Archivo | Discurso |
 |---|---|
-| `gryffindor_discurso_1.mp3` | [excited] ¡Ajá! ¡Pero qué tenemos aquí! [mischievously] Valor, coraje... ¡y un corazón que NO se rinde! [laughs] ¡Esta cabeza está que arde! [excited] ¡No hay duda! Tu lugar está en... **[shouting] ¡GRÍFINDOR!** |
-| `gryffindor_discurso_2.mp3` | [curious] Hmm, hmm, hmm... ¡a ver! [excited] ¡Aventura! ¡Retos! ¡Ganas de comerte el mundo! [impressed] Y siempre defiendes a los demás... [excited] ¡Ya sé! ¡Ya sé a dónde vas! **[shouting] ¡GRÍFINDOR!** |
-| `gryffindor_discurso_3.mp3` | [laughs] ¡Ja! ¿Nervios? ¡Pero si aquí adentro hay un león! [excited] ¡Das el paso aunque tengas miedo! [mischievously] Eso... eso es justo lo que yo busco. [excited] Te envío a... **[shouting] ¡GRÍFINDOR!** |
-| `gryffindor_discurso_4.mp3` | [excited] ¡Oh, oh, oh! ¡Esta me la sé! [mischievously] Corazón noble, palabra firme... ¡y mucho, MUCHO valor! [excited] ¡Ni lo pienso dos veces! **[shouting] ¡GRÍFINDOR!** |
-| `hufflepuff_discurso_1.mp3` | [curious] Hmm... ¡a ver, a ver! [surprised] ¡Oh! ¡Qué corazón tan grande! [excited] Leal, amable... ¡y trabajas como nadie! [excited] ¡Ya lo tengo! Tu lugar está en... **[shouting] ¡JÁFELPAF!** |
-| `hufflepuff_discurso_2.mp3` | [laughs] ¡Ja, ja! ¡Compartes tus dulces de Halloween! [impressed] ¿Hasta el último chocolate? ¡Eso es bondad de verdad! [excited] ¡Está clarísimo! Perteneces a... **[shouting] ¡JÁFELPAF!** |
-| `hufflepuff_discurso_3.mp3` | [curious] Mmm... ¿astucia? ¿valor? [mischievously] ¡No, no, no! Hay que mirar más profundo... [excited] ¡Un corazón leal que NUNCA abandona a nadie! [excited] ¡Ya está! **[shouting] ¡JÁFELPAF!** |
-| `hufflepuff_discurso_4.mp3` | [excited] ¡Ah, qué maravilla! [laughs] ¡Esta cabeza huele a pan recién horneado! [impressed] Haces que todos se sientan en casa... ¡y nunca te rindes! [excited] Tu casa es... **[shouting] ¡JÁFELPAF!** |
-| `ravenclaw_discurso_1.mp3` | [excited] ¡Vaya! ¡Cuántas preguntas! [curious] ¿Por qué el cielo es azul? ¿Cómo vuelan los murciélagos? [impressed] ¡Una mente que nunca se apaga! [excited] ¡Lo sé! Tu lugar está en... **[shouting] ¡RÉIVENCLO!** |
-| `ravenclaw_discurso_2.mp3` | [curious] Hmm, hmm... ¡interesante! [impressed] Escuchas, observas... ¡y encuentras soluciones donde nadie las ve! [mischievously] Podría mandarte con los valientes... pero no. [excited] Te envío a... **[shouting] ¡RÉIVENCLO!** |
-| `ravenclaw_discurso_3.mp3` | [surprised] ¡Uy! ¡Cuidado, que me haces pensar de más! [excited] Colores, historias, inventos... ¡mundos enteros aquí adentro! [laughs] ¡Creatividad pura! [excited] Perteneces a... **[shouting] ¡RÉIVENCLO!** |
-| `ravenclaw_discurso_4.mp3` | [mischievously] Ajá... mientras todos corren, tú piensas. [impressed] ¡Y casi siempre tienes razón! [excited] ¡Sabiduría! ¡Ingenio! ¡No hay ninguna duda! **[shouting] ¡RÉIVENCLO!** |
-| `slytherin_discurso_1.mp3` | [mischievously] ¡Ajá! ¡Aquí hay grandes planes! [excited] ¡Enormes! Cuando te propones algo... ¡NADA te detiene! [impressed] Y los demás te siguen... [excited] Tu lugar está en... **[shouting] ¡SLÍDERIN!** |
-| `slytherin_discurso_2.mp3` | [laughs] ¡Ja! ¡Ya te vi pensando cómo convencerme! [mischievously] ¡Qué mente tan astuta! [impressed] Planeas cada paso, como en el ajedrez... [excited] ¡Muy bien, me convenciste! **[shouting] ¡SLÍDERIN!** |
-| `slytherin_discurso_3.mp3` | [curious] Hmm... ¿un gran corazón? Sí, sí... [excited] ¡Pero qué voluntad de hierro! [impressed] Te caes... ¡y te levantas con más fuerza! [excited] ¡Decidido! Perteneces a... **[shouting] ¡SLÍDERIN!** |
-| `slytherin_discurso_4.mp3` | [laughs] ¡Ja, ja! ¡Ideas brillantes... y un poquito traviesas! [mischievously] Organizas el juego, pones las reglas... ¡y cuidas a los tuyos! [excited] ¡Un líder nato! Tu casa es... **[shouting] ¡SLÍDERIN!** |
+| `gryffindor_discurso_1.mp3` | [excited] ¡AJÁ! ¡Pero qué tenemos aquí! [mischievously] Valor... coraje... ¡y un corazón que NO se rinde! [laughs harder] ¡JA, JA! ¡Esta cabeza está que ARDE! [excited] ¡No hay duda! Tu lugar está en... **[shouting] ¡GRÍFINDOR!** |
+| `gryffindor_discurso_2.mp3` | [curious] Hmm, hmm, hmm... ¡a ver! [excited] ¡AVENTURA! ¡RETOS! ¡Ganas de comerte el mundo! [impressed] Y siempre defiendes a los demás... [excited] ¡Ya sé! ¡YA SÉ a dónde vas! **[shouting] ¡GRÍFINDOR!** |
+| `gryffindor_discurso_3.mp3` | [laughs] ¡JA! ¿Nervios? ¡Pero si aquí adentro hay un LEÓN! [excited] ¡Das el paso aunque tengas miedo! [mischievously] Eso... ¡eso es justo lo que yo busco! [excited] Te envío a... **[shouting] ¡GRÍFINDOR!** |
+| `gryffindor_discurso_4.mp3` | [excited] ¡Oh, oh, OH! ¡Esta me la sé! [mischievously] Corazón noble, palabra firme... ¡y mucho, MUCHO valor! [excited] ¡Ni lo pienso dos veces! **[shouting] ¡GRÍFINDOR!** |
+| `hufflepuff_discurso_1.mp3` | [curious] Hmm... ¡a ver, a ver! [surprised] ¡OH! ¡Qué corazón tan GRANDE! [excited] Leal, amable... ¡y trabajas como NADIE! [excited] ¡Ya lo tengo! Tu lugar está en... **[shouting] ¡JÁFELPAF!** |
+| `hufflepuff_discurso_2.mp3` | [laughs] ¡JA, JA! ¡Compartes tus dulces de Halloween! [impressed] ¿Hasta el último chocolate? ¡Eso es bondad de VERDAD! [excited] ¡Está clarísimo! Perteneces a... **[shouting] ¡JÁFELPAF!** |
+| `hufflepuff_discurso_3.mp3` | [curious] Mmm... ¿astucia? ¿valor? [mischievously] ¡No, no, NO! Hay que mirar más profundo... [excited] ¡Un corazón leal que NUNCA abandona a nadie! [excited] ¡Ya está! **[shouting] ¡JÁFELPAF!** |
+| `hufflepuff_discurso_4.mp3` | [excited] ¡Ah, qué MARAVILLA! [laughs] ¡Esta cabeza huele a pan recién horneado! [impressed] Haces que todos se sientan en casa... ¡y NUNCA te rindes! [excited] Tu casa es... **[shouting] ¡JÁFELPAF!** |
+| `ravenclaw_discurso_1.mp3` | [excited] ¡VAYA! ¡Cuántas preguntas! [curious] ¿Por qué el cielo es azul? ¿Cómo vuelan los murciélagos? [impressed] ¡Una mente que NUNCA se apaga! [excited] ¡Lo sé! Tu lugar está en... **[shouting] ¡RÉIVENCLO!** |
+| `ravenclaw_discurso_2.mp3` | [curious] Hmm, hmm... ¡INTERESANTE! [impressed] Escuchas, observas... ¡y encuentras soluciones donde nadie las ve! [mischievously] Podría mandarte con los valientes... ¡pero NO! [excited] Te envío a... **[shouting] ¡RÉIVENCLO!** |
+| `ravenclaw_discurso_3.mp3` | [surprised] ¡UY! ¡Cuidado, que me haces pensar de más! [excited] Colores, historias, inventos... ¡mundos ENTEROS aquí adentro! [laughs harder] ¡Creatividad pura! [excited] Perteneces a... **[shouting] ¡RÉIVENCLO!** |
+| `ravenclaw_discurso_4.mp3` | [mischievously] Ajá... mientras todos corren, tú piensas. [impressed] ¡Y casi SIEMPRE tienes razón! [excited] ¡Sabiduría! ¡Ingenio! ¡No hay ninguna duda! **[shouting] ¡RÉIVENCLO!** |
+| `slytherin_discurso_1.mp3` | [mischievously] ¡AJÁ! ¡Aquí hay grandes planes! [excited] ¡ENORMES! Cuando te propones algo... ¡NADA te detiene! [impressed] Y los demás te siguen... [excited] Tu lugar está en... **[shouting] ¡SLÍDERIN!** |
+| `slytherin_discurso_2.mp3` | [laughs] ¡JA! ¡Ya te vi pensando cómo convencerme! [mischievously] ¡Qué mente tan astuta! [impressed] Planeas cada paso, como en el ajedrez... [excited] ¡Muy bien, me CONVENCISTE! **[shouting] ¡SLÍDERIN!** |
+| `slytherin_discurso_3.mp3` | [curious] Hmm... ¿un gran corazón? Sí, sí... [excited] ¡Pero qué voluntad de HIERRO! [impressed] Te caes... ¡y te levantas con MÁS fuerza! [excited] ¡Decidido! Perteneces a... **[shouting] ¡SLÍDERIN!** |
+| `slytherin_discurso_4.mp3` | [laughs harder] ¡JA, JA! ¡Ideas brillantes... y un poquito traviesas! [mischievously] Organizas el juego, pones las reglas... ¡y cuidas a los tuyos! [excited] ¡Un líder NATO! Tu casa es... **[shouting] ¡SLÍDERIN!** |
 
 ## Frases sueltas (respaldo)
 
