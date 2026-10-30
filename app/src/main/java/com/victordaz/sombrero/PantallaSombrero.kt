@@ -96,6 +96,7 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
         BoxWithConstraints(Modifier.fillMaxSize().safeDrawingPadding()) {
             val horizontal = maxWidth > maxHeight && maxWidth >= 600.dp
             val alto = maxHeight
+            val ancho = maxWidth
             if (horizontal) {
                 Row(
                     Modifier.fillMaxSize().padding(24.dp),
@@ -127,7 +128,7 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
                     verticalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Encabezado(estado)
-                    SombreroAnimado(estado, minOf(maxWidth - 32.dp,
+                    SombreroAnimado(estado, minOf(ancho - 32.dp,
                         (alto * if (casa == null) 0.43f else 0.32f).coerceIn(180.dp, 390.dp)))
                     Column(
                         Modifier.widthIn(max = 520.dp),
