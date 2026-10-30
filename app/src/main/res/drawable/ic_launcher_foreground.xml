@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sombrero simplificado para el icono (lienzo 108x108, zona segura 18..90) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- ala -->
+    <path
+        android:fillColor="#4E3219"
+        android:pathData="M54,70m-34,0a34,8 0,1 1,68 0a34,8 0,1 1,-68 0" />
+    <!-- cono -->
+    <path
+        android:fillColor="#8A5C33"
+        android:pathData="M31,70 C36,58 42,46 47,38 C51,31 56,25 66,21 C72,19 78,21 81,26 C75,25 70,27 67,33 C64,40 66,56 77,70 Z" />
+    <!-- ojos -->
+    <path
+        android:strokeColor="#2E1D0E"
+        android:strokeWidth="2.2"
+        android:strokeLineCap="round"
+        android:pathData="M44,54 Q48,51 52,53 M56,53 Q60,51 64,54" />
+    <!-- boca -->
+    <path
+        android:fillColor="#2E1D0E"
+        android:pathData="M41,63 Q54,60 68,62 Q54,69 41,63 Z" />
+    <!-- estrellita -->
+    <path
+        android:fillColor="#E8C15A"
+        android:pathData="M28,30 L29.5,34 L33.5,35 L29.5,36 L28,40 L26.5,36 L22.5,35 L26.5,34 Z" />
+</vector>
