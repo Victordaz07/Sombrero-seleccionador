@@ -1,74 +1,80 @@
 package com.victordaz.sombrero
 
-/** Una frase que dice el sombrero y cuánto espera (en milisegundos) antes de la siguiente. */
+import android.content.Context
+import org.json.JSONArray
+import org.json.JSONObject
+
+/**
+ * Una frase que dice el sombrero.
+ *
+ * - [clave] es el nombre de su audio grabado: `assets/voz/<clave>.mp3`.
+ * - [pausaDespues] es cuánto espera (en milisegundos) antes de la siguiente.
+ */
 data class Linea(
+    val clave: String,
     val texto: String,
     val pausaDespues: Long = 500,
     val esAnuncio: Boolean = false,
 )
 
-object Frases {
+/** Frases de una casa. */
+class FrasesCasa(val virtudes: List<Linea>, val dudas: List<Linea>, val anuncio: Linea)
 
-    private val aperturas = listOf(
-        "Mmm... veamos, veamos... ¿qué tenemos aquí?",
-        "Ah... una cabeza nueva. No te muevas, que voy a mirar muy adentro.",
-        "Interesante... muy interesante. Déjame pensar...",
-        "Hmm... llevo cientos de años haciendo esto, y aun así me sorprendes.",
-        "Bien, bien... no tengas miedo. Solo voy a echar un vistazo a tus pensamientos.",
-        "Oh, vaya... ¡cuántas cosas hay en esta cabeza!",
-    )
+/**
+ * Todas las frases del sombrero, leídas de `assets/frases.json`.
+ *
+ * Las claves se arman igual que en `herramientas/generar_voces.py`:
+ * `apertura_1`, `decision_2`, `gryffindor_virtud_3`, `ravenclaw_duda_1`, `slytherin_anuncio`...
+ */
+class Frases(json: JSONObject) {
 
-    private val dudas = listOf(
-        "Aunque también veo %s... esto no será tan fácil.",
-        "Pero espera... también hay %s. Hmm...",
-        "Y por aquí encuentro %s... ¡qué difícil decisión!",
-        "Aunque... no puedo ignorar %s.",
-    )
+    private val aperturas = lista(json.getJSONArray("aperturas"), "apertura")
+    private val decisiones = lista(json.getJSONArray("decisiones"), "decision")
+    private val preanuncios = lista(json.getJSONArray("preanuncios"), "preanuncio")
+    private val cierres = lista(json.getJSONArray("cierres"), "cierre")
+    val prueba = Linea("prueba", json.getString("prueba"))
 
-    private val decisiones = listOf(
-        "Sí... ahora lo veo con claridad.",
-        "Ya no tengo ninguna duda.",
-        "Lo he decidido.",
-        "Mmm... sí, sí. Está muy claro.",
-        "Muy bien... sé exactamente a dónde perteneces.",
-    )
+    private val casas: Map<String, FrasesCasa> = CASAS.associate { casa ->
+        val c = json.getJSONObject("casas").getJSONObject(casa.id)
+        casa.id to FrasesCasa(
+            virtudes = lista(c.getJSONArray("virtudes"), "${casa.id}_virtud"),
+            dudas = lista(c.getJSONArray("dudas"), "${casa.id}_duda"),
+            anuncio = Linea("${casa.id}_anuncio", c.getString("anuncio"), esAnuncio = true),
+        )
+    }
 
-    private val preanuncios = listOf(
-        "Tu lugar está en...",
-        "Tu casa será...",
-        "Te envío a...",
-        "Perteneces a...",
-    )
-
-    private val cierres = listOf(
-        "¡Que tengas una noche mágica!",
-        "¡Tu nueva casa te recibe con los brazos abiertos!",
-        "¡Ve con tu casa, que la fiesta te espera!",
-        "¡Que la alegría te acompañe esta noche!",
-        "¡Siguiente, por favor!",
-    )
+    /** Todas las frases posibles (sirve para contar cuántas tienen audio grabado). */
+    val todas: List<Linea> =
+        listOf(prueba) + aperturas + decisiones + preanuncios + cierres +
+            casas.values.flatMap { it.virtudes + it.dudas + it.anuncio }
 
     /** Arma el guion completo que dirá el sombrero para la casa ya elegida. */
     fun guion(casa: Casa, otras: List<Casa>): List<Linea> {
-        val virtudes = casa.virtudes.shuffled()
+        val frases = casas.getValue(casa.id)
+        val virtudes = frases.virtudes.shuffled()
         val lineas = mutableListOf<Linea>()
 
-        lineas += Linea(aperturas.random(), pausaDespues = 900)
-        lineas += Linea(virtudes[0], pausaDespues = 600)
+        lineas += aperturas.random().copy(pausaDespues = 900)
+        lineas += virtudes[0].copy(pausaDespues = 600)
 
-        // A veces el sombrero "duda" con un rasgo de otra casa, para dar suspenso.
+        // A veces el sombrero "duda" con una virtud de otra casa, para dar suspenso.
         if (otras.isNotEmpty() && Math.random() < 0.6) {
-            val rasgo = otras.random().rasgos.random()
-            lineas += Linea(dudas.random().format(rasgo), pausaDespues = 900)
+            lineas += casas.getValue(otras.random().id).dudas.random().copy(pausaDespues = 900)
         }
 
-        lineas += Linea(virtudes[1], pausaDespues = 800)
-        lineas += Linea(decisiones.random(), pausaDespues = 700)
-        lineas += Linea(preanuncios.random(), pausaDespues = 1400)
-        lineas += Linea("¡${casa.nombreHablado}!", pausaDespues = 900, esAnuncio = true)
-        lineas += Linea(cierres.random(), pausaDespues = 0)
+        lineas += virtudes[1].copy(pausaDespues = 800)
+        lineas += decisiones.random().copy(pausaDespues = 700)
+        lineas += preanuncios.random().copy(pausaDespues = 1400)
+        lineas += frases.anuncio.copy(pausaDespues = 900)
+        lineas += cierres.random().copy(pausaDespues = 0)
         return lineas
     }
 
-    const val PRUEBA = "Hmm... ¿me escuchas bien? Soy el sombrero seleccionador."
+    companion object {
+        fun cargar(context: Context): Frases =
+            Frases(JSONObject(context.assets.open("frases.json").bufferedReader().use { it.readText() }))
+
+        private fun lista(arr: JSONArray, prefijo: String): List<Linea> =
+            List(arr.length()) { i -> Linea("${prefijo}_${i + 1}", arr.getString(i)) }
+    }
 }

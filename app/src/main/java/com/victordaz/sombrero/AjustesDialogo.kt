@@ -53,6 +53,14 @@ fun AjustesDialogo(vm: SombreroViewModel, alCerrar: () -> Unit) {
             text = {
                 Column(Modifier.verticalScroll(rememberScrollState())) {
                     Seccion("Voz")
+                    FilaSwitch(
+                        "Usar voces grabadas (${a.frasesGrabadas} de ${a.frasesTotales} frases tienen audio)",
+                        a.usarGrabaciones, vm::cambiarUsarGrabaciones,
+                    )
+                    Text(
+                        "Las frases sin audio usan la voz del teléfono:",
+                        fontSize = 12.sp, color = Color.Gray,
+                    )
                     Text("Tono: ${"%.2f".format(a.tono)} (más bajo = más grave)", fontSize = 14.sp)
                     Slider(a.tono, onValueChange = vm::cambiarTono, valueRange = 0.3f..1.5f)
                     Text("Velocidad: ${"%.2f".format(a.velocidad)}", fontSize = 14.sp)

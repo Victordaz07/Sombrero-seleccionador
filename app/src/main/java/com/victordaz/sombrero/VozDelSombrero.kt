@@ -75,16 +75,19 @@ class VozDelSombrero(
         if (voz != null) tts.voice = voz else elegirEspanol()
     }
 
-    /** Dice el texto y espera (sin bloquear) hasta que termine de hablar. */
-    suspend fun hablar(texto: String) {
+    /**
+     * Dice el texto y espera (sin bloquear) hasta que termine de hablar.
+     * Con [enfasis] lo dice más agudo y rápido, como un grito (para anunciar la casa).
+     */
+    suspend fun hablar(texto: String, enfasis: Boolean = false) {
         val estimado = 1500L + texto.length * 75L
         if (!lista) {
             // Sin voz disponible: al menos dejamos el subtítulo en pantalla un rato.
             delay(estimado)
             return
         }
-        tts.setPitch(tono)
-        tts.setSpeechRate(velocidad)
+        tts.setPitch(if (enfasis) tono * 1.2f else tono)
+        tts.setSpeechRate(if (enfasis) velocidad * 1.1f else velocidad)
         val id = UUID.randomUUID().toString()
         // Algunos motores nunca avisan que terminaron; por eso el tiempo límite.
         withTimeoutOrNull(estimado * 3) {

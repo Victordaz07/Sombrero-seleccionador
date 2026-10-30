@@ -29,12 +29,17 @@ data class EstadoAjustes(
     val voces: List<Pair<String, String>>, // nombre interno -> nombre para mostrar
     val equilibrar: Boolean,
     val controlRemoto: Boolean,
+    val usarGrabaciones: Boolean,
+    val frasesGrabadas: Int,
+    val frasesTotales: Int,
     val casasActivas: Set<String>,
 )
 
 class SombreroViewModel(app: Application) : AndroidViewModel(app) {
 
     private val ajustes = Ajustes(app)
+    private val frases = Frases.cargar(app)
+    private val grabada = VozGrabada(app)
     private var trabajo: Job? = null
 
     private val voz = VozDelSombrero(app) { lista ->
@@ -67,7 +72,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     private fun seleccionar() {
         val activas = CASAS.filter { it.id in ajustes.casasActivas }.ifEmpty { CASAS }
         val casa = elegirCasa(activas)
-        val guion = Frases.guion(casa, activas - casa)
+        val guion = frases.guion(casa, activas - casa)
 
         trabajo = viewModelScope.launch {
             estado = estado.copy(fase = Fase.PENSANDO, casa = null, subtitulo = "")
@@ -81,10 +86,19 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
                     subtitulo = if (linea.esAnuncio) "¡${casa.nombre.uppercase()}!" else linea.texto,
                     hablando = true,
                 )
-                voz.hablar(linea.texto)
+                decir(linea)
                 estado = estado.copy(hablando = false)
                 delay(linea.pausaDespues)
             }
+        }
+    }
+
+    /** Usa el audio grabado si existe; si no, la voz del teléfono. */
+    private suspend fun decir(linea: Linea) {
+        if (ajustes.usarGrabaciones && grabada.tiene(linea.clave)) {
+            grabada.reproducir(linea.clave)
+        } else {
+            voz.hablar(linea.texto, enfasis = linea.esAnuncio)
         }
     }
 
@@ -103,7 +117,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         trabajo?.cancel()
         trabajo = viewModelScope.launch {
             estado = estado.copy(hablando = true)
-            voz.hablar(Frases.PRUEBA)
+            decir(frases.prueba)
             estado = estado.copy(hablando = false)
         }
     }
@@ -126,6 +140,10 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
 
     fun cambiarControlRemoto(v: Boolean) {
         ajustes.controlRemoto = v; refrescarAjustes()
+    }
+
+    fun cambiarUsarGrabaciones(v: Boolean) {
+        ajustes.usarGrabaciones = v; refrescarAjustes()
     }
 
     fun alternarCasa(id: String) {
@@ -156,6 +174,9 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         },
         equilibrar = ajustes.equilibrar,
         controlRemoto = ajustes.controlRemoto,
+        usarGrabaciones = ajustes.usarGrabaciones,
+        frasesGrabadas = frases.todas.count { grabada.tiene(it.clave) },
+        frasesTotales = frases.todas.size,
         casasActivas = ajustes.casasActivas,
     )
 

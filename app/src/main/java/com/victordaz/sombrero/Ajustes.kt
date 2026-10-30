@@ -29,6 +29,11 @@ class Ajustes(context: Context) {
         get() = prefs.getBoolean("control_remoto", true)
         set(v) = prefs.edit().putBoolean("control_remoto", v).apply()
 
+    /** Si está activo, usa los audios de assets/voz cuando existen. */
+    var usarGrabaciones: Boolean
+        get() = prefs.getBoolean("usar_grabaciones", true)
+        set(v) = prefs.edit().putBoolean("usar_grabaciones", v).apply()
+
     var casasActivas: Set<String>
         get() = prefs.getStringSet("casas_activas", null) ?: CASAS.map { it.id }.toSet()
         set(v) = prefs.edit().putStringSet("casas_activas", v).apply()

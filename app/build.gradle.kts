@@ -34,6 +34,10 @@ android {
     buildFeatures {
         compose = true
     }
+    androidResources {
+        // Los audios del sombrero se leen directo del APK, sin comprimir.
+        noCompress += "mp3"
+    }
 }
 
 dependencies {
