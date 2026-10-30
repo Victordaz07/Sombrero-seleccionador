@@ -125,6 +125,13 @@ def cargar_frases(datos):
                 clave = f"{casa}_discurso_{i + 1}{sufijo}"
                 frases.append(Frase(clave, " ".join(segmentos), segmentos, crudos.index(ANUNCIO)))
 
+    # Pregunta bilingüe antes de cada persona y sus dos respuestas.
+    idioma = datos.get("idioma", {})
+    for clave, campo in [("pregunta_idioma", "pregunta"), ("respuesta_idioma_es", "respuesta_es"),
+                         ("respuesta_idioma_en", "respuesta_en")]:
+        if campo in idioma:
+            frases.append(Frase(clave, idioma[campo]))
+
     frases.append(Frase("prueba", datos["prueba"]))
     for campo, prefijo in [
         ("aperturas", "apertura"),
@@ -174,6 +181,18 @@ def escribir_guion(frases):
         if f.es_discurso:
             partes = [f"**{s}**" if i == f.indice_anuncio else s for i, s in enumerate(f.segmentos)]
             lineas.append(f"| `{f.clave}.mp3` | {' '.join(partes)} |")
+    especiales = [f for f in frases if f.clave.startswith(("pregunta_idioma", "respuesta_idioma"))]
+    if especiales:
+        lineas += [
+            "",
+            "## Pregunta de idioma",
+            "",
+            "Antes de cada persona el sombrero pregunta en qué idioma hablar y responde según lo que elijan.",
+            "",
+            "| Archivo | Frase |",
+            "|---|---|",
+        ]
+        lineas += [f"| `{f.clave}.mp3` | {f.texto} |" for f in especiales]
     lineas += [
         "",
         "## Frases sueltas (respaldo)",
@@ -184,7 +203,7 @@ def escribir_guion(frases):
         "| Archivo | Frase |",
         "|---|---|",
     ]
-    lineas += [f"| `{f.clave}.mp3` | {f.texto} |" for f in frases if not f.es_discurso]
+    lineas += [f"| `{f.clave}.mp3` | {f.texto} |" for f in frases if not f.es_discurso and f not in especiales]
     GUION.write_text("\n".join(lineas) + "\n", encoding="utf-8")
 
 

@@ -27,6 +27,11 @@ class Ajustes(context: Context) {
     // En español se conserva la clave original "voz" para no perder lo que ya estaba elegido.
     private fun claveVoz() = if (idioma == Idioma.ES) "voz" else "voz_${idioma.codigo}"
 
+    /** Si está activo, el sombrero pregunta "English o español" antes de cada persona. */
+    var preguntarIdioma: Boolean
+        get() = prefs.getBoolean("preguntar_idioma", true)
+        set(v) = prefs.edit().putBoolean("preguntar_idioma", v).apply()
+
     /** Si está activo, el sombrero reparte a la gente de forma pareja entre las casas. */
     var equilibrar: Boolean
         get() = prefs.getBoolean("equilibrar", true)

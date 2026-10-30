@@ -1,5 +1,10 @@
 {
-  "_ayuda": "Todo lo que dice el sombrero. 'discursos' (español) y 'discursos_en' (inglés) son 4 actuaciones completas por casa (un audio cada una), escritas para ElevenLabs v3/v4: las etiquetas entre corchetes como [laughs] o [excited] indican la emoción y no se muestran en pantalla. {ANUNCIO} es donde grita la casa ('anuncio' / 'anuncio_en'). Las frases sueltas (solo español) son el respaldo si falta algún discurso. Si cambias un texto, vuelve a generar su audio.",
+  "_ayuda": "Todo lo que dice el sombrero. 'discursos' (español) y 'discursos_en' (inglés) son 4 actuaciones completas por casa (un audio cada una), escritas para ElevenLabs v3/v4: las etiquetas entre corchetes como [laughs] o [excited] indican la emoción y no se muestran en pantalla. {ANUNCIO} es donde grita la casa ('anuncio' / 'anuncio_en'). Las frases sueltas (solo español) son el respaldo si falta algún discurso. Si cambias un texto, vuelve a generar su audio. 'idioma' es la pregunta bilingüe que el sombrero hace antes de cada persona y sus dos respuestas (audios pregunta_idioma.mp3, respuesta_idioma_es.mp3 y respuesta_idioma_en.mp3).",
+  "idioma": {
+    "pregunta": "[curious] Hmm... a new head! [mischievously] Tell me, tell me... do you prefer ENGLISH... [excited] ¿o prefieres que te hable en ESPAÑOL?",
+    "respuesta_es": "[excited] ¡Perfecto! [mischievously] Ahora sí... ¡vamos a ver a qué casa te vamos a enviar!",
+    "respuesta_en": "[excited] Perfect! [mischievously] Now then... let's see which house we're sending you to!"
+  },
   "prueba": "Hmm... ¿me escuchas bien? Soy el sombrero seleccionador.",
   "prueba_en": "Hmm... can you hear me? I am the Sorting Hat!",
   "discursos": {

@@ -10,7 +10,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-enum class Fase { ESPERANDO, PENSANDO, REVELADO }
+/** IDIOMA = el sombrero preguntó "English o español" y espera la respuesta. */
+enum class Fase { ESPERANDO, IDIOMA, PENSANDO, REVELADO }
 
 data class EstadoUi(
     val fase: Fase = Fase.ESPERANDO,
@@ -31,6 +32,7 @@ data class EstadoAjustes(
     val voces: List<Pair<String, String>>, // nombre interno -> nombre para mostrar
     val equilibrar: Boolean,
     val controlRemoto: Boolean,
+    val preguntarIdioma: Boolean,
     val usarGrabaciones: Boolean,
     val frasesGrabadas: Int,
     val frasesTotales: Int,
@@ -68,7 +70,9 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     /** Se llama al tocar la pantalla o al presionar el control remoto. */
     fun alTocar() {
         when (estado.fase) {
-            Fase.ESPERANDO -> seleccionar()
+            Fase.ESPERANDO -> if (ajustes.preguntarIdioma) preguntarIdioma() else seleccionar()
+            // Con el control remoto se confirma el idioma actual.
+            Fase.IDIOMA -> elegirIdioma(estado.idioma)
             Fase.PENSANDO -> Unit // el sombrero está pensando, no lo interrumpas
             Fase.REVELADO -> {
                 trabajo?.cancel()
@@ -78,14 +82,40 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    private fun seleccionar() {
+    /** El sombrero pregunta en qué idioma hablar; la respuesta llega con [elegirIdioma]. */
+    private fun preguntarIdioma() {
+        trabajo = viewModelScope.launch {
+            val pregunta = frases.preguntaIdioma
+            estado = estado.copy(fase = Fase.IDIOMA, casa = null, subtitulo = pregunta.texto, hablando = true)
+            decir(pregunta)
+            estado = estado.copy(hablando = false)
+        }
+    }
+
+    /** La persona eligió idioma: el sombrero responde y empieza la selección en ese idioma. */
+    fun elegirIdioma(idioma: Idioma) {
+        if (estado.fase != Fase.IDIOMA) return
+        trabajo?.cancel()
+        voz.callar()
+        aplicarIdioma(idioma)
+        seleccionar(introduccion = frases.respuestaIdioma(idioma))
+    }
+
+    private fun seleccionar(introduccion: Linea? = null) {
         val activas = CASAS.filter { it.id in ajustes.casasActivas }.ifEmpty { CASAS }
         val casa = elegirCasa(activas)
         val guion = frases.guion(casa, activas - casa)
 
         trabajo = viewModelScope.launch {
             estado = estado.copy(fase = Fase.PENSANDO, casa = null, subtitulo = "")
-            delay(400)
+            if (introduccion != null) {
+                estado = estado.copy(subtitulo = introduccion.texto, hablando = true)
+                decir(introduccion)
+                estado = estado.copy(hablando = false)
+                delay(200)
+            } else {
+                delay(400)
+            }
             val discurso = if (ajustes.usarGrabaciones) siguienteDiscurso(casa) else null
             when {
                 discurso != null -> decirDiscurso(casa, discurso)
@@ -200,18 +230,26 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /** Cambio de idioma desde Ajustes: detiene lo que esté pasando y vuelve al inicio. */
     fun cambiarIdioma(nuevo: Idioma) {
         if (nuevo == ajustes.idioma) return
         trabajo?.cancel()
         voz.callar()
+        estado = estado.copy(fase = Fase.ESPERANDO, casa = null, subtitulo = "", hablando = false)
+        aplicarIdioma(nuevo)
+    }
+
+    private fun aplicarIdioma(nuevo: Idioma) {
+        if (nuevo == ajustes.idioma && nuevo == estado.idioma) return
         ajustes.idioma = nuevo
         val lista = voz.cambiarIdioma(nuevo)
         aplicarAjustesDeVoz()
-        estado = estado.copy(
-            idioma = nuevo, vozLista = if (estado.vozLista == null) null else lista,
-            fase = Fase.ESPERANDO, casa = null, subtitulo = "", hablando = false,
-        )
+        estado = estado.copy(idioma = nuevo, vozLista = if (estado.vozLista == null) null else lista)
         refrescarAjustes()
+    }
+
+    fun cambiarPreguntarIdioma(v: Boolean) {
+        ajustes.preguntarIdioma = v; refrescarAjustes()
     }
 
     fun cambiarTono(v: Float) {
@@ -267,6 +305,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         },
         equilibrar = ajustes.equilibrar,
         controlRemoto = ajustes.controlRemoto,
+        preguntarIdioma = ajustes.preguntarIdioma,
         usarGrabaciones = ajustes.usarGrabaciones,
         frasesGrabadas = frases.todas.count { grabada.tiene(it.clave) },
         frasesTotales = frases.todas.size,

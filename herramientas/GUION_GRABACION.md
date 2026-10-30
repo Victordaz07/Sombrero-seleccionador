@@ -44,6 +44,16 @@ Haz una pausa de suspenso antes del nombre de la casa (en **negritas**) y gríta
 | `slytherin_discurso_3_en.mp3` | [curious] Hmm... a big heart? Yes, yes... [excited] But what a will of IRON! [impressed] You fall... and you get back up STRONGER! [excited] Decided! You belong to... **[shouting] SLYTHERIN!** |
 | `slytherin_discurso_4_en.mp3` | [laughs harder] HA HA! Brilliant ideas... and a little bit mischievous! [mischievously] You organize the game, you make the rules... and you look after your own! [excited] A BORN leader! Your house is... **[shouting] SLYTHERIN!** |
 
+## Pregunta de idioma
+
+Antes de cada persona el sombrero pregunta en qué idioma hablar y responde según lo que elijan.
+
+| Archivo | Frase |
+|---|---|
+| `pregunta_idioma.mp3` | [curious] Hmm... a new head! [mischievously] Tell me, tell me... do you prefer ENGLISH... [excited] ¿o prefieres que te hable en ESPAÑOL? |
+| `respuesta_idioma_es.mp3` | [excited] ¡Perfecto! [mischievously] Ahora sí... ¡vamos a ver a qué casa te vamos a enviar! |
+| `respuesta_idioma_en.mp3` | [excited] Perfect! [mischievously] Now then... let's see which house we're sending you to! |
+
 ## Frases sueltas (respaldo)
 
 Si una casa no tiene discursos grabados, el sombrero arma el discurso con estas frases.

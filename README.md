@@ -83,6 +83,8 @@ Todo está en `app/src/main/assets/frases.json`. En `discursos`, cada casa tiene
 
 En ⚙ → **Idioma / Language** cambias toda la ceremonia a inglés: textos de pantalla, lemas de las casas, subtítulos y discursos. Hay 16 discursos en inglés (`discursos_en` en `frases.json`, archivos `<casa>_discurso_<n>_en.mp3`). Si un discurso en inglés no tiene audio, la voz del teléfono lo lee en inglés.
 
+**Pregunta de idioma:** si está activo en ⚙ (*Preguntar idioma a cada persona*), al tocar el sombrero pregunta "…do you prefer ENGLISH… ¿o prefieres que te hable en ESPAÑOL?" y aparecen dos botones. Al elegir, responde en ese idioma y sigue la ceremonia. Con el control Bluetooth: subir volumen = idioma actual, bajar volumen = el otro. Audios: `pregunta_idioma.mp3`, `respuesta_idioma_es.mp3`, `respuesta_idioma_en.mp3` (se importan con `importar_voces.py --especiales`).
+
 Para importar audios hechos a mano en ElevenLabs (los reconoce y sincroniza el grito aunque el archivo se llame distinto):
 
 ```bash

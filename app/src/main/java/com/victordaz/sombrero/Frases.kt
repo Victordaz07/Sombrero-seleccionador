@@ -78,6 +78,17 @@ class Frases(json: JSONObject) {
 
     fun prueba(idioma: Idioma) = if (idioma == Idioma.EN) pruebaEn else prueba
 
+    /** Pregunta bilingüe antes de cada persona y la respuesta en el idioma elegido. */
+    private val textosIdioma = json.optJSONObject("idioma") ?: JSONObject()
+    val preguntaIdioma = Linea(
+        "pregunta_idioma",
+        sinEtiquetas(textosIdioma.optString("pregunta", "Do you prefer English... ¿o prefieres español?")),
+    )
+    private val respuestaEs = Linea("respuesta_idioma_es", sinEtiquetas(textosIdioma.optString("respuesta_es", "¡Perfecto!")))
+    private val respuestaEn = Linea("respuesta_idioma_en", sinEtiquetas(textosIdioma.optString("respuesta_en", "Perfect!")))
+
+    fun respuestaIdioma(idioma: Idioma) = if (idioma == Idioma.EN) respuestaEn else respuestaEs
+
     /** Todas las frases posibles (sirve para contar cuántas tienen audio grabado). */
     val todas: List<Linea> =
         listOf(prueba) + aperturas + decisiones + preanuncios + cierres +

@@ -91,6 +91,7 @@ fun AjustesDialogo(vm: SombreroViewModel, alCerrar: () -> Unit) {
                     }
 
                     Seccion("Selección")
+                    FilaSwitch("Preguntar idioma a cada persona (English / Español)", a.preguntarIdioma, vm::cambiarPreguntarIdioma)
                     FilaSwitch("Repartir parejo entre casas", a.equilibrar, vm::cambiarEquilibrar)
                     FilaSwitch("Activar con botón de volumen / control Bluetooth", a.controlRemoto, vm::cambiarControlRemoto)
                     Spacer(Modifier.padding(4.dp))

@@ -82,7 +82,8 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
     val t = textos(estado.idioma)
     Box(Modifier.fillMaxSize().background(Tinta).clickable(
         interactionSource = remember { MutableInteractionSource() }, indication = null,
-        enabled = estado.fase != Fase.PENSANDO,
+        // Mientras pregunta el idioma hay que elegir con los botones, no tocando el fondo.
+        enabled = estado.fase != Fase.PENSANDO && estado.fase != Fase.IDIOMA,
         onClickLabel = if (estado.fase == Fase.REVELADO) t.botonSiguiente else t.botonComenzar,
         onClick = vm::alTocar,
     )) {
@@ -117,7 +118,7 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
                         verticalArrangement = Arrangement.spacedBy(18.dp),
                     ) {
                         Subtitulo(estado)
-                        Accion(estado, vm::alTocar)
+                        Accion(estado, vm::alTocar, vm::elegirIdioma)
                         PiePagina(estado, vm.estadoAjustes.casasActivas)
                     }
                 }
@@ -137,7 +138,7 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         Subtitulo(estado)
-                        Accion(estado, vm::alTocar)
+                        Accion(estado, vm::alTocar, vm::elegirIdioma)
                         PiePagina(estado, vm.estadoAjustes.casasActivas)
                     }
                 }
@@ -237,6 +238,7 @@ private fun Subtitulo(estado: EstadoUi) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(when {
+            estado.fase == Fase.IDIOMA -> "ENGLISH · ESPAÑOL"
             estado.hablando -> t.estadoHablando
             estado.fase == Fase.PENSANDO -> t.estadoPensando
             estado.fase == Fase.REVELADO -> t.estadoRevelado
@@ -251,8 +253,12 @@ private fun Subtitulo(estado: EstadoUi) {
 }
 
 @Composable
-private fun Accion(estado: EstadoUi, alTocar: () -> Unit) {
+private fun Accion(estado: EstadoUi, alTocar: () -> Unit, alElegirIdioma: (Idioma) -> Unit) {
     val t = textos(estado.idioma)
+    if (estado.fase == Fase.IDIOMA) {
+        BotonesIdioma(alElegirIdioma)
+        return
+    }
     val disponible = estado.fase != Fase.PENSANDO && !estado.hablando
     OutlinedButton(
         onClick = alTocar, enabled = disponible,
@@ -269,6 +275,23 @@ private fun Accion(estado: EstadoUi, alTocar: () -> Unit) {
             estado.fase == Fase.REVELADO -> t.botonSiguiente
             else -> t.botonComenzar
         }, fontFamily = FontFamily.Serif, fontSize = 18.sp, textAlign = TextAlign.Center)
+    }
+}
+
+/** Los dos botones para responder la pregunta del sombrero. */
+@Composable
+private fun BotonesIdioma(alElegir: (Idioma) -> Unit) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        listOf(Idioma.EN to "🇺🇸  English", Idioma.ES to "🇲🇽  Español").forEach { (idioma, etiqueta) ->
+            Button(
+                onClick = { alElegir(idioma) },
+                modifier = Modifier.weight(1f).heightIn(min = 64.dp),
+                shape = RoundedCornerShape(28.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Dorado, contentColor = Tinta),
+            ) {
+                Text(etiqueta, fontFamily = FontFamily.Serif, fontWeight = FontWeight.Bold, fontSize = 19.sp)
+            }
+        }
     }
 }
 
