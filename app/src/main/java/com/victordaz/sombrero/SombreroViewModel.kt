@@ -64,8 +64,9 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     }
     private var trabajo: Job? = null
 
-    /** Discursos: se usan todos antes de repetir alguno. */
+    /** Discursos y fanfarrias: se usan todos antes de repetir alguno. */
     private val rotador = Rotador<Discurso>(clave = { it.clave })
+    private val rotadorFanfarrias = Rotador<String>(clave = { it })
 
     /** Última versión dicha de cada frase que tiene variantes, para no repetirla seguida. */
     private val ultimaVersion = mutableMapOf<String, String>()
@@ -195,7 +196,9 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
                 else -> decirDiscursoConVoz(casa, discursosDe(casa).randomOrNull())
             }
             // ¡Ta-ra-rá! y aplausos. Si tocan para la siguiente persona, se corta.
-            if (ajustes.fanfarria) grabada.reproducirEfecto("fanfarria")
+            if (ajustes.fanfarria) {
+                rotadorFanfarrias.siguiente("fanfarria", grabada.efectos("fanfarria"))?.let { grabada.reproducirEfecto(it) }
+            }
         }
     }
 
