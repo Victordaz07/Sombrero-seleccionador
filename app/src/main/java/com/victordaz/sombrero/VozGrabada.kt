@@ -43,8 +43,17 @@ class VozGrabada(private val context: Context) {
     suspend fun reproducir(clave: String, alAvanzar: ((posicionMs: Int, duracionMs: Int) -> Unit)? = null): Boolean =
         reproducirArchivo("$CARPETA/$clave.mp3", alAvanzar)
 
-    /** Efectos de sonido de `assets/efectos/` (por ejemplo, la fanfarria con aplausos). */
-    suspend fun reproducirEfecto(archivo: String): Boolean = reproducirArchivo("efectos/$archivo")
+    private val efectos: Set<String> =
+        runCatching { context.assets.list("efectos").orEmpty().toSet() }.getOrDefault(emptySet())
+
+    /**
+     * Efecto de sonido de `assets/efectos/` (por ejemplo "fanfarria"), en .mp3 u .ogg.
+     * Si no existe, no suena nada y devuelve false.
+     */
+    suspend fun reproducirEfecto(nombre: String): Boolean {
+        val archivo = listOf("mp3", "ogg").map { "$nombre.$it" }.firstOrNull { it in efectos } ?: return false
+        return reproducirArchivo("efectos/$archivo")
+    }
 
     private suspend fun reproducirArchivo(ruta: String, alAvanzar: ((Int, Int) -> Unit)? = null): Boolean {
         val reproductor = MediaPlayer()

@@ -195,7 +195,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
                 else -> decirDiscursoConVoz(casa, discursosDe(casa).randomOrNull())
             }
             // ¡Ta-ra-rá! y aplausos. Si tocan para la siguiente persona, se corta.
-            if (ajustes.fanfarria) grabada.reproducirEfecto("fanfarria.ogg")
+            if (ajustes.fanfarria) grabada.reproducirEfecto("fanfarria")
         }
     }
 
