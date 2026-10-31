@@ -37,15 +37,6 @@ class Ajustes(context: Context) {
         get() = prefs.getBoolean("contar_manuales", false)
         set(v) = prefs.edit().putBoolean("contar_manuales", v).apply()
 
-    /** Idiomas que ofrece la pregunta (con tagalo usa la pregunta trilingüe). */
-    var idiomasPregunta: List<Idioma>
-        get() {
-            val guardados = prefs.getStringSet("idiomas_pregunta", null) ?: setOf("en", "es")
-            return Idioma.entries.filter { it.codigo in guardados }
-                .sortedBy { listOf(Idioma.EN, Idioma.ES, Idioma.TL).indexOf(it) }
-        }
-        set(v) = prefs.edit().putStringSet("idiomas_pregunta", v.map { it.codigo }.toSet()).apply()
-
     /** Si está activo, el sombrero reparte a la gente de forma pareja entre las casas. */
     var equilibrar: Boolean
         get() = prefs.getBoolean("equilibrar", true)

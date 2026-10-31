@@ -96,21 +96,7 @@ fun AjustesDialogo(vm: SombreroViewModel, alCerrar: () -> Unit) {
                     }
 
                     Seccion("Selección")
-                    FilaSwitch("Preguntar idioma a cada persona", a.preguntarIdioma, vm::cambiarPreguntarIdioma)
-                    if (a.preguntarIdioma) {
-                        Text("Idiomas que ofrece la pregunta (con Tagalog usa la pregunta de 3 idiomas):", fontSize = 12.sp, color = Color.Gray)
-                        Row {
-                            Idioma.entries.forEach { idioma ->
-                                Row(
-                                    Modifier.weight(1f).clickable { vm.alternarIdiomaPregunta(idioma) },
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ) {
-                                    Checkbox(idioma in a.idiomasPregunta, onCheckedChange = { vm.alternarIdiomaPregunta(idioma) })
-                                    Text(idioma.nombre, fontSize = 13.sp)
-                                }
-                            }
-                        }
-                    }
+                    FilaSwitch("Preguntar idioma a cada persona (English / Español)", a.preguntarIdioma, vm::cambiarPreguntarIdioma)
                     FilaSwitch("Repartir parejo entre casas", a.equilibrar, vm::cambiarEquilibrar)
                     Text(
                         "Para elegir tú la casa (por ejemplo, para repetir una selección y grabarla), toca su escudo " +

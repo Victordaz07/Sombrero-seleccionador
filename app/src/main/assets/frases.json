@@ -1,5 +1,5 @@
 {
-  "_ayuda": "Todo lo que dice el sombrero. 'discursos' (español), 'discursos_en' (inglés) y 'discursos_tl' (tagalo) son 4 actuaciones completas por casa (un audio cada una), escritas para ElevenLabs v3/v4: las etiquetas entre corchetes como [laughs] o [excited] indican la emoción y no se muestran en pantalla. {ANUNCIO} es donde grita la casa ('anuncio' / 'anuncio_en' / 'anuncio_tl'). Las frases sueltas (solo español) son el respaldo si falta algún discurso. Si cambias un texto, vuelve a generar su audio. 'idioma' tiene las versiones de la pregunta bilingüe y de sus respuestas; el sombrero las va alternando (audios pregunta_idioma.mp3, pregunta_idioma_2.mp3, respuesta_idioma_es.mp3, respuesta_idioma_es_2.mp3...). 'preguntas_trilingues' se usan cuando el tagalo está entre los idiomas de la pregunta.",
+  "_ayuda": "Todo lo que dice el sombrero. 'discursos' (español) y 'discursos_en' (inglés) son 4 actuaciones completas por casa (un audio cada una), escritas para ElevenLabs v3/v4: las etiquetas entre corchetes como [laughs] o [excited] indican la emoción y no se muestran en pantalla. {ANUNCIO} es donde grita la casa ('anuncio' / 'anuncio_en'). Las frases sueltas (solo español) son el respaldo si falta algún discurso. Si cambias un texto, vuelve a generar su audio. 'idioma' tiene las versiones de la pregunta bilingüe y de sus respuestas; el sombrero las va alternando (audios pregunta_idioma.mp3, pregunta_idioma_2.mp3, respuesta_idioma_es.mp3, respuesta_idioma_es_2.mp3...).",
   "idioma": {
     "preguntas": [
       "[curious] Hmm... a new head! [mischievously] Tell me, tell me... do you prefer ENGLISH... [excited] ¿o prefieres que te hable en ESPAÑOL?",
@@ -15,21 +15,10 @@
       "[excited] Perfect! [mischievously] Now then... let's see which house we're sending you to!",
       "[laughs] Excellent choice! [excited] Now let me take a good look inside that head...",
       "[excited] Very well! [mischievously] Then... let the sorting BEGIN!"
-    ],
-    "respuestas_tl": [
-      "[excited] Perpekto! [mischievously] Ngayon... tingnan natin kung saang bahay ka namin ipapadala!",
-      "[laughs] Magaling na pagpili! [excited] Ngayon, hayaan mong silipin ko nang mabuti ang ulong iyan...",
-      "[excited] Napakahusay! [mischievously] Kung gayon... simulan na ang pagpili!"
-    ],
-    "preguntas_trilingues": [
-      "[curious] Hmm... a new head! [mischievously] English... ¿español?... [excited] o Tagalog? [laughs] Choose, choose!",
-      "[curious] Before I peek inside that head... English? ¿Español? [mischievously] O Tagalog ba? [excited] Pumili ka!",
-      "[mischievously] Ahh, another brave soul! [curious] English... ¿o español?... [excited] o Tagalog kaya? [laughs] ¡Rápido, rápido!"
     ]
   },
   "prueba": "Hmm... ¿me escuchas bien? Soy el sombrero seleccionador.",
   "prueba_en": "Hmm... can you hear me? I am the Sorting Hat!",
-  "prueba_tl": "Hmm... naririnig mo ba ako? Ako ang Sorting Hat!",
   "discursos": {
     "gryffindor": [
       [
@@ -266,124 +255,6 @@
       ]
     ]
   },
-  "discursos_tl": {
-    "gryffindor": [
-      [
-        "[excited] AHA! Aba, ano'ng meron dito!",
-        "[mischievously] Tapang... lakas ng loob... at pusong HINDI sumusuko!",
-        "[laughs harder] HA HA! NAG-AAPOY ang ulong ito!",
-        "[excited] Walang duda! Ang lugar mo ay sa...",
-        "{ANUNCIO}"
-      ],
-      [
-        "[curious] Hmm, hmm, hmm... tingnan natin!",
-        "[excited] PAKIKIPAGSAPALARAN! HAMON! Gusto mong sakupin ang buong mundo!",
-        "[impressed] At lagi mong ipinagtatanggol ang iba...",
-        "[excited] Alam ko na! ALAM KO NA kung saan ka pupunta!",
-        "{ANUNCIO}"
-      ],
-      [
-        "[laughs] HA! Kinakabahan ka? Pero may LEON dito sa loob!",
-        "[excited] Humahakbang ka kahit natatakot ka!",
-        "[mischievously] Iyan... iyan mismo ang hinahanap ko!",
-        "[excited] Ipapadala kita sa...",
-        "{ANUNCIO}"
-      ],
-      [
-        "[excited] Oh, oh, OH! Alam ko 'to!",
-        "[mischievously] Marangal na puso, tapat na salita... at napakarami, NAPAKARAMING tapang!",
-        "[excited] Hindi na ako mag-iisip nang dalawang beses!",
-        "{ANUNCIO}"
-      ]
-    ],
-    "hufflepuff": [
-      [
-        "[curious] Hmm... tingnan natin, tingnan natin!",
-        "[surprised] OH! Napakalaking PUSO!",
-        "[excited] Tapat, mabait... at mas masipag ka kaysa SINUMAN!",
-        "[excited] Nakuha ko na! Ang lugar mo ay sa...",
-        "{ANUNCIO}"
-      ],
-      [
-        "[laughs] HA HA! Ibinabahagi mo ang Halloween candy mo!",
-        "[impressed] Hanggang sa huling tsokolate? IYAN ang tunay na kabaitan!",
-        "[excited] Malinaw na malinaw! Kabilang ka sa...",
-        "{ANUNCIO}"
-      ],
-      [
-        "[curious] Hmm... katalinuhan? Tapang?",
-        "[mischievously] Hindi, hindi, HINDI! Tingnan pa natin nang mas malalim...",
-        "[excited] Isang tapat na pusong HINDI nang-iiwan ng kahit sino!",
-        "[excited] Iyon na!",
-        "{ANUNCIO}"
-      ],
-      [
-        "[excited] Ah, ang GANDA!",
-        "[laughs] Amoy bagong lutong tinapay ang ulong ito!",
-        "[impressed] Pinaparamdam mo sa lahat na nasa bahay sila... at HINDI ka sumusuko!",
-        "[excited] Ang bahay mo ay...",
-        "{ANUNCIO}"
-      ]
-    ],
-    "ravenclaw": [
-      [
-        "[excited] WOW! Ang daming tanong!",
-        "[curious] Bakit asul ang langit? Paano lumilipad ang mga paniki?",
-        "[impressed] Isang isip na HINDI tumitigil!",
-        "[excited] Alam ko na! Ang lugar mo ay sa...",
-        "{ANUNCIO}"
-      ],
-      [
-        "[curious] Hmm, hmm... KAWILI-WILI!",
-        "[impressed] Nakikinig ka, nagmamasid... at nakakahanap ka ng sagot kung saan walang makakita!",
-        "[mischievously] Puwede kitang ipadala sa mga matatapang... pero HINDI!",
-        "[excited] Ipapadala kita sa...",
-        "{ANUNCIO}"
-      ],
-      [
-        "[surprised] UY! Ingat, pinapaisip mo ako nang sobra!",
-        "[excited] Mga kulay, kuwento, imbensyon... BUONG mundo ang nandito!",
-        "[laughs harder] Purong pagkamalikhain!",
-        "[excited] Kabilang ka sa...",
-        "{ANUNCIO}"
-      ],
-      [
-        "[mischievously] Aha... habang nagmamadali ang lahat, nag-iisip ka.",
-        "[impressed] At halos LAGI kang tama!",
-        "[excited] Karunungan! Talino! Walang duda!",
-        "{ANUNCIO}"
-      ]
-    ],
-    "slytherin": [
-      [
-        "[mischievously] AHA! Malalaking plano ang nandito!",
-        "[excited] NAPAKALAKI! Kapag may gusto ka... WALANG makakapigil sa'yo!",
-        "[impressed] At sumusunod sa'yo ang iba...",
-        "[excited] Ang lugar mo ay sa...",
-        "{ANUNCIO}"
-      ],
-      [
-        "[laughs] HA! Nakita kitang sinusubukan mo akong kumbinsihin!",
-        "[mischievously] Napakatalino at tusong isip!",
-        "[impressed] Pinaplano mo ang bawat galaw, parang laro ng chess...",
-        "[excited] Sige na nga, NAKUMBINSI mo ako!",
-        "{ANUNCIO}"
-      ],
-      [
-        "[curious] Hmm... malaking puso? Oo, oo...",
-        "[excited] Pero napakatibay na kalooban, parang BAKAL!",
-        "[impressed] Nadadapa ka... at bumabangon kang MAS malakas!",
-        "[excited] Desidido na! Kabilang ka sa...",
-        "{ANUNCIO}"
-      ],
-      [
-        "[laughs harder] HA HA! Napakatalinong ideya... at medyo pilyo!",
-        "[mischievously] Ikaw ang nag-oorganisa ng laro, ikaw ang gumagawa ng patakaran... at inaalagaan mo ang mga sa'yo!",
-        "[excited] Isang TUNAY na lider! Ang bahay mo ay...",
-        "{ANUNCIO}"
-      ]
-    ]
-  },
   "aperturas": [
     "Mmm... veamos, veamos... ¿qué tenemos aquí?",
     "Ah... una cabeza nueva. No te muevas, que voy a mirar muy adentro.",
@@ -428,8 +299,7 @@
         "Pero espera... también hay un coraje enorme aquí. Hmm...",
         "Y por aquí encuentro un espíritu aventurero... ¡qué difícil decisión!"
       ],
-      "anuncio_en": "GRYFFINDOR!",
-      "anuncio_tl": "GRYFFINDOR!"
+      "anuncio_en": "GRYFFINDOR!"
     },
     "hufflepuff": {
       "anuncio": "¡Jáfelpaf!",
@@ -446,8 +316,7 @@
         "Pero espera... también hay mucha bondad en este corazón.",
         "Y por aquí encuentro un corazón enorme... ¡qué difícil decisión!"
       ],
-      "anuncio_en": "HUFFLEPUFF!",
-      "anuncio_tl": "HUFFLEPUFF!"
+      "anuncio_en": "HUFFLEPUFF!"
     },
     "ravenclaw": {
       "anuncio": "¡Réivenclo!",
@@ -464,8 +333,7 @@
         "Pero espera... también hay mucha curiosidad aquí. Hmm...",
         "Y por aquí encuentro una creatividad sorprendente... ¡qué difícil decisión!"
       ],
-      "anuncio_en": "RAVENCLAW!",
-      "anuncio_tl": "RAVENCLAW!"
+      "anuncio_en": "RAVENCLAW!"
     },
     "slytherin": {
       "anuncio": "¡Slíderin!",
@@ -482,8 +350,7 @@
         "Pero espera... también hay madera de líder aquí.",
         "Y por aquí encuentro metas muy grandes... ¡qué difícil decisión!"
       ],
-      "anuncio_en": "SLYTHERIN!",
-      "anuncio_tl": "SLYTHERIN!"
+      "anuncio_en": "SLYTHERIN!"
     }
   }
 }

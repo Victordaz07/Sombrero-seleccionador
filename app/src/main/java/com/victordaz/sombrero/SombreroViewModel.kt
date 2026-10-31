@@ -10,7 +10,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-/** IDIOMA = el sombrero preguntó en qué idioma hablar y espera la respuesta. */
+/** IDIOMA = el sombrero preguntó "English o español" y espera la respuesta. */
 enum class Fase { ESPERANDO, IDIOMA, PENSANDO, REVELADO }
 
 data class EstadoUi(
@@ -22,8 +22,6 @@ data class EstadoUi(
     val vozLista: Boolean? = null,
     val conteo: Map<String, Int> = emptyMap(),
     val idioma: Idioma = Idioma.ES,
-    /** Idiomas que ofrece la pregunta (botones). */
-    val idiomasPregunta: List<Idioma> = listOf(Idioma.EN, Idioma.ES),
     /** El volumen multimedia está tan bajo que casi no se escucharía. */
     val volumenBajo: Boolean = false,
 )
@@ -37,7 +35,6 @@ data class EstadoAjustes(
     val equilibrar: Boolean,
     val controlRemoto: Boolean,
     val preguntarIdioma: Boolean,
-    val idiomasPregunta: List<Idioma>,
     val contarManuales: Boolean,
     val volumen: Float,
     val usarGrabaciones: Boolean,
@@ -111,15 +108,8 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     /** El sombrero pregunta en qué idioma hablar; la respuesta llega con [elegirIdioma]. */
     private fun preguntarIdioma() {
         trabajo = lanzar {
-            val idiomas = ajustes.idiomasPregunta
-            val pregunta = if (Idioma.TL in idiomas) {
-                elegirVersion("pregunta-tri", frases.preguntasTrilingues)
-            } else {
-                elegirVersion("pregunta", frases.preguntasIdioma)
-            }
-            estado = estado.copy(
-                fase = Fase.IDIOMA, casa = null, subtitulo = pregunta.texto, hablando = true, idiomasPregunta = idiomas,
-            )
+            val pregunta = elegirVersion("pregunta", frases.preguntasIdioma)
+            estado = estado.copy(fase = Fase.IDIOMA, casa = null, subtitulo = pregunta.texto, hablando = true)
             decir(pregunta)
             estado = estado.copy(hablando = false)
         }
@@ -172,8 +162,8 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
             val discurso = if (ajustes.usarGrabaciones) siguienteDiscurso(casa) else null
             when {
                 discurso != null -> decirDiscurso(casa, discurso)
-                // En inglés y tagalo no hay frases sueltas: la voz del teléfono lee un discurso completo.
-                estado.idioma != Idioma.ES -> decirDiscursoConVoz(casa, discursosDe(casa).random())
+                // En inglés no hay frases sueltas: la voz del teléfono lee un discurso completo.
+                estado.idioma == Idioma.EN -> decirDiscursoConVoz(casa, discursosDe(casa).random())
                 else -> decirGuion(casa, guion)
             }
         }
@@ -314,20 +304,6 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         ajustes.contarManuales = v; refrescarAjustes()
     }
 
-    /** Agrega o quita un idioma de la pregunta (siempre quedan al menos dos). */
-    fun alternarIdiomaPregunta(idioma: Idioma) {
-        val actuales = ajustes.idiomasPregunta
-        val nuevos = if (idioma in actuales) actuales - idioma else actuales + idioma
-        if (nuevos.size >= 2) ajustes.idiomasPregunta = nuevos
-        refrescarAjustes()
-    }
-
-    /** Control remoto: el "otro" idioma de la pregunta, siguiendo el orden de los botones. */
-    fun siguienteIdiomaPregunta(): Idioma {
-        val idiomas = estado.idiomasPregunta
-        return idiomas[(idiomas.indexOf(estado.idioma) + 1).mod(idiomas.size)]
-    }
-
     fun cambiarPreguntarIdioma(v: Boolean) {
         ajustes.preguntarIdioma = v; refrescarAjustes()
     }
@@ -386,7 +362,6 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         equilibrar = ajustes.equilibrar,
         controlRemoto = ajustes.controlRemoto,
         preguntarIdioma = ajustes.preguntarIdioma,
-        idiomasPregunta = ajustes.idiomasPregunta,
         contarManuales = ajustes.contarManuales,
         volumen = volumen.nivel,
         usarGrabaciones = ajustes.usarGrabaciones,
