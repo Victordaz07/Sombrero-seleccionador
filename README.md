@@ -16,7 +16,7 @@ Cada vez que se sube un cambio, GitHub revisa `frases.json`, corre las pruebas y
 ### En una fiesta
 1. La persona se sienta y tocas la pantalla (o *Comenzar selección*, o el botón de un control Bluetooth).
 2. Si está activo, el sombrero pregunta **"English… ¿o español?"** y aparecen dos botones.
-3. Dice uno de sus discursos (4 por casa y por idioma, sin repetirse) y **grita la casa**.
+3. Dice uno de sus discursos (4 por casa y por idioma, sin repetirse), **grita la casa** y suena una **fanfarria con aplausos** 🎺👏.
 4. Tocas para la siguiente persona.
 
 ### En la calle 🚶
@@ -38,6 +38,7 @@ Mantén presionado uno de los 4 escudos de abajo: el sombrero hace la ceremonia 
 |---|---|
 | Idioma | Español o inglés |
 | Volumen + *Probar sonido* | Volumen multimedia (bocina del teléfono o Bluetooth) |
+| Fanfarria con aplausos | Suena justo después de que el sombrero grita la casa |
 | Música de fondo | Prender/apagar y su volumen. Baja sola cuando habla el sombrero |
 | Brillo al máximo | Para verse en la calle |
 | **Fijar / Soltar** | Fija la app: nadie puede salir con Atrás o Inicio |
@@ -84,6 +85,7 @@ python3 herramientas/importar_voces.py --idioma en --casa gryffindor audios/*.mp
 python3 herramientas/importar_voces.py --especiales audios/*.mp3                   # pregunta, respuestas e invitaciones
 
 python3 herramientas/componer_musica.py       # vuelve a crear la música de fondo (necesita numpy)
+python3 herramientas/componer_efectos.py      # vuelve a crear la fanfarria con aplausos (necesita numpy)
 ```
 
 ## Para programadores

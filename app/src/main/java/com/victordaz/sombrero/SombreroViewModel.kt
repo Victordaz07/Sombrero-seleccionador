@@ -45,6 +45,7 @@ data class EstadoAjustes(
     val musica: Boolean,
     val volumenMusica: Float,
     val brilloMaximo: Boolean,
+    val fanfarria: Boolean,
     val usarGrabaciones: Boolean,
     val discursosGrabados: Int,
     val discursosTotales: Int,
@@ -193,6 +194,8 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
                 // Sin audio grabado, la voz del teléfono lee un discurso completo.
                 else -> decirDiscursoConVoz(casa, discursosDe(casa).randomOrNull())
             }
+            // ¡Ta-ra-rá! y aplausos. Si tocan para la siguiente persona, se corta.
+            if (ajustes.fanfarria) grabada.reproducirEfecto("fanfarria.ogg")
         }
     }
 
@@ -354,6 +357,10 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         refrescarAjustes()
     }
 
+    fun cambiarFanfarria(v: Boolean) {
+        ajustes.fanfarria = v; refrescarAjustes()
+    }
+
     fun cambiarBrilloMaximo(v: Boolean) {
         ajustes.brilloMaximo = v; refrescarAjustes()
     }
@@ -430,6 +437,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         musica = ajustes.musica,
         volumenMusica = ajustes.volumenMusica,
         brilloMaximo = ajustes.brilloMaximo,
+        fanfarria = ajustes.fanfarria,
         usarGrabaciones = ajustes.usarGrabaciones,
         discursosGrabados = frases.discursos.getValue(ajustes.idioma).values.flatten().count { grabada.tiene(it.clave) },
         discursosTotales = frases.discursos.getValue(ajustes.idioma).values.sumOf { it.size },

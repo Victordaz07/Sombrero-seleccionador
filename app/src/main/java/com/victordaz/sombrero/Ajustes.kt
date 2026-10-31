@@ -70,6 +70,11 @@ class Ajustes(context: Context) {
         get() = prefs.getFloat("volumen_musica", 0.35f)
         set(v) = prefs.edit().putFloat("volumen_musica", v).apply()
 
+    /** Fanfarria con aplausos justo después de que el sombrero grita la casa. */
+    var fanfarria: Boolean
+        get() = prefs.getBoolean("fanfarria", true)
+        set(v) = prefs.edit().putBoolean("fanfarria", v).apply()
+
     /** Pantalla al máximo brillo mientras la app está abierta (para verse en la calle). */
     var brilloMaximo: Boolean
         get() = prefs.getBoolean("brillo_maximo", true)

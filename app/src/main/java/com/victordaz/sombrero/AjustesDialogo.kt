@@ -70,6 +70,7 @@ fun AjustesDialogo(vm: SombreroViewModel, alCerrar: () -> Unit) {
                     OutlinedButton(onClick = vm::probarVoz, modifier = Modifier.fillMaxWidth()) { Text("🔊 Probar sonido") }
 
                     Seccion("Música de fondo")
+                    FilaSwitch("Fanfarria con aplausos al revelar la casa", a.fanfarria, vm::cambiarFanfarria)
                     FilaSwitch("Música mágica de fondo", a.musica, vm::cambiarMusica)
                     if (a.musica) {
                         Text("Volumen de la música: ${(a.volumenMusica * 100).toInt()}% (baja sola cuando habla el sombrero)", fontSize = 14.sp)

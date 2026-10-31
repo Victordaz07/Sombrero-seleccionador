@@ -40,16 +40,22 @@ class VozGrabada(private val context: Context) {
      * [alAvanzar] recibe la posición y la duración (en milisegundos) unas 10 veces por segundo.
      * Devuelve false si el audio no se pudo abrir (para usar la voz del teléfono en su lugar).
      */
-    suspend fun reproducir(clave: String, alAvanzar: ((posicionMs: Int, duracionMs: Int) -> Unit)? = null): Boolean {
+    suspend fun reproducir(clave: String, alAvanzar: ((posicionMs: Int, duracionMs: Int) -> Unit)? = null): Boolean =
+        reproducirArchivo("$CARPETA/$clave.mp3", alAvanzar)
+
+    /** Efectos de sonido de `assets/efectos/` (por ejemplo, la fanfarria con aplausos). */
+    suspend fun reproducirEfecto(archivo: String): Boolean = reproducirArchivo("efectos/$archivo")
+
+    private suspend fun reproducirArchivo(ruta: String, alAvanzar: ((Int, Int) -> Unit)? = null): Boolean {
         val reproductor = MediaPlayer()
         try {
             reproductor.setAudioAttributes(Volumen.ATRIBUTOS)
-            context.assets.openFd("$CARPETA/$clave.mp3").use {
+            context.assets.openFd(ruta).use {
                 reproductor.setDataSource(it.fileDescriptor, it.startOffset, it.length)
             }
             reproductor.prepare()
         } catch (e: Exception) {
-            Log.e("Sombrero", "No se pudo abrir el audio $clave", e)
+            Log.e("Sombrero", "No se pudo abrir el audio $ruta", e)
             reproductor.release()
             return false
         }
