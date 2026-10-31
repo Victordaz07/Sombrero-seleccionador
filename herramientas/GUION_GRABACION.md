@@ -52,10 +52,13 @@ Antes de cada persona el sombrero pregunta en qué idioma hablar y responde seg�
 |---|---|
 | `pregunta_idioma.mp3` | [curious] Hmm... a new head! [mischievously] Tell me, tell me... do you prefer ENGLISH... [excited] ¿o prefieres que te hable en ESPAÑOL? |
 | `pregunta_idioma_2.mp3` | [curious] Hmm... before I peek inside that head... English or Spanish? [mischievously] ¿Inglés o español? [laughs] ¡Tú escoges! |
+| `pregunta_idioma_3.mp3` | [mischievously] Ahh, another brave soul! [curious] Quick question... English... [excited] ¿o español? [laughs] ¡Dímelo rápido! |
 | `respuesta_idioma_es.mp3` | [excited] ¡Perfecto! [mischievously] Ahora sí... ¡vamos a ver a qué casa te vamos a enviar! |
 | `respuesta_idioma_es_2.mp3` | [laughs] ¡Excelente elección! [excited] Ahora déjame mirar bien dentro de esa cabeza... |
+| `respuesta_idioma_es_3.mp3` | [excited] ¡Muy bien! [mischievously] Entonces... ¡que comience la selección! |
 | `respuesta_idioma_en.mp3` | [excited] Perfect! [mischievously] Now then... let's see which house we're sending you to! |
 | `respuesta_idioma_en_2.mp3` | [laughs] Excellent choice! [excited] Now let me take a good look inside that head... |
+| `respuesta_idioma_en_3.mp3` | [excited] Very well! [mischievously] Then... let the sorting BEGIN! |
 
 ## Frases sueltas (respaldo)
 

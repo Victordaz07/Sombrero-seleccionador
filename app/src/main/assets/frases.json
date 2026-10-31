@@ -3,15 +3,18 @@
   "idioma": {
     "preguntas": [
       "[curious] Hmm... a new head! [mischievously] Tell me, tell me... do you prefer ENGLISH... [excited] ¿o prefieres que te hable en ESPAÑOL?",
-      "[curious] Hmm... before I peek inside that head... English or Spanish? [mischievously] ¿Inglés o español? [laughs] ¡Tú escoges!"
+      "[curious] Hmm... before I peek inside that head... English or Spanish? [mischievously] ¿Inglés o español? [laughs] ¡Tú escoges!",
+      "[mischievously] Ahh, another brave soul! [curious] Quick question... English... [excited] ¿o español? [laughs] ¡Dímelo rápido!"
     ],
     "respuestas_es": [
       "[excited] ¡Perfecto! [mischievously] Ahora sí... ¡vamos a ver a qué casa te vamos a enviar!",
-      "[laughs] ¡Excelente elección! [excited] Ahora déjame mirar bien dentro de esa cabeza..."
+      "[laughs] ¡Excelente elección! [excited] Ahora déjame mirar bien dentro de esa cabeza...",
+      "[excited] ¡Muy bien! [mischievously] Entonces... ¡que comience la selección!"
     ],
     "respuestas_en": [
       "[excited] Perfect! [mischievously] Now then... let's see which house we're sending you to!",
-      "[laughs] Excellent choice! [excited] Now let me take a good look inside that head..."
+      "[laughs] Excellent choice! [excited] Now let me take a good look inside that head...",
+      "[excited] Very well! [mischievously] Then... let the sorting BEGIN!"
     ]
   },
   "prueba": "Hmm... ¿me escuchas bien? Soy el sombrero seleccionador.",
