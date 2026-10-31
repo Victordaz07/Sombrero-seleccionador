@@ -1,5 +1,5 @@
 {
-  "_ayuda": "Todo lo que dice el sombrero. 'discursos' (español) y 'discursos_en' (inglés) son 4 actuaciones completas por casa (un audio cada una), escritas para ElevenLabs v3/v4: las etiquetas entre corchetes como [laughs] o [excited] indican la emoción y no se muestran en pantalla. {ANUNCIO} es donde grita la casa ('anuncio' / 'anuncio_en'). Las frases sueltas (solo español) son el respaldo si falta algún discurso. Si cambias un texto, vuelve a generar su audio. 'idioma' tiene las versiones de la pregunta bilingüe y de sus respuestas; el sombrero las va alternando (audios pregunta_idioma.mp3, pregunta_idioma_2.mp3, respuesta_idioma_es.mp3, respuesta_idioma_es_2.mp3...).",
+  "_ayuda": "Todo lo que dice el sombrero. 'discursos' (español) y 'discursos_en' (inglés) son 4 actuaciones completas por casa (un audio cada una), escritas para ElevenLabs v3/v4: las etiquetas entre corchetes como [laughs] o [excited] indican la emoción y no se muestran en pantalla. {ANUNCIO} es donde grita la casa ('anuncio' / 'anuncio_en'). Las frases sueltas (solo español) son el respaldo si falta algún discurso. Si cambias un texto, vuelve a generar su audio. 'idioma' tiene las versiones de la pregunta bilingüe y de sus respuestas; el sombrero las va alternando (audios pregunta_idioma.mp3, pregunta_idioma_2.mp3, respuesta_idioma_es.mp3, respuesta_idioma_es_2.mp3...). 'invitaciones' son las frases con las que el sombrero invita a la gente en la calle, por idioma y tipo de persona (audios invitacion_<tipo>_<n>_en.mp3 en inglés e invitacion_<tipo>_<n>.mp3 en español).",
   "idioma": {
     "preguntas": [
       "[curious] Hmm... a new head! [mischievously] Tell me, tell me... do you prefer ENGLISH... [excited] ¿o prefieres que te hable en ESPAÑOL?",
@@ -351,6 +351,70 @@
         "Y por aquí encuentro metas muy grandes... ¡qué difícil decisión!"
       ],
       "anuncio_en": "SLYTHERIN!"
+    }
+  },
+  "invitaciones": {
+    "en": {
+      "nino": [
+        "[excited] Hey, you there, young man! [mischievously] Yes, YOU! Want to know which magical house you belong to? [laughs] Come and try me on!",
+        "[curious] Psst... little adventurer! [excited] I can see courage in your eyes! [mischievously] Ask your mom or dad if you can try me on!",
+        "[laughs] HA! A brave young hero! [excited] Come closer... I want to tell you which house is YOURS!"
+      ],
+      "nina": [
+        "[excited] Hello there, young lady! [mischievously] Yes, YOU! Want to find out which magical house is yours? [laughs] Come and try me on!",
+        "[curious] Psst... little star! [excited] I can see something special in you! [mischievously] Ask your mom or dad if you can try me on!",
+        "[laughs] Oh my! A brilliant young princess! [excited] Come closer... let me tell you which house is YOURS!"
+      ],
+      "joven_m": [
+        "[excited] Hey, you! Yeah, the cool guy right there! [mischievously] Think you know which house you belong to? [laughs] Prove it... try me on!",
+        "[curious] Hmm... I sense a future leader walking by! [excited] Come here, young man... let's find your house!",
+        "[mischievously] Don't be shy, dude! [laughs] It only takes a few seconds... [excited] and I PROMISE it's worth it!"
+      ],
+      "joven_f": [
+        "[excited] Hey, you! Yes, you with the amazing smile! [mischievously] Want to know which house is yours? [laughs] Try me on!",
+        "[curious] Hmm... I sense a brilliant mind walking by! [excited] Come here, young lady... let's find your house!",
+        "[mischievously] Don't be shy! [laughs] It only takes a few seconds... [excited] and your friends will LOVE it!"
+      ],
+      "senor": [
+        "[excited] Hello there, sir! [mischievously] You look like a man with a great story! [laughs] Care to find out your house?",
+        "[curious] Excuse me, sir... [excited] I've sorted thousands of heads, and yours looks VERY interesting! [laughs] Shall we?",
+        "[laughs] Sir! Yes, you, sir! [mischievously] Brave enough to let a talking hat read your mind?"
+      ],
+      "senora": [
+        "[excited] Hello there, ma'am! [mischievously] I can tell you have a kind and wise heart! [laughs] Want to discover your house?",
+        "[curious] Excuse me, ma'am... [excited] I've sorted thousands of heads, and yours looks WONDERFUL! [laughs] Shall we?",
+        "[laughs] Oh, ma'am! Yes, you! [mischievously] Would you let a magical talking hat guess your house?"
+      ],
+      "todos": [
+        "[excited] Hey there! Yes, YOU! [mischievously] Want to find out which magical house you belong to? [laughs] Come and try me on!",
+        "[curious] Psst... over here! [excited] A talking hat! [laughs] Don't be scared... I don't bite! Come and try me on!",
+        "[excited] Step right up, step right up! [mischievously] The one and only Sorting Hat is here! [laughs] Who's next?",
+        "[curious] Hmm... I sense someone special walking by... [excited] Yes, YOU! It's free, it's fun, and it's magical!"
+      ]
+    },
+    "es": {
+      "nino": [
+        "[excited] ¡Oye, tú, campeón! [mischievously] ¿Quieres saber a qué casa mágica perteneces? [laughs] ¡Pídele permiso a tus papás y pruébame!"
+      ],
+      "nina": [
+        "[excited] ¡Hola, princesa! [mischievously] ¿Quieres saber a qué casa mágica perteneces? [laughs] ¡Pídele permiso a tus papás y pruébame!"
+      ],
+      "joven_m": [
+        "[excited] ¡Oye, tú, joven! [mischievously] ¿Te atreves a descubrir tu casa? [laughs] ¡Solo toma unos segundos!"
+      ],
+      "joven_f": [
+        "[excited] ¡Hola, señorita! [mischievously] ¿Te atreves a descubrir tu casa? [laughs] ¡A tus amigas les va a encantar!"
+      ],
+      "senor": [
+        "[excited] ¡Buenas, caballero! [mischievously] ¿Se atreve a que un sombrero mágico le lea la mente? [laughs] ¡Pruébeme!"
+      ],
+      "senora": [
+        "[excited] ¡Hola, señora! [mischievously] Se ve que tiene un corazón muy bueno... [laughs] ¿Quiere descubrir a qué casa pertenece?"
+      ],
+      "todos": [
+        "[excited] ¡Oye, sí, TÚ! [mischievously] ¿Quieres saber a qué casa mágica perteneces? [laughs] ¡Ven y pruébame!",
+        "[curious] Psst... ¡por aquí! [excited] ¡Un sombrero que habla! [laughs] No tengas miedo... ¡no muerdo! ¡Ven, pruébame!"
+      ]
     }
   }
 }

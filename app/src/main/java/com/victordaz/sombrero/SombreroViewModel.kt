@@ -35,6 +35,7 @@ data class EstadoAjustes(
     val equilibrar: Boolean,
     val controlRemoto: Boolean,
     val preguntarIdioma: Boolean,
+    val modoCalle: Boolean,
     val contarManuales: Boolean,
     val volumen: Float,
     val usarGrabaciones: Boolean,
@@ -62,6 +63,9 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
 
     /** Última versión dicha de cada frase que tiene variantes, para no repetirla seguida. */
     private val ultimaVersion = mutableMapOf<String, String>()
+
+    /** Tras una invitación el idioma ya está elegido: la ceremonia no vuelve a preguntarlo. */
+    private var invitacionReciente = false
 
     /** Casa elegida a mano para la próxima ceremonia (null = la elige el sombrero). */
     private var casaManual: Casa? = null
@@ -100,6 +104,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
             Fase.REVELADO -> {
                 trabajo?.cancel()
                 voz.callar()
+                invitacionReciente = false
                 estado = estado.copy(fase = Fase.ESPERANDO, casa = null, subtitulo = "", hablando = false)
             }
         }
@@ -125,7 +130,32 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private fun empezarCeremonia() {
-        if (ajustes.preguntarIdioma) preguntarIdioma() else seleccionar()
+        // Si el sombrero estaba invitando, se interrumpe y empieza la ceremonia.
+        trabajo?.cancel()
+        voz.callar()
+        val preguntar = ajustes.preguntarIdioma && !invitacionReciente
+        invitacionReciente = false
+        if (preguntar) preguntarIdioma() else seleccionar()
+    }
+
+    /** Modo calle: el sombrero invita a quien va pasando, en el idioma elegido en pantalla. */
+    fun invitar(publico: Publico) {
+        if (estado.fase == Fase.PENSANDO || estado.fase == Fase.IDIOMA) return
+        trabajo?.cancel()
+        voz.callar()
+        val versiones = frases.invitaciones[estado.idioma]?.get(publico).orEmpty()
+        if (versiones.isEmpty()) return
+        val invitacion = elegirVersion("invitacion-${estado.idioma.codigo}-${publico.id}", versiones)
+        invitacionReciente = true
+        estado = estado.copy(fase = Fase.ESPERANDO, casa = null, subtitulo = invitacion.texto, hablando = true)
+        trabajo = lanzar {
+            decir(invitacion)
+            estado = estado.copy(hablando = false)
+        }
+    }
+
+    fun cambiarModoCalle(v: Boolean) {
+        ajustes.modoCalle = v; refrescarAjustes()
     }
 
     /**
@@ -362,6 +392,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         equilibrar = ajustes.equilibrar,
         controlRemoto = ajustes.controlRemoto,
         preguntarIdioma = ajustes.preguntarIdioma,
+        modoCalle = ajustes.modoCalle,
         contarManuales = ajustes.contarManuales,
         volumen = volumen.nivel,
         usarGrabaciones = ajustes.usarGrabaciones,

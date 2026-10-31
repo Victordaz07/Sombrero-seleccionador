@@ -37,6 +37,11 @@ class Ajustes(context: Context) {
         get() = prefs.getBoolean("contar_manuales", false)
         set(v) = prefs.edit().putBoolean("contar_manuales", v).apply()
 
+    /** Modo calle: botones para que el sombrero invite a la gente que pasa. */
+    var modoCalle: Boolean
+        get() = prefs.getBoolean("modo_calle", true)
+        set(v) = prefs.edit().putBoolean("modo_calle", v).apply()
+
     /** Si está activo, el sombrero reparte a la gente de forma pareja entre las casas. */
     var equilibrar: Boolean
         get() = prefs.getBoolean("equilibrar", true)

@@ -44,9 +44,10 @@ Haz una pausa de suspenso antes del nombre de la casa (en **negritas**) y gríta
 | `slytherin_discurso_3_en.mp3` | [curious] Hmm... a big heart? Yes, yes... [excited] But what a will of IRON! [impressed] You fall... and you get back up STRONGER! [excited] Decided! You belong to... **[shouting] SLYTHERIN!** |
 | `slytherin_discurso_4_en.mp3` | [laughs harder] HA HA! Brilliant ideas... and a little bit mischievous! [mischievously] You organize the game, you make the rules... and you look after your own! [excited] A BORN leader! Your house is... **[shouting] SLYTHERIN!** |
 
-## Pregunta de idioma
+## Pregunta de idioma e invitaciones
 
 Antes de cada persona el sombrero pregunta en qué idioma hablar y responde según lo que elijan.
+Las invitaciones (`invitacion_*`) son para el modo calle: el sombrero llama a quien va pasando.
 
 | Archivo | Frase |
 |---|---|
@@ -59,6 +60,36 @@ Antes de cada persona el sombrero pregunta en qué idioma hablar y responde seg�
 | `respuesta_idioma_en.mp3` | [excited] Perfect! [mischievously] Now then... let's see which house we're sending you to! |
 | `respuesta_idioma_en_2.mp3` | [laughs] Excellent choice! [excited] Now let me take a good look inside that head... |
 | `respuesta_idioma_en_3.mp3` | [excited] Very well! [mischievously] Then... let the sorting BEGIN! |
+| `invitacion_nino_1_en.mp3` | [excited] Hey, you there, young man! [mischievously] Yes, YOU! Want to know which magical house you belong to? [laughs] Come and try me on! |
+| `invitacion_nino_2_en.mp3` | [curious] Psst... little adventurer! [excited] I can see courage in your eyes! [mischievously] Ask your mom or dad if you can try me on! |
+| `invitacion_nino_3_en.mp3` | [laughs] HA! A brave young hero! [excited] Come closer... I want to tell you which house is YOURS! |
+| `invitacion_nina_1_en.mp3` | [excited] Hello there, young lady! [mischievously] Yes, YOU! Want to find out which magical house is yours? [laughs] Come and try me on! |
+| `invitacion_nina_2_en.mp3` | [curious] Psst... little star! [excited] I can see something special in you! [mischievously] Ask your mom or dad if you can try me on! |
+| `invitacion_nina_3_en.mp3` | [laughs] Oh my! A brilliant young princess! [excited] Come closer... let me tell you which house is YOURS! |
+| `invitacion_joven_m_1_en.mp3` | [excited] Hey, you! Yeah, the cool guy right there! [mischievously] Think you know which house you belong to? [laughs] Prove it... try me on! |
+| `invitacion_joven_m_2_en.mp3` | [curious] Hmm... I sense a future leader walking by! [excited] Come here, young man... let's find your house! |
+| `invitacion_joven_m_3_en.mp3` | [mischievously] Don't be shy, dude! [laughs] It only takes a few seconds... [excited] and I PROMISE it's worth it! |
+| `invitacion_joven_f_1_en.mp3` | [excited] Hey, you! Yes, you with the amazing smile! [mischievously] Want to know which house is yours? [laughs] Try me on! |
+| `invitacion_joven_f_2_en.mp3` | [curious] Hmm... I sense a brilliant mind walking by! [excited] Come here, young lady... let's find your house! |
+| `invitacion_joven_f_3_en.mp3` | [mischievously] Don't be shy! [laughs] It only takes a few seconds... [excited] and your friends will LOVE it! |
+| `invitacion_senor_1_en.mp3` | [excited] Hello there, sir! [mischievously] You look like a man with a great story! [laughs] Care to find out your house? |
+| `invitacion_senor_2_en.mp3` | [curious] Excuse me, sir... [excited] I've sorted thousands of heads, and yours looks VERY interesting! [laughs] Shall we? |
+| `invitacion_senor_3_en.mp3` | [laughs] Sir! Yes, you, sir! [mischievously] Brave enough to let a talking hat read your mind? |
+| `invitacion_senora_1_en.mp3` | [excited] Hello there, ma'am! [mischievously] I can tell you have a kind and wise heart! [laughs] Want to discover your house? |
+| `invitacion_senora_2_en.mp3` | [curious] Excuse me, ma'am... [excited] I've sorted thousands of heads, and yours looks WONDERFUL! [laughs] Shall we? |
+| `invitacion_senora_3_en.mp3` | [laughs] Oh, ma'am! Yes, you! [mischievously] Would you let a magical talking hat guess your house? |
+| `invitacion_todos_1_en.mp3` | [excited] Hey there! Yes, YOU! [mischievously] Want to find out which magical house you belong to? [laughs] Come and try me on! |
+| `invitacion_todos_2_en.mp3` | [curious] Psst... over here! [excited] A talking hat! [laughs] Don't be scared... I don't bite! Come and try me on! |
+| `invitacion_todos_3_en.mp3` | [excited] Step right up, step right up! [mischievously] The one and only Sorting Hat is here! [laughs] Who's next? |
+| `invitacion_todos_4_en.mp3` | [curious] Hmm... I sense someone special walking by... [excited] Yes, YOU! It's free, it's fun, and it's magical! |
+| `invitacion_nino_1.mp3` | [excited] ¡Oye, tú, campeón! [mischievously] ¿Quieres saber a qué casa mágica perteneces? [laughs] ¡Pídele permiso a tus papás y pruébame! |
+| `invitacion_nina_1.mp3` | [excited] ¡Hola, princesa! [mischievously] ¿Quieres saber a qué casa mágica perteneces? [laughs] ¡Pídele permiso a tus papás y pruébame! |
+| `invitacion_joven_m_1.mp3` | [excited] ¡Oye, tú, joven! [mischievously] ¿Te atreves a descubrir tu casa? [laughs] ¡Solo toma unos segundos! |
+| `invitacion_joven_f_1.mp3` | [excited] ¡Hola, señorita! [mischievously] ¿Te atreves a descubrir tu casa? [laughs] ¡A tus amigas les va a encantar! |
+| `invitacion_senor_1.mp3` | [excited] ¡Buenas, caballero! [mischievously] ¿Se atreve a que un sombrero mágico le lea la mente? [laughs] ¡Pruébeme! |
+| `invitacion_senora_1.mp3` | [excited] ¡Hola, señora! [mischievously] Se ve que tiene un corazón muy bueno... [laughs] ¿Quiere descubrir a qué casa pertenece? |
+| `invitacion_todos_1.mp3` | [excited] ¡Oye, sí, TÚ! [mischievously] ¿Quieres saber a qué casa mágica perteneces? [laughs] ¡Ven y pruébame! |
+| `invitacion_todos_2.mp3` | [curious] Psst... ¡por aquí! [excited] ¡Un sombrero que habla! [laughs] No tengas miedo... ¡no muerdo! ¡Ven, pruébame! |
 
 ## Frases sueltas (respaldo)
 

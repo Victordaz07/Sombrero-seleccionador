@@ -14,7 +14,7 @@ Uso:
     python3 herramientas/importar_voces.py audio1.mp3 audio2.mp3 ...
     python3 herramientas/importar_voces.py --casa hufflepuff *.mp3     # solo busca entre esa casa
     python3 herramientas/importar_voces.py --idioma en *.mp3            # discursos en inglés
-    python3 herramientas/importar_voces.py --especiales *.mp3           # pregunta y respuestas de idioma
+    python3 herramientas/importar_voces.py --especiales *.mp3           # pregunta de idioma e invitaciones
     python3 herramientas/importar_voces.py --simular *.mp3              # muestra qué haría
 """
 
@@ -115,7 +115,7 @@ def main():
         # Frases de un solo tramo: se tratan como un "discurso" sin anuncio.
         discursos = [
             Frase(f.clave, f.texto, [f.texto], 1) for f in todas
-            if f.clave.startswith(("pregunta_idioma", "respuesta_idioma"))
+            if f.clave.startswith(("pregunta_idioma", "respuesta_idioma", "invitacion_"))
         ]
     else:
         discursos = [f for f in todas if f.es_discurso and f.en_ingles == (args.idioma == "en")]

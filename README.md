@@ -103,6 +103,10 @@ python3 herramientas/importar_voces.py --idioma en --casa gryffindor audios/*.mp
 - **Elegir tú la casa:** toca uno de los 4 escudos de abajo. El sombrero hace la ceremonia completa y termina en esa casa (útil para repetir una selección y grabarla). Por defecto no suma al conteo; se cambia en ⚙.
 - Toca la pantalla para pasar a la siguiente persona.
 
+### 🚶 Modo calle
+
+Arriba a la izquierda eliges el idioma (🇺🇸 EN / 🇲🇽 ES). Abajo aparecen los botones **"El sombrero invita a…"**: niño, niña, jovencito, jovencita, señor, señora o cualquiera. Al tocar uno, el sombrero dice una invitación (va alternando variantes). Si la persona acepta, toca *Comenzar selección* (o la pantalla): la ceremonia empieza directo en ese idioma, sin volver a preguntarlo. Se desactiva en ⚙ → *Modo calle*. Audios: `invitacion_<tipo>_<n>_en.mp3` (inglés) e `invitacion_<tipo>_<n>.mp3` (español), se importan con `importar_voces.py --especiales`.
+
 ## Cambiar las frases, casas o colores
 
 - `app/src/main/assets/frases.json`: todo lo que dice el sombrero (virtudes, dudas, anuncios). El anuncio está escrito como se pronuncia, por ejemplo "¡Jáfelpaf!" para Hufflepuff.

@@ -133,6 +133,11 @@ def cargar_frases(datos):
         for i, texto in enumerate(idioma.get(campo, [])):
             frases.append(Frase(clave if i == 0 else f"{clave}_{i + 1}", texto))
 
+    # Invitaciones del modo calle: invitacion_<tipo>_<n>_en (inglés) e invitacion_<tipo>_<n> (español).
+    for codigo, sufijo in [("en", "_en"), ("es", "")]:
+        for tipo, lista in datos.get("invitaciones", {}).get(codigo, {}).items():
+            frases += [Frase(f"invitacion_{tipo}_{i + 1}{sufijo}", t) for i, t in enumerate(lista)]
+
     frases.append(Frase("prueba", datos["prueba"]))
     for campo, prefijo in [
         ("aperturas", "apertura"),
@@ -182,13 +187,14 @@ def escribir_guion(frases):
         if f.es_discurso:
             partes = [f"**{s}**" if i == f.indice_anuncio else s for i, s in enumerate(f.segmentos)]
             lineas.append(f"| `{f.clave}.mp3` | {' '.join(partes)} |")
-    especiales = [f for f in frases if f.clave.startswith(("pregunta_idioma", "respuesta_idioma"))]
+    especiales = [f for f in frases if f.clave.startswith(("pregunta_idioma", "respuesta_idioma", "invitacion_"))]
     if especiales:
         lineas += [
             "",
-            "## Pregunta de idioma",
+            "## Pregunta de idioma e invitaciones",
             "",
             "Antes de cada persona el sombrero pregunta en qué idioma hablar y responde según lo que elijan.",
+            "Las invitaciones (`invitacion_*`) son para el modo calle: el sombrero llama a quien va pasando.",
             "",
             "| Archivo | Frase |",
             "|---|---|",

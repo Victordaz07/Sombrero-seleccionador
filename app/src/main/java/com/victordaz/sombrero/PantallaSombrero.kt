@@ -119,6 +119,7 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
                         verticalArrangement = Arrangement.spacedBy(18.dp),
                     ) {
                         Subtitulo(estado)
+                        if (vm.estadoAjustes.modoCalle) PanelInvitacion(estado, vm::invitar)
                         Accion(estado, vm::alTocar, vm::elegirIdioma)
                         PiePagina(estado, vm.estadoAjustes.casasActivas, vm::elegirCasaManual)
                     }
@@ -139,6 +140,7 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         Subtitulo(estado)
+                        if (vm.estadoAjustes.modoCalle) PanelInvitacion(estado, vm::invitar)
                         Accion(estado, vm::alTocar, vm::elegirIdioma)
                         PiePagina(estado, vm.estadoAjustes.casasActivas, vm::elegirCasaManual)
                     }
@@ -152,10 +154,14 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
         ) {
             Icon(Icons.Filled.Settings, t.ajustes, tint = Pergamino.copy(alpha = if (estado.fase == Fase.PENSANDO) 0.3f else 0.9f))
         }
+        SelectorIdioma(
+            estado, vm::cambiarIdioma,
+            Modifier.align(Alignment.TopStart).safeDrawingPadding().padding(8.dp),
+        )
         if (estado.volumenBajo) {
             Text(
                 t.volumenBajo,
-                Modifier.align(Alignment.TopCenter).safeDrawingPadding().padding(top = 8.dp, start = 56.dp, end = 56.dp)
+                Modifier.align(Alignment.TopCenter).safeDrawingPadding().padding(top = 60.dp, start = 16.dp, end = 16.dp)
                     .background(Color(0xFFB3261E), RoundedCornerShape(20.dp))
                     .clickable(onClick = vm::subirVolumen)
                     .padding(horizontal = 16.dp, vertical = 10.dp),
@@ -270,7 +276,8 @@ private fun Accion(estado: EstadoUi, alTocar: () -> Unit, alElegirIdioma: (Idiom
         BotonesIdioma(alElegirIdioma)
         return
     }
-    val disponible = estado.fase != Fase.PENSANDO && !estado.hablando
+    // Mientras invita (ESPERANDO + hablando) sí se puede empezar: la persona aceptó.
+    val disponible = estado.fase != Fase.PENSANDO && !(estado.hablando && estado.fase != Fase.ESPERANDO)
     OutlinedButton(
         onClick = alTocar, enabled = disponible,
         modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
@@ -282,10 +289,65 @@ private fun Accion(estado: EstadoUi, alTocar: () -> Unit, alElegirIdioma: (Idiom
         ),
     ) {
         Text(when {
+            estado.fase == Fase.ESPERANDO -> t.botonComenzar
             estado.fase == Fase.PENSANDO || estado.hablando -> t.botonEscuchar
             estado.fase == Fase.REVELADO -> t.botonSiguiente
             else -> t.botonComenzar
         }, fontFamily = FontFamily.Serif, fontSize = 18.sp, textAlign = TextAlign.Center)
+    }
+}
+
+/** Idioma de la ceremonia, siempre a la vista (arriba a la izquierda). */
+@Composable
+private fun SelectorIdioma(estado: EstadoUi, alCambiar: (Idioma) -> Unit, modifier: Modifier = Modifier) {
+    val activo = estado.fase != Fase.PENSANDO && estado.fase != Fase.IDIOMA
+    Row(
+        modifier.background(Tinta.copy(alpha = 0.75f), RoundedCornerShape(20.dp))
+            .border(1.dp, Dorado.copy(alpha = 0.4f), RoundedCornerShape(20.dp)).padding(3.dp),
+    ) {
+        listOf(Idioma.EN to "🇺🇸 EN", Idioma.ES to "🇲🇽 ES").forEach { (idioma, etiqueta) ->
+            val elegido = estado.idioma == idioma
+            Text(
+                etiqueta,
+                Modifier.clip(RoundedCornerShape(16.dp))
+                    .background(if (elegido) Dorado else Color.Transparent)
+                    .clickable(enabled = activo && !elegido) { alCambiar(idioma) }
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                color = if (elegido) Tinta else Pergamino.copy(alpha = if (activo) 0.9f else 0.4f),
+                fontSize = 14.sp, fontWeight = FontWeight.Bold,
+            )
+        }
+    }
+}
+
+/** Modo calle: el operador toca a quién invitar y el sombrero lo llama. */
+@Composable
+private fun PanelInvitacion(estado: EstadoUi, alInvitar: (Publico) -> Unit) {
+    if (estado.fase != Fase.ESPERANDO && estado.fase != Fase.REVELADO) return
+    val t = textos(estado.idioma)
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(t.invitarA, color = Dorado, fontSize = 11.sp, letterSpacing = 1.5.sp)
+        Spacer(Modifier.height(6.dp))
+        listOf(Publico.entries.take(4), Publico.entries.drop(4)).forEach { fila ->
+            Row(
+                Modifier.fillMaxWidth().padding(vertical = 3.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
+            ) {
+                fila.forEach { publico ->
+                    Column(
+                        Modifier.weight(1f).clip(RoundedCornerShape(14.dp))
+                            .background(Color(0xFF35291B).copy(alpha = 0.85f))
+                            .border(1.dp, Dorado.copy(alpha = 0.5f), RoundedCornerShape(14.dp))
+                            .clickable { alInvitar(publico) }
+                            .padding(vertical = 8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(publico.emoji, fontSize = 22.sp)
+                        Text(publico.etiqueta(estado.idioma), color = Pergamino, fontSize = 12.sp, maxLines = 1)
+                    }
+                }
+            }
+        }
     }
 }
 

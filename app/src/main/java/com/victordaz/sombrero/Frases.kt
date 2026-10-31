@@ -89,6 +89,21 @@ class Frases(json: JSONObject) {
 
     fun respuestasIdioma(idioma: Idioma) = if (idioma == Idioma.EN) respuestasEn else respuestasEs
 
+    /**
+     * Invitaciones del modo calle, por idioma y tipo de persona.
+     * Claves: `invitacion_nino_1_en` (inglés) e `invitacion_nino_1` (español).
+     */
+    val invitaciones: Map<Idioma, Map<Publico, List<Linea>>> = Idioma.entries.associateWith { idioma ->
+        val porTipo = json.optJSONObject("invitaciones")?.optJSONObject(idioma.codigo) ?: JSONObject()
+        val sufijo = if (idioma == Idioma.EN) "_en" else ""
+        Publico.entries.associateWith { publico ->
+            val lista = porTipo.optJSONArray(publico.id) ?: JSONArray()
+            List(lista.length()) { i ->
+                Linea("invitacion_${publico.id}_${i + 1}$sufijo", sinEtiquetas(lista.getString(i)))
+            }
+        }
+    }
+
     private fun versiones(campo: String, clave: String, porDefecto: String): List<Linea> {
         val lista = textosIdioma.optJSONArray(campo) ?: JSONArray().put(porDefecto)
         return List(lista.length()) { i ->

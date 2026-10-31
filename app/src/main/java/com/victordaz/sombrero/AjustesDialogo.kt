@@ -96,6 +96,7 @@ fun AjustesDialogo(vm: SombreroViewModel, alCerrar: () -> Unit) {
                     }
 
                     Seccion("Selección")
+                    FilaSwitch("Modo calle: botones para que el sombrero invite a la gente", a.modoCalle, vm::cambiarModoCalle)
                     FilaSwitch("Preguntar idioma a cada persona (English / Español)", a.preguntarIdioma, vm::cambiarPreguntarIdioma)
                     FilaSwitch("Repartir parejo entre casas", a.equilibrar, vm::cambiarEquilibrar)
                     Text(
