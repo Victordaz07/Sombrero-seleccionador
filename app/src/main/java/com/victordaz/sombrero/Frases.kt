@@ -57,6 +57,7 @@ class Frases(json: JSONObject) {
     private val cierres = lista(json.getJSONArray("cierres"), "cierre")
     val prueba = Linea("prueba", json.getString("prueba"))
     val pruebaEn = Linea("prueba_en", json.optString("prueba_en", "Hmm... can you hear me? I am the Sorting Hat!"))
+    val pruebaTl = Linea("prueba_tl", json.optString("prueba_tl", "Hmm... naririnig mo ba ako? Ako ang Sorting Hat!"))
 
     private val casas: Map<String, FrasesCasa> = CASAS.associate { casa ->
         val c = json.getJSONObject("casas").getJSONObject(casa.id)
@@ -69,14 +70,19 @@ class Frases(json: JSONObject) {
 
     /**
      * 4 discursos completos por casa en cada idioma.
-     * Claves: `gryffindor_discurso_1` (español) y `gryffindor_discurso_1_en` (inglés).
+     * Claves: `gryffindor_discurso_1` (español), `gryffindor_discurso_1_en` (inglés) y `..._tl` (tagalo).
      */
     val discursos: Map<Idioma, Map<String, List<Discurso>>> = mapOf(
         Idioma.ES to leerDiscursos(json, "discursos", "anuncio", ""),
         Idioma.EN to leerDiscursos(json, "discursos_en", "anuncio_en", "_en"),
+        Idioma.TL to leerDiscursos(json, "discursos_tl", "anuncio_tl", "_tl"),
     )
 
-    fun prueba(idioma: Idioma) = if (idioma == Idioma.EN) pruebaEn else prueba
+    fun prueba(idioma: Idioma) = when (idioma) {
+        Idioma.ES -> prueba
+        Idioma.EN -> pruebaEn
+        Idioma.TL -> pruebaTl
+    }
 
     /**
      * Versiones de la pregunta bilingüe y de sus respuestas; el sombrero las va alternando.
@@ -84,10 +90,19 @@ class Frases(json: JSONObject) {
      */
     private val textosIdioma = json.optJSONObject("idioma") ?: JSONObject()
     val preguntasIdioma = versiones("preguntas", "pregunta_idioma", "Do you prefer English... ¿o prefieres español?")
+
+    /** Pregunta que también ofrece tagalo: `pregunta_idioma_tri`, `pregunta_idioma_tri_2`... */
+    val preguntasTrilingues =
+        versiones("preguntas_trilingues", "pregunta_idioma_tri", "English... ¿español?... o Tagalog?")
     private val respuestasEs = versiones("respuestas_es", "respuesta_idioma_es", "¡Perfecto!")
     private val respuestasEn = versiones("respuestas_en", "respuesta_idioma_en", "Perfect!")
+    private val respuestasTl = versiones("respuestas_tl", "respuesta_idioma_tl", "Perpekto!")
 
-    fun respuestasIdioma(idioma: Idioma) = if (idioma == Idioma.EN) respuestasEn else respuestasEs
+    fun respuestasIdioma(idioma: Idioma) = when (idioma) {
+        Idioma.ES -> respuestasEs
+        Idioma.EN -> respuestasEn
+        Idioma.TL -> respuestasTl
+    }
 
     private fun versiones(campo: String, clave: String, porDefecto: String): List<Linea> {
         val lista = textosIdioma.optJSONArray(campo) ?: JSONArray().put(porDefecto)

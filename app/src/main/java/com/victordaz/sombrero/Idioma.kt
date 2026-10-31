@@ -1,9 +1,10 @@
 package com.victordaz.sombrero
 
 /** Idioma de la ceremonia: cambia los textos de pantalla, los discursos y la voz. */
-enum class Idioma(val codigo: String, val nombre: String) {
-    ES("es", "Español"),
-    EN("en", "English"),
+enum class Idioma(val codigo: String, val nombre: String, val boton: String) {
+    ES("es", "Español", "🇲🇽  Español"),
+    EN("en", "English", "🇺🇸  English"),
+    TL("tl", "Tagalog", "🇵🇭  Tagalog"),
     ;
 
     companion object {
@@ -33,11 +34,15 @@ data class Textos(
     val escudoDe: String,
     val volumenBajo: String,
 ) {
-    /** "¡GRYFFINDOR!" o "GRYFFINDOR!" según el idioma. */
+    /** "¡GRYFFINDOR!" en español, "GRYFFINDOR!" en inglés y tagalo. */
     fun anuncio(casa: Casa, idioma: Idioma) =
-        if (idioma == Idioma.EN) "${casa.nombre.uppercase()}!" else "¡${casa.nombre.uppercase()}!"
+        if (idioma == Idioma.ES) "¡${casa.nombre.uppercase()}!" else "${casa.nombre.uppercase()}!"
 
-    fun lema(casa: Casa, idioma: Idioma) = if (idioma == Idioma.EN) casa.lemaEn else casa.lema
+    fun lema(casa: Casa, idioma: Idioma) = when (idioma) {
+        Idioma.ES -> casa.lema
+        Idioma.EN -> casa.lemaEn
+        Idioma.TL -> casa.lemaTl
+    }
 }
 
 fun textos(idioma: Idioma): Textos = when (idioma) {
@@ -82,5 +87,26 @@ fun textos(idioma: Idioma): Textos = when (idioma) {
         noParticipa = "not participating",
         escudoDe = "Crest of",
         volumenBajo = "🔇 Volume is too low · Tap here to turn it up",
+    )
+    Idioma.TL -> Textos(
+        etiquetaInicio = "ANG SEREMONYA",
+        etiquetaCasa = "ANG BAHAY MO AY",
+        titulo = "Ang Sorting\nHat",
+        sinVoz = "Walang nakitang boses sa Filipino. I-install ang Google Speech Services at ang Filipino voice pack.",
+        pistaEsperando = "Umupo ka… at hawakan ang sombrero",
+        pistaPensando = "Hmm… tingnan natin kung ano ang nasa loob mo…",
+        estadoHablando = "NAGSASALITA ANG SOMBRERO",
+        estadoPensando = "NAG-IISIP ANG SOMBRERO",
+        estadoRevelado = "MALIGAYANG PAGDATING SA IYONG BAHAY",
+        estadoInicio = "DITO NAGSISIMULA ANG IYONG KUWENTO",
+        botonEscuchar = "Makinig sa sombrero…",
+        botonSiguiente = "Susunod na kalahok",
+        botonComenzar = "Simulan ang pagpili",
+        lasCuatroCasas = "ANG APAT NA BAHAY",
+        ajustes = "Settings",
+        participantes = "kalahok",
+        noParticipa = "hindi kasali",
+        escudoDe = "Sagisag ng",
+        volumenBajo = "🔇 Masyadong mahina ang volume · I-tap dito para lakasan",
     )
 }

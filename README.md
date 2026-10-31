@@ -79,7 +79,9 @@ Alguien de la iglesia con voz grave puede grabar las frases con el celular. La l
 
 Todo está en `app/src/main/assets/frases.json`. En `discursos`, cada casa tiene 4 listas de frases y `{ANUNCIO}` marca dónde grita el nombre de la casa. Los discursos se generan con **Eleven v3**, que actúa las etiquetas de emoción entre corchetes (`[whispers]`, `[chuckles]`, `[thoughtful]`, `[excited]`...). Las etiquetas no se muestran en los subtítulos. Si cambias el texto de una frase o discurso, vuelve a generar su audio con `--rehacer --solo <clave>` (por ejemplo `--solo gryffindor_discurso_2`). Si agregas o quitas frases, cambian las claves: corre `--solo-lista` para actualizar el guion.
 
-## 🌎 Español / English
+## 🌎 Español / English / Tagalog
+
+Hay 3 idiomas: español, inglés y **tagalo** (`discursos_tl`, archivos `<casa>_discurso_<n>_tl.mp3`). En ⚙ también eliges qué idiomas ofrece la pregunta; si incluyes Tagalog, el sombrero usa la pregunta de 3 idiomas (`pregunta_idioma_tri*.mp3`) y aparecen 3 botones. Importar audios en tagalo: `importar_voces.py --idioma tl`.
 
 En ⚙ → **Idioma / Language** cambias toda la ceremonia a inglés: textos de pantalla, lemas de las casas, subtítulos y discursos. Hay 16 discursos en inglés (`discursos_en` en `frases.json`, archivos `<casa>_discurso_<n>_en.mp3`). Si un discurso en inglés no tiene audio, la voz del teléfono lo lee en inglés.
 

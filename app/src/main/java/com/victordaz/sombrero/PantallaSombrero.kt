@@ -249,7 +249,7 @@ private fun Subtitulo(estado: EstadoUi) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(when {
-            estado.fase == Fase.IDIOMA -> "ENGLISH · ESPAÑOL"
+            estado.fase == Fase.IDIOMA -> estado.idiomasPregunta.joinToString(" · ") { it.nombre.uppercase() }
             estado.hablando -> t.estadoHablando
             estado.fase == Fase.PENSANDO -> t.estadoPensando
             estado.fase == Fase.REVELADO -> t.estadoRevelado
@@ -267,7 +267,7 @@ private fun Subtitulo(estado: EstadoUi) {
 private fun Accion(estado: EstadoUi, alTocar: () -> Unit, alElegirIdioma: (Idioma) -> Unit) {
     val t = textos(estado.idioma)
     if (estado.fase == Fase.IDIOMA) {
-        BotonesIdioma(alElegirIdioma)
+        BotonesIdioma(estado.idiomasPregunta, alElegirIdioma)
         return
     }
     val disponible = estado.fase != Fase.PENSANDO && !estado.hablando
@@ -291,16 +291,19 @@ private fun Accion(estado: EstadoUi, alTocar: () -> Unit, alElegirIdioma: (Idiom
 
 /** Los dos botones para responder la pregunta del sombrero. */
 @Composable
-private fun BotonesIdioma(alElegir: (Idioma) -> Unit) {
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        listOf(Idioma.EN to "🇺🇸  English", Idioma.ES to "🇲🇽  Español").forEach { (idioma, etiqueta) ->
+private fun BotonesIdioma(idiomas: List<Idioma>, alElegir: (Idioma) -> Unit) {
+    // Con tres idiomas los botones son más angostos: letra un poco más chica.
+    val letra = if (idiomas.size > 2) 15.sp else 19.sp
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(if (idiomas.size > 2) 8.dp else 12.dp)) {
+        idiomas.forEach { idioma ->
             Button(
                 onClick = { alElegir(idioma) },
                 modifier = Modifier.weight(1f).heightIn(min = 64.dp),
                 shape = RoundedCornerShape(28.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Dorado, contentColor = Tinta),
             ) {
-                Text(etiqueta, fontFamily = FontFamily.Serif, fontWeight = FontWeight.Bold, fontSize = 19.sp)
+                Text(idioma.boton, fontFamily = FontFamily.Serif, fontWeight = FontWeight.Bold, fontSize = letra,
+                    textAlign = TextAlign.Center, maxLines = 1)
             }
         }
     }

@@ -6,7 +6,7 @@ Este archivo se genera solo con `python3 herramientas/generar_voces.py --solo-li
 
 ## Discursos completos (recomendado)
 
-4 por casa en español y 4 en inglés (los que terminan en `_en`). Cada uno se graba **de corrido**, en un solo audio. La app los va rotando para que no se repitan.
+4 por casa en español, 4 en inglés (terminan en `_en`) y 4 en tagalo (terminan en `_tl`). Cada uno se graba **de corrido**, en un solo audio. La app los va rotando para que no se repitan.
 Haz una pausa de suspenso antes del nombre de la casa (en **negritas**) y grítalo con emoción.
 
 | Archivo | Discurso |
@@ -43,6 +43,22 @@ Haz una pausa de suspenso antes del nombre de la casa (en **negritas**) y gríta
 | `slytherin_discurso_2_en.mp3` | [laughs] HA! I saw you trying to talk me into it! [mischievously] What a clever, crafty mind! [impressed] You plan every move, like a game of chess... [excited] Fine, you CONVINCED me! **[shouting] SLYTHERIN!** |
 | `slytherin_discurso_3_en.mp3` | [curious] Hmm... a big heart? Yes, yes... [excited] But what a will of IRON! [impressed] You fall... and you get back up STRONGER! [excited] Decided! You belong to... **[shouting] SLYTHERIN!** |
 | `slytherin_discurso_4_en.mp3` | [laughs harder] HA HA! Brilliant ideas... and a little bit mischievous! [mischievously] You organize the game, you make the rules... and you look after your own! [excited] A BORN leader! Your house is... **[shouting] SLYTHERIN!** |
+| `gryffindor_discurso_1_tl.mp3` | [excited] AHA! Aba, ano'ng meron dito! [mischievously] Tapang... lakas ng loob... at pusong HINDI sumusuko! [laughs harder] HA HA! NAG-AAPOY ang ulong ito! [excited] Walang duda! Ang lugar mo ay sa... **[shouting] GRYFFINDOR!** |
+| `gryffindor_discurso_2_tl.mp3` | [curious] Hmm, hmm, hmm... tingnan natin! [excited] PAKIKIPAGSAPALARAN! HAMON! Gusto mong sakupin ang buong mundo! [impressed] At lagi mong ipinagtatanggol ang iba... [excited] Alam ko na! ALAM KO NA kung saan ka pupunta! **[shouting] GRYFFINDOR!** |
+| `gryffindor_discurso_3_tl.mp3` | [laughs] HA! Kinakabahan ka? Pero may LEON dito sa loob! [excited] Humahakbang ka kahit natatakot ka! [mischievously] Iyan... iyan mismo ang hinahanap ko! [excited] Ipapadala kita sa... **[shouting] GRYFFINDOR!** |
+| `gryffindor_discurso_4_tl.mp3` | [excited] Oh, oh, OH! Alam ko 'to! [mischievously] Marangal na puso, tapat na salita... at napakarami, NAPAKARAMING tapang! [excited] Hindi na ako mag-iisip nang dalawang beses! **[shouting] GRYFFINDOR!** |
+| `hufflepuff_discurso_1_tl.mp3` | [curious] Hmm... tingnan natin, tingnan natin! [surprised] OH! Napakalaking PUSO! [excited] Tapat, mabait... at mas masipag ka kaysa SINUMAN! [excited] Nakuha ko na! Ang lugar mo ay sa... **[shouting] HUFFLEPUFF!** |
+| `hufflepuff_discurso_2_tl.mp3` | [laughs] HA HA! Ibinabahagi mo ang Halloween candy mo! [impressed] Hanggang sa huling tsokolate? IYAN ang tunay na kabaitan! [excited] Malinaw na malinaw! Kabilang ka sa... **[shouting] HUFFLEPUFF!** |
+| `hufflepuff_discurso_3_tl.mp3` | [curious] Hmm... katalinuhan? Tapang? [mischievously] Hindi, hindi, HINDI! Tingnan pa natin nang mas malalim... [excited] Isang tapat na pusong HINDI nang-iiwan ng kahit sino! [excited] Iyon na! **[shouting] HUFFLEPUFF!** |
+| `hufflepuff_discurso_4_tl.mp3` | [excited] Ah, ang GANDA! [laughs] Amoy bagong lutong tinapay ang ulong ito! [impressed] Pinaparamdam mo sa lahat na nasa bahay sila... at HINDI ka sumusuko! [excited] Ang bahay mo ay... **[shouting] HUFFLEPUFF!** |
+| `ravenclaw_discurso_1_tl.mp3` | [excited] WOW! Ang daming tanong! [curious] Bakit asul ang langit? Paano lumilipad ang mga paniki? [impressed] Isang isip na HINDI tumitigil! [excited] Alam ko na! Ang lugar mo ay sa... **[shouting] RAVENCLAW!** |
+| `ravenclaw_discurso_2_tl.mp3` | [curious] Hmm, hmm... KAWILI-WILI! [impressed] Nakikinig ka, nagmamasid... at nakakahanap ka ng sagot kung saan walang makakita! [mischievously] Puwede kitang ipadala sa mga matatapang... pero HINDI! [excited] Ipapadala kita sa... **[shouting] RAVENCLAW!** |
+| `ravenclaw_discurso_3_tl.mp3` | [surprised] UY! Ingat, pinapaisip mo ako nang sobra! [excited] Mga kulay, kuwento, imbensyon... BUONG mundo ang nandito! [laughs harder] Purong pagkamalikhain! [excited] Kabilang ka sa... **[shouting] RAVENCLAW!** |
+| `ravenclaw_discurso_4_tl.mp3` | [mischievously] Aha... habang nagmamadali ang lahat, nag-iisip ka. [impressed] At halos LAGI kang tama! [excited] Karunungan! Talino! Walang duda! **[shouting] RAVENCLAW!** |
+| `slytherin_discurso_1_tl.mp3` | [mischievously] AHA! Malalaking plano ang nandito! [excited] NAPAKALAKI! Kapag may gusto ka... WALANG makakapigil sa'yo! [impressed] At sumusunod sa'yo ang iba... [excited] Ang lugar mo ay sa... **[shouting] SLYTHERIN!** |
+| `slytherin_discurso_2_tl.mp3` | [laughs] HA! Nakita kitang sinusubukan mo akong kumbinsihin! [mischievously] Napakatalino at tusong isip! [impressed] Pinaplano mo ang bawat galaw, parang laro ng chess... [excited] Sige na nga, NAKUMBINSI mo ako! **[shouting] SLYTHERIN!** |
+| `slytherin_discurso_3_tl.mp3` | [curious] Hmm... malaking puso? Oo, oo... [excited] Pero napakatibay na kalooban, parang BAKAL! [impressed] Nadadapa ka... at bumabangon kang MAS malakas! [excited] Desidido na! Kabilang ka sa... **[shouting] SLYTHERIN!** |
+| `slytherin_discurso_4_tl.mp3` | [laughs harder] HA HA! Napakatalinong ideya... at medyo pilyo! [mischievously] Ikaw ang nag-oorganisa ng laro, ikaw ang gumagawa ng patakaran... at inaalagaan mo ang mga sa'yo! [excited] Isang TUNAY na lider! Ang bahay mo ay... **[shouting] SLYTHERIN!** |
 
 ## Pregunta de idioma
 
@@ -59,6 +75,12 @@ Antes de cada persona el sombrero pregunta en qué idioma hablar y responde seg�
 | `respuesta_idioma_en.mp3` | [excited] Perfect! [mischievously] Now then... let's see which house we're sending you to! |
 | `respuesta_idioma_en_2.mp3` | [laughs] Excellent choice! [excited] Now let me take a good look inside that head... |
 | `respuesta_idioma_en_3.mp3` | [excited] Very well! [mischievously] Then... let the sorting BEGIN! |
+| `respuesta_idioma_tl.mp3` | [excited] Perpekto! [mischievously] Ngayon... tingnan natin kung saang bahay ka namin ipapadala! |
+| `respuesta_idioma_tl_2.mp3` | [laughs] Magaling na pagpili! [excited] Ngayon, hayaan mong silipin ko nang mabuti ang ulong iyan... |
+| `respuesta_idioma_tl_3.mp3` | [excited] Napakahusay! [mischievously] Kung gayon... simulan na ang pagpili! |
+| `pregunta_idioma_tri.mp3` | [curious] Hmm... a new head! [mischievously] English... ¿español?... [excited] o Tagalog? [laughs] Choose, choose! |
+| `pregunta_idioma_tri_2.mp3` | [curious] Before I peek inside that head... English? ¿Español? [mischievously] O Tagalog ba? [excited] Pumili ka! |
+| `pregunta_idioma_tri_3.mp3` | [mischievously] Ahh, another brave soul! [curious] English... ¿o español?... [excited] o Tagalog kaya? [laughs] ¡Rápido, rápido! |
 
 ## Frases sueltas (respaldo)
 

@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
             }
             // Mientras el sombrero pregunta el idioma, el otro botón del control elige el otro idioma.
             if (desdeControl && keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && vm.estado.fase == Fase.IDIOMA) {
-                if (event.repeatCount == 0) vm.elegirIdioma(if (vm.estado.idioma == Idioma.ES) Idioma.EN else Idioma.ES)
+                if (event.repeatCount == 0) vm.elegirIdioma(vm.siguienteIdiomaPregunta())
                 return true
             }
         }

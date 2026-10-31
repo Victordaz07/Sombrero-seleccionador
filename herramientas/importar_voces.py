@@ -14,6 +14,7 @@ Uso:
     python3 herramientas/importar_voces.py audio1.mp3 audio2.mp3 ...
     python3 herramientas/importar_voces.py --casa hufflepuff *.mp3     # solo busca entre esa casa
     python3 herramientas/importar_voces.py --idioma en *.mp3            # discursos en inglés
+    python3 herramientas/importar_voces.py --idioma tl *.mp3            # discursos en tagalo
     python3 herramientas/importar_voces.py --especiales *.mp3           # pregunta y respuestas de idioma
     python3 herramientas/importar_voces.py --simular *.mp3              # muestra qué haría
 """
@@ -102,7 +103,7 @@ def main():
     p = argparse.ArgumentParser(description="Importa audios de discursos hechos a mano.")
     p.add_argument("audios", nargs="+", type=Path)
     p.add_argument("--casa", help="solo compara con los discursos de esta casa")
-    p.add_argument("--idioma", choices=["es", "en"], default="es", help="idioma de los audios")
+    p.add_argument("--idioma", choices=["es", "en", "tl"], default="es", help="idioma de los audios")
     p.add_argument("--especiales", action="store_true", help="pregunta de idioma y sus respuestas")
     p.add_argument("--modelo", default="small", help="modelo de Whisper: tiny, base, small, medium")
     p.add_argument("--simular", action="store_true", help="muestra qué haría, sin copiar nada")
@@ -118,7 +119,7 @@ def main():
             if f.clave.startswith(("pregunta_idioma", "respuesta_idioma"))
         ]
     else:
-        discursos = [f for f in todas if f.es_discurso and f.en_ingles == (args.idioma == "en")]
+        discursos = [f for f in todas if f.es_discurso and f.idioma == args.idioma]
     if args.casa:
         discursos = [d for d in discursos if d.clave.startswith(f"{args.casa}_")]
     modelo = WhisperModel(args.modelo, device="cpu", compute_type="int8")

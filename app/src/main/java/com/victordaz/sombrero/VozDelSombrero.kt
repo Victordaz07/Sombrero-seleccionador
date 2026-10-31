@@ -74,6 +74,7 @@ class VozDelSombrero(
                 Locale("es", "ES"), Locale("es"),
             )
             Idioma.EN -> listOf(Locale.US, Locale.UK, Locale.ENGLISH)
+            Idioma.TL -> listOf(Locale("fil", "PH"), Locale("tl", "PH"), Locale("fil"), Locale("tl"))
         }
         return candidatos.any { tts.setLanguage(it) >= TextToSpeech.LANG_AVAILABLE }
     }
@@ -81,8 +82,11 @@ class VozDelSombrero(
     /** Voces del idioma actual instaladas en el teléfono. */
     fun voces(): List<Voice> =
         runCatching { tts.voices.orEmpty() }.getOrDefault(emptySet())
-            .filter { it.locale.language == idioma.codigo }
+            .filter { it.locale.language in codigosDeVoz() }
             .sortedWith(compareBy({ it.isNetworkConnectionRequired }, { it.locale.toString() }, { it.name }))
+
+    // El tagalo aparece en Android como "fil" (filipino) o "tl".
+    private fun codigosDeVoz() = if (idioma == Idioma.TL) setOf("fil", "tl") else setOf(idioma.codigo)
 
     fun usarVoz(nombre: String?) {
         if (!lista) return

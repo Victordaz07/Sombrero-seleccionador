@@ -102,8 +102,12 @@ class Frase:
         return self.segmentos is not None
 
     @property
-    def en_ingles(self):
-        return self.clave.endswith("_en")
+    def idioma(self):
+        """'en' o 'tl' según el sufijo de la clave; si no tiene, español."""
+        for codigo in ("en", "tl"):
+            if self.clave.endswith(f"_{codigo}"):
+                return codigo
+        return "es"
 
     @property
     def es_anuncio(self):
@@ -114,7 +118,9 @@ def cargar_frases(datos):
     """Misma lógica de claves que Frases.kt. Si cambias una, cambia la otra."""
     frases = []
     # Español: gryffindor_discurso_1 ... / Inglés: gryffindor_discurso_1_en ...
-    for campo, campo_anuncio, sufijo in [("discursos", "anuncio", ""), ("discursos_en", "anuncio_en", "_en")]:
+    for campo, campo_anuncio, sufijo in [
+        ("discursos", "anuncio", ""), ("discursos_en", "anuncio_en", "_en"), ("discursos_tl", "anuncio_tl", "_tl"),
+    ]:
         for casa, lista in datos.get(campo, {}).items():
             anuncio = datos["casas"][casa][campo_anuncio]
             for i, crudos in enumerate(lista):
@@ -129,7 +135,8 @@ def cargar_frases(datos):
     # Cada una puede tener varias versiones: pregunta_idioma, pregunta_idioma_2, ...
     idioma = datos.get("idioma", {})
     for clave, campo in [("pregunta_idioma", "preguntas"), ("respuesta_idioma_es", "respuestas_es"),
-                         ("respuesta_idioma_en", "respuestas_en")]:
+                         ("respuesta_idioma_en", "respuestas_en"), ("respuesta_idioma_tl", "respuestas_tl"),
+                         ("pregunta_idioma_tri", "preguntas_trilingues")]:
         for i, texto in enumerate(idioma.get(campo, [])):
             frases.append(Frase(clave if i == 0 else f"{clave}_{i + 1}", texto))
 
@@ -171,7 +178,8 @@ def escribir_guion(frases):
         "",
         "## Discursos completos (recomendado)",
         "",
-        "4 por casa en español y 4 en inglés (los que terminan en `_en`). Cada uno se graba **de corrido**, "
+        "4 por casa en español, 4 en inglés (terminan en `_en`) y 4 en tagalo (terminan en `_tl`). "
+        "Cada uno se graba **de corrido**, "
         "en un solo audio. La app los va rotando para que no se repitan.",
         "Haz una pausa de suspenso antes del nombre de la casa (en **negritas**) y grítalo con emoción.",
         "",
@@ -230,8 +238,10 @@ def pedir(url, cuerpo, cabeceras, salir_si_falla=True):
 def generar_openai(frase, voz):
     """Devuelve (audio_mp3, inicios). OpenAI no da tiempos: la app los estima."""
     clave = os.environ.get("OPENAI_API_KEY") or sys.exit("Falta la variable OPENAI_API_KEY")
-    if frase.en_ingles:
+    if frase.idioma == "en":
         estilo = ESTILO_DISCURSO_EN
+    elif frase.idioma == "tl":
+        estilo = ESTILO_DISCURSO_EN.replace("Speak in English.", "Speak in Filipino (Tagalog).")
     else:
         estilo = ESTILO_DISCURSO if frase.es_discurso else ESTILO_ANUNCIO if frase.es_anuncio else ESTILO
     audio = pedir(

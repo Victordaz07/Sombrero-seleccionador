@@ -3,7 +3,7 @@ package com.victordaz.sombrero
 import androidx.compose.ui.graphics.Color
 
 /**
- * Una casa a la que el sombrero puede enviar a alguien: nombre, colores y lema (español e inglés) que se ven en pantalla.
+ * Una casa a la que el sombrero puede enviar a alguien: nombre, colores y lema (español, inglés y tagalo) que se ven en pantalla.
  *
  * Lo que el sombrero DICE de cada casa (virtudes, dudas, anuncio) está en `assets/frases.json`.
  */
@@ -14,6 +14,7 @@ data class Casa(
     val colorSecundario: Color,
     val lema: String,
     val lemaEn: String,
+    val lemaTl: String,
 )
 
 val CASAS = listOf(
@@ -24,6 +25,7 @@ val CASAS = listOf(
         colorSecundario = Color(0xFFE8B730),
         lema = "Valentía · Coraje · Corazón noble",
         lemaEn = "Bravery · Courage · Noble heart",
+        lemaTl = "Katapangan · Lakas ng loob · Marangal na puso",
     ),
     Casa(
         id = "hufflepuff",
@@ -32,6 +34,7 @@ val CASAS = listOf(
         colorSecundario = Color(0xFF2B2420),
         lema = "Lealtad · Bondad · Trabajo constante",
         lemaEn = "Loyalty · Kindness · Hard work",
+        lemaTl = "Katapatan · Kabaitan · Sipag",
     ),
     Casa(
         id = "ravenclaw",
@@ -40,6 +43,7 @@ val CASAS = listOf(
         colorSecundario = Color(0xFFC0894A),
         lema = "Sabiduría · Ingenio · Creatividad",
         lemaEn = "Wisdom · Wit · Creativity",
+        lemaTl = "Karunungan · Talino · Pagkamalikhain",
     ),
     Casa(
         id = "slytherin",
@@ -48,6 +52,7 @@ val CASAS = listOf(
         colorSecundario = Color(0xFFC8CCD0),
         lema = "Determinación · Liderazgo · Ambición",
         lemaEn = "Determination · Leadership · Ambition",
+        lemaTl = "Determinasyon · Pamumuno · Ambisyon",
     ),
 )
 
