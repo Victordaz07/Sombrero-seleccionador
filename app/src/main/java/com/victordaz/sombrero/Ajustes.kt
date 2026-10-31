@@ -75,10 +75,6 @@ class Ajustes(context: Context) {
         get() = prefs.getBoolean("fanfarria", true)
         set(v) = prefs.edit().putBoolean("fanfarria", v).apply()
 
-    /** Pantalla al máximo brillo mientras la app está abierta (para verse en la calle). */
-    var brilloMaximo: Boolean
-        get() = prefs.getBoolean("brillo_maximo", true)
-        set(v) = prefs.edit().putBoolean("brillo_maximo", v).apply()
 
     fun conteo(): Map<String, Int> = CASAS.associate { it.id to prefs.getInt("conteo_${it.id}", 0) }
 

@@ -84,7 +84,6 @@ fun AjustesDialogo(vm: SombreroViewModel, alCerrar: () -> Unit) {
                     }
 
                     Seccion("Calle")
-                    FilaSwitch("Brillo al máximo mientras la app está abierta", a.brilloMaximo, vm::cambiarBrilloMaximo)
                     Text(
                         "Fijar la app: nadie puede salir de ella con los botones de Atrás o Inicio. " +
                             "Para soltarla, usa el botón de abajo o mantén presionados Atrás y Recientes a la vez.",

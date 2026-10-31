@@ -23,7 +23,7 @@ Cada vez que se sube un cambio, GitHub revisa `frases.json`, corre las pruebas y
 - **Arriba a la izquierda** eliges el idioma: 🇺🇸 EN / 🇲🇽 ES.
 - **"El sombrero invita a…"**: tocas a quién va pasando (niño, niña, jovencito, jovencita, señor, señora o cualquiera) y el sombrero lo invita. Hay varias invitaciones por tipo y se van alternando.
 - Si acepta, tocas *Comenzar*: la ceremonia empieza directo en ese idioma, sin volver a preguntar.
-- **Batería** arriba al centro (se pone roja al 20%). **Brillo al máximo** mientras la app está abierta.
+- **Batería** arriba al centro (se pone roja al 20%).
 
 ### Botones de arriba a la derecha
 - 🎵 / 🔇 — prende o apaga la **música de fondo** (un toque).
@@ -40,7 +40,6 @@ Mantén presionado uno de los 4 escudos de abajo: el sombrero hace la ceremonia 
 | Volumen + *Probar sonido* | Volumen multimedia (bocina del teléfono o Bluetooth) |
 | Fanfarria con aplausos | Suena justo después de que el sombrero grita la casa. Hay 6 (`assets/efectos/fanfarria_1.mp3`…`_6.mp3`, hechas en ElevenLabs) y se alternan sin repetir |
 | Música de fondo | Prender/apagar y su volumen. Baja sola cuando habla el sombrero |
-| Brillo al máximo | Para verse en la calle |
 | **Fijar / Soltar** | Fija la app: nadie puede salir con Atrás o Inicio |
 | Modo calle | Muestra los botones de invitación |
 | Preguntar idioma | El sombrero pregunta "English o español" antes de cada persona |
@@ -51,7 +50,7 @@ Mantén presionado uno de los 4 escudos de abajo: el sombrero hace la ceremonia 
 ## Sonido
 
 - Todo suena por el canal **multimedia**: bocina del teléfono o **bocina Bluetooth** (escóndela dentro del sombrero).
-- Si el volumen está muy bajo, al abrir la app se sube al 80% y aparece un aviso rojo.
+- La app no cambia el volumen ni el brillo por su cuenta. Si el volumen está muy bajo aparece un aviso rojo; al tocarlo se abre el control de volumen del teléfono.
 - **Música de fondo**: ambiente mágico original (libre de derechos), en bucle. Con la música apagada suena un "silencio" inaudible: así la bocina Bluetooth **no se duerme** y no se corta la primera palabra.
 - Si entra una llamada o sales de la app, el sombrero se calla y la música se pausa.
 - Si falta algún audio, esa parte la dice la voz del teléfono.
@@ -91,7 +90,7 @@ python3 herramientas/componer_musica.py       # vuelve a crear la música de fon
 
 ```
 app/src/main/java/com/victordaz/sombrero/
-├── MainActivity.kt        Pantalla completa, control remoto, pausa al salir, brillo
+├── MainActivity.kt        Pantalla completa, control remoto, pausa al salir
 ├── PantallaSombrero.kt    Interfaz (Jetpack Compose)
 ├── AjustesDialogo.kt      Ventana de ajustes
 ├── SombreroViewModel.kt   La ceremonia paso a paso

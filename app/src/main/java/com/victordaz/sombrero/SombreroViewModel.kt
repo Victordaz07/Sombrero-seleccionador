@@ -44,7 +44,6 @@ data class EstadoAjustes(
     val volumen: Float,
     val musica: Boolean,
     val volumenMusica: Float,
-    val brilloMaximo: Boolean,
     val fanfarria: Boolean,
     val usarGrabaciones: Boolean,
     val discursosGrabados: Int,
@@ -58,10 +57,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     private val frases = Frases.cargar(app)
     private val grabada = VozGrabada(app)
     private val fondo = FondoMusical(app).apply { volumen = ajustes.volumenMusica }
-    private val volumen = Volumen(app, alPerderFoco = ::detener).also {
-        // Para la fiesta: si al abrir la app el volumen multimedia está bajo, se sube.
-        if (it.nivel < 0.5f) it.poner(0.8f, mostrarEnPantalla = false)
-    }
+    private val volumen = Volumen(app, alPerderFoco = ::detener)
     private var trabajo: Job? = null
 
     /** Discursos y fanfarrias: se usan todos antes de repetir alguno. */
@@ -364,10 +360,6 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         ajustes.fanfarria = v; refrescarAjustes()
     }
 
-    fun cambiarBrilloMaximo(v: Boolean) {
-        ajustes.brilloMaximo = v; refrescarAjustes()
-    }
-
     fun cambiarModoCalle(v: Boolean) {
         ajustes.modoCalle = v; refrescarAjustes()
     }
@@ -439,7 +431,6 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         volumen = volumen.nivel,
         musica = ajustes.musica,
         volumenMusica = ajustes.volumenMusica,
-        brilloMaximo = ajustes.brilloMaximo,
         fanfarria = ajustes.fanfarria,
         usarGrabaciones = ajustes.usarGrabaciones,
         discursosGrabados = frases.discursos.getValue(ajustes.idioma).values.flatten().count { grabada.tiene(it.clave) },
@@ -456,9 +447,9 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         if (estadoAjustes.volumen != volumen.nivel) refrescarAjustes()
     }
 
-    fun subirVolumen() {
-        volumen.poner(1f)
-        refrescarVolumen()
+    /** Abre el control de volumen del teléfono para que el operador lo ajuste (la app no lo cambia sola). */
+    fun mostrarControlVolumen() {
+        volumen.mostrarControl()
     }
 
     fun cambiarVolumen(nivel: Float) {

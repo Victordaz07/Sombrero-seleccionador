@@ -90,9 +90,6 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
     )
     val t = textos(estado.idioma)
     val calle = vm.estadoAjustes.modoCalle
-    val actividad = LocalContext.current as? MainActivity
-    val brillo = vm.estadoAjustes.brilloMaximo
-    LaunchedEffect(brillo) { actividad?.aplicarBrillo(brillo) }
     // Pista breve para el operador cuando toca algo que necesita toque largo.
     var pista by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(pista) {
@@ -230,7 +227,7 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
                 t.volumenBajo,
                 Modifier.align(Alignment.TopCenter).safeDrawingPadding().padding(top = 60.dp, start = 16.dp, end = 16.dp)
                     .background(Color(0xFFB3261E), RoundedCornerShape(20.dp))
-                    .clickable(onClick = vm::subirVolumen)
+                    .clickable(onClick = vm::mostrarControlVolumen)
                     .padding(horizontal = 16.dp, vertical = 10.dp),
                 color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center,
             )

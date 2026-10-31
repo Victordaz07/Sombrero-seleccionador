@@ -48,14 +48,6 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         vm.refrescarVolumen()
-        aplicarBrillo(vm.estadoAjustes.brilloMaximo)
-    }
-
-    /** Brillo al máximo solo mientras la app está abierta (para que se vea en la calle). */
-    fun aplicarBrillo(maximo: Boolean) {
-        window.attributes = window.attributes.apply {
-            screenBrightness = if (maximo) 1f else WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
-        }
     }
 
     /**

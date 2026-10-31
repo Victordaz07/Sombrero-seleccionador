@@ -44,6 +44,13 @@ class Volumen(context: Context, alPerderFoco: () -> Unit = {}) {
         }
     }
 
+    /** Muestra el control de volumen del sistema, sin cambiar el nivel. */
+    fun mostrarControl() {
+        runCatching {
+            audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_SAME, AudioManager.FLAG_SHOW_UI)
+        }
+    }
+
     fun pedirFoco() {
         runCatching { audio.requestAudioFocus(foco) }
     }
