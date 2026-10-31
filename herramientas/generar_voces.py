@@ -10,7 +10,7 @@ Hay dos tipos de audio:
 - Discursos: 4 actuaciones completas por casa (16 audios). Es lo recomendado: suenan
   más naturales porque se dicen de corrido. Con ElevenLabs también se guarda
   <clave>.json con el segundo exacto de cada frase, para sincronizar subtítulos y la revelación.
-- Frases sueltas: respaldo para armar el discurso por partes si falta algún discurso.
+- Pregunta de idioma, respuestas e invitaciones del modo calle (frases cortas).
 
 Uso (desde la carpeta del proyecto):
 
@@ -27,7 +27,7 @@ Uso (desde la carpeta del proyecto):
     python3 herramientas/generar_voces.py --solo-lista
 
 Opciones útiles:
-    --discursos      genera solo los 16 discursos completos (sin las frases sueltas)
+    --discursos      genera solo los discursos completos
     --simular        muestra qué se generaría y cuántos caracteres gasta, sin gastar nada
     --limite 4       genera como máximo 4 audios (empieza por un discurso de cada casa)
     --rehacer        vuelve a generar audios que ya existen (por ejemplo, si cambiaste una frase)
@@ -138,32 +138,19 @@ def cargar_frases(datos):
         for tipo, lista in datos.get("invitaciones", {}).get(codigo, {}).items():
             frases += [Frase(f"invitacion_{tipo}_{i + 1}{sufijo}", t) for i, t in enumerate(lista)]
 
-    frases.append(Frase("prueba", datos["prueba"]))
-    for campo, prefijo in [
-        ("aperturas", "apertura"),
-        ("decisiones", "decision"),
-        ("preanuncios", "preanuncio"),
-        ("cierres", "cierre"),
-    ]:
-        frases += [Frase(f"{prefijo}_{i + 1}", t) for i, t in enumerate(datos[campo])]
-    for casa, c in datos["casas"].items():
-        frases += [Frase(f"{casa}_virtud_{i + 1}", t) for i, t in enumerate(c["virtudes"])]
-        frases += [Frase(f"{casa}_duda_{i + 1}", t) for i, t in enumerate(c["dudas"])]
-        frases.append(Frase(f"{casa}_anuncio", c["anuncio"]))
+    for clave in ("prueba", "prueba_en"):
+        if clave in datos:
+            frases.append(Frase(clave, datos[clave]))
     return frases
 
 
 def prioridad(frase):
-    """Primero un discurso de cada casa, luego el resto de discursos, luego frases sueltas."""
+    """Primero un discurso de cada casa, luego el resto de discursos, luego las demás frases."""
     if frase.es_discurso:
         return (0, int(frase.clave.split("_discurso_")[1].split("_")[0]))
-    if frase.es_anuncio:
-        return (1, 0)
-    if frase.clave.startswith("preanuncio"):
+    if frase.clave.startswith("prueba"):
         return (2, 0)
-    if frase.clave == "prueba":
-        return (4, 0)
-    return (3, 0)
+    return (1, 0)
 
 
 def escribir_guion(frases):
@@ -200,17 +187,10 @@ def escribir_guion(frases):
             "|---|---|",
         ]
         lineas += [f"| `{f.clave}.mp3` | {f.texto} |" for f in especiales]
-    lineas += [
-        "",
-        "## Frases sueltas (respaldo)",
-        "",
-        "Si una casa no tiene discursos grabados, el sombrero arma el discurso con estas frases.",
-        "Si una frase no tiene audio, la app usa la voz del teléfono para esa frase.",
-        "",
-        "| Archivo | Frase |",
-        "|---|---|",
-    ]
-    lineas += [f"| `{f.clave}.mp3` | {f.texto} |" for f in frases if not f.es_discurso and f not in especiales]
+    otras = [f for f in frases if not f.es_discurso and f not in especiales]
+    if otras:
+        lineas += ["", "## Otras", "", "| Archivo | Frase |", "|---|---|"]
+        lineas += [f"| `{f.clave}.mp3` | {f.texto} |" for f in otras]
     GUION.write_text("\n".join(lineas) + "\n", encoding="utf-8")
 
 
@@ -408,7 +388,7 @@ def main():
     frases = cargar_frases(json.loads(FRASES.read_text(encoding="utf-8")))
     escribir_guion(frases)
     discursos = sum(f.es_discurso for f in frases)
-    print(f"Guion actualizado: {GUION.relative_to(RAIZ)} ({discursos} discursos, {len(frases) - discursos} frases sueltas)")
+    print(f"Guion actualizado: {GUION.relative_to(RAIZ)} ({discursos} discursos, {len(frases) - discursos} frases cortas)")
     if args.solo_lista:
         return
 

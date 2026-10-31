@@ -36,7 +36,7 @@ android {
     }
     androidResources {
         // Los audios del sombrero se leen directo del APK, sin comprimir.
-        noCompress += "mp3"
+        noCompress += listOf("mp3", "ogg")
     }
 }
 
@@ -51,4 +51,8 @@ dependencies {
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-core")
+
+    testImplementation("junit:junit:4.13.2")
+    // org.json real para las pruebas (en Android viene incluido en el sistema).
+    testImplementation("org.json:json:20240303")
 }

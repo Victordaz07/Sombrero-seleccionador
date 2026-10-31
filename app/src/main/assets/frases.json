@@ -1,5 +1,5 @@
 {
-  "_ayuda": "Todo lo que dice el sombrero. 'discursos' (español) y 'discursos_en' (inglés) son 4 actuaciones completas por casa (un audio cada una), escritas para ElevenLabs v3/v4: las etiquetas entre corchetes como [laughs] o [excited] indican la emoción y no se muestran en pantalla. {ANUNCIO} es donde grita la casa ('anuncio' / 'anuncio_en'). Las frases sueltas (solo español) son el respaldo si falta algún discurso. Si cambias un texto, vuelve a generar su audio. 'idioma' tiene las versiones de la pregunta bilingüe y de sus respuestas; el sombrero las va alternando (audios pregunta_idioma.mp3, pregunta_idioma_2.mp3, respuesta_idioma_es.mp3, respuesta_idioma_es_2.mp3...). 'invitaciones' son las frases con las que el sombrero invita a la gente en la calle, por idioma y tipo de persona (audios invitacion_<tipo>_<n>_en.mp3 en inglés e invitacion_<tipo>_<n>.mp3 en español).",
+  "_ayuda": "Todo lo que dice el sombrero. 'discursos' (español) y 'discursos_en' (inglés): 4 actuaciones completas por casa (un audio cada una), escritas para ElevenLabs: las etiquetas entre corchetes como [laughs] o [excited] indican la emoción y no se muestran en pantalla; {ANUNCIO} es donde grita la casa ('anuncio' / 'anuncio_en' en 'casas'). 'idioma': versiones de la pregunta bilingüe y de sus respuestas. 'invitaciones': frases del modo calle por idioma y tipo de persona. Cada audio va en assets/voz/<clave>.mp3 (ver herramientas/GUION_GRABACION.md). Si cambias un texto, vuelve a generar su audio. Después de editar, revisa con: python3 herramientas/validar_frases.py",
   "idioma": {
     "preguntas": [
       "[curious] Hmm... a new head! [mischievously] Tell me, tell me... do you prefer ENGLISH... [excited] ¿o prefieres que te hable en ESPAÑOL?",
@@ -255,101 +255,21 @@
       ]
     ]
   },
-  "aperturas": [
-    "Mmm... veamos, veamos... ¿qué tenemos aquí?",
-    "Ah... una cabeza nueva. No te muevas, que voy a mirar muy adentro.",
-    "Interesante... muy interesante. Déjame pensar...",
-    "Hmm... llevo cientos de años haciendo esto, y aun así me sorprendes.",
-    "Bien, bien... no tengas miedo. Solo voy a echar un vistazo a tus pensamientos.",
-    "Oh, vaya... ¡cuántas cosas hay en esta cabeza!"
-  ],
-  "decisiones": [
-    "Sí... ahora lo veo con claridad.",
-    "Ya no tengo ninguna duda.",
-    "Lo he decidido.",
-    "Mmm... sí, sí. Está muy claro.",
-    "Muy bien... sé exactamente a dónde perteneces."
-  ],
-  "preanuncios": [
-    "Tu lugar está en...",
-    "Tu casa será...",
-    "Te envío a...",
-    "Perteneces a..."
-  ],
-  "cierres": [
-    "¡Que tengas una noche mágica!",
-    "¡Tu nueva casa te recibe con los brazos abiertos!",
-    "¡Ve con tu casa, que la fiesta te espera!",
-    "¡Que la alegría te acompañe esta noche!",
-    "¡Siguiente, por favor!"
-  ],
   "casas": {
     "gryffindor": {
       "anuncio": "¡Grífindor!",
-      "virtudes": [
-        "Veo un valor que no se rinde, ni siquiera cuando tienes miedo.",
-        "Tienes un corazón noble: defiendes a los demás aunque nadie te lo pida.",
-        "Te gustan los retos... y cuando todos dan un paso atrás, tú das uno al frente.",
-        "Hay fuego en tu interior. Un fuego que contagia valor a quienes te rodean.",
-        "Dices la verdad aunque cueste. Eso es verdadera valentía.",
-        "Veo una gran capacidad para levantarte cada vez que caes."
-      ],
-      "dudas": [
-        "Aunque también veo mucha valentía... esto no será tan fácil.",
-        "Pero espera... también hay un coraje enorme aquí. Hmm...",
-        "Y por aquí encuentro un espíritu aventurero... ¡qué difícil decisión!"
-      ],
       "anuncio_en": "GRYFFINDOR!"
     },
     "hufflepuff": {
       "anuncio": "¡Jáfelpaf!",
-      "virtudes": [
-        "Veo una lealtad enorme. Tus amigos pueden contar contigo siempre.",
-        "Tienes un corazón amable y paciente. Tratas a todos con justicia.",
-        "No buscas aplausos: trabajas duro y nunca abandonas lo que empiezas.",
-        "Compartes lo que tienes sin esperar nada a cambio. Eso es un tesoro.",
-        "Haces sentir a los demás en casa. Es un don muy especial.",
-        "Veo humildad y constancia, dos virtudes que valen más que el oro."
-      ],
-      "dudas": [
-        "Aunque también veo una lealtad a toda prueba... hmm.",
-        "Pero espera... también hay mucha bondad en este corazón.",
-        "Y por aquí encuentro un corazón enorme... ¡qué difícil decisión!"
-      ],
       "anuncio_en": "HUFFLEPUFF!"
     },
     "ravenclaw": {
       "anuncio": "¡Réivenclo!",
-      "virtudes": [
-        "Qué mente tan curiosa... siempre preguntando el porqué de las cosas.",
-        "Veo ingenio y creatividad. Encuentras soluciones donde otros ven problemas.",
-        "Te encanta aprender. Cada libro y cada pregunta es una aventura para ti.",
-        "Tienes sabiduría para escuchar antes de hablar. Eso es muy poco común.",
-        "Tu imaginación no tiene límites. Ves el mundo de una manera única.",
-        "Piensas con calma y con claridad, incluso cuando todos se apresuran."
-      ],
-      "dudas": [
-        "Aunque también veo una mente brillante... esto no será tan fácil.",
-        "Pero espera... también hay mucha curiosidad aquí. Hmm...",
-        "Y por aquí encuentro una creatividad sorprendente... ¡qué difícil decisión!"
-      ],
       "anuncio_en": "RAVENCLAW!"
     },
     "slytherin": {
       "anuncio": "¡Slíderin!",
-      "virtudes": [
-        "Veo una determinación de hierro. Cuando te propones algo, lo consigues.",
-        "Tienes madera de líder: los demás te siguen sin que se los pidas.",
-        "Sueñas en grande y trabajas con astucia para alcanzar tus metas.",
-        "Tienes ingenio para salir de cualquier aprieto. Nada te detiene.",
-        "Veo ambición, sí... la buena ambición de querer ser cada día mejor.",
-        "Sabes planear cada paso con cuidado. Eso te llevará muy lejos."
-      ],
-      "dudas": [
-        "Aunque también veo mucha determinación... hmm, interesante.",
-        "Pero espera... también hay madera de líder aquí.",
-        "Y por aquí encuentro metas muy grandes... ¡qué difícil decisión!"
-      ],
       "anuncio_en": "SLYTHERIN!"
     }
   },

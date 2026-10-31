@@ -1,5 +1,10 @@
+@file:OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+
 package com.victordaz.sombrero
 
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.BatteryManager
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
@@ -13,6 +18,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -35,6 +41,7 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
@@ -51,6 +58,7 @@ import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.sin
 import kotlin.random.Random
+import kotlinx.coroutines.delay
 
 internal val Dorado = Color(0xFFE8C15A)
 internal val Pergamino = Color(0xFFFFEED2)
@@ -81,6 +89,18 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
         tween(1100), label = "color de la casa",
     )
     val t = textos(estado.idioma)
+    val calle = vm.estadoAjustes.modoCalle
+    val actividad = LocalContext.current as? MainActivity
+    val brillo = vm.estadoAjustes.brilloMaximo
+    LaunchedEffect(brillo) { actividad?.aplicarBrillo(brillo) }
+    // Pista breve para el operador cuando toca algo que necesita toque largo.
+    var pista by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(pista) {
+        if (pista != null) {
+            delay(2500)
+            pista = null
+        }
+    }
     Box(Modifier.fillMaxSize().background(Tinta).clickable(
         interactionSource = remember { MutableInteractionSource() }, indication = null,
         // Mientras pregunta el idioma hay que elegir con los botones, no tocando el fondo.
@@ -121,7 +141,9 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
                         Subtitulo(estado)
                         if (vm.estadoAjustes.modoCalle) PanelInvitacion(estado, vm::invitar)
                         Accion(estado, vm::alTocar, vm::elegirIdioma)
-                        PiePagina(estado, vm.estadoAjustes.casasActivas, vm::elegirCasaManual)
+                        PiePagina(estado, vm.estadoAjustes.casasActivas, vm::elegirCasaManual, compacto = calle) {
+                            pista = t.mantenerPresionado
+                        }
                     }
                 }
             } else {
@@ -132,8 +154,13 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
                     verticalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Encabezado(estado)
-                    SombreroAnimado(estado, minOf(ancho - 32.dp,
-                        (alto * if (casa == null) 0.43f else 0.32f).coerceIn(180.dp, 390.dp)))
+                    // En modo calle el sombrero es más chico para dejar espacio a los botones grandes.
+                    val proporcion = when {
+                        casa != null -> 0.32f
+                        calle -> 0.26f
+                        else -> 0.43f
+                    }
+                    SombreroAnimado(estado, minOf(ancho - 32.dp, (alto * proporcion).coerceIn(150.dp, 390.dp)))
                     Column(
                         Modifier.widthIn(max = 520.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -142,17 +169,57 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
                         Subtitulo(estado)
                         if (vm.estadoAjustes.modoCalle) PanelInvitacion(estado, vm::invitar)
                         Accion(estado, vm::alTocar, vm::elegirIdioma)
-                        PiePagina(estado, vm.estadoAjustes.casasActivas, vm::elegirCasaManual)
+                        PiePagina(estado, vm.estadoAjustes.casasActivas, vm::elegirCasaManual, compacto = calle) {
+                            pista = t.mantenerPresionado
+                        }
                     }
                 }
             }
         }
-        IconButton(
-            onClick = { mostrarAjustes = true }, enabled = estado.fase != Fase.PENSANDO,
-            modifier = Modifier.align(Alignment.TopEnd).safeDrawingPadding().padding(6.dp)
-                .background(Tinta.copy(alpha = 0.7f), CircleShape),
+        Row(
+            Modifier.align(Alignment.TopEnd).safeDrawingPadding().padding(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Icon(Icons.Filled.Settings, t.ajustes, tint = Pergamino.copy(alpha = if (estado.fase == Fase.PENSANDO) 0.3f else 0.9f))
+            // Música: un toque la prende o la apaga.
+            Box(
+                Modifier.size(48.dp).clip(CircleShape).background(Tinta.copy(alpha = 0.7f))
+                    .clickable(onClickLabel = t.musica, onClick = vm::alternarMusica),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(if (estado.musica) "🎵" else "🔇", fontSize = 20.sp)
+            }
+            // Ajustes: solo con toque largo, para que nadie los abra sin querer.
+            Box(
+                Modifier.size(48.dp).clip(CircleShape).background(Tinta.copy(alpha = 0.7f))
+                    .combinedClickable(
+                        enabled = estado.fase != Fase.PENSANDO,
+                        onClick = { pista = t.mantenerPresionado },
+                        onLongClickLabel = t.ajustes,
+                        onLongClick = { mostrarAjustes = true },
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(Icons.Filled.Settings, t.ajustes, tint = Pergamino.copy(alpha = if (estado.fase == Fase.PENSANDO) 0.3f else 0.9f))
+            }
+        }
+        IndicadorBateria(Modifier.align(Alignment.TopCenter).safeDrawingPadding().padding(top = 14.dp))
+        pista?.let {
+            Text(
+                it,
+                Modifier.align(Alignment.BottomCenter).safeDrawingPadding().padding(bottom = 24.dp, start = 16.dp, end = 16.dp)
+                    .background(Tinta.copy(alpha = 0.9f), RoundedCornerShape(16.dp))
+                    .border(1.dp, Dorado.copy(alpha = 0.6f), RoundedCornerShape(16.dp))
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                color = Pergamino, fontSize = 14.sp, textAlign = TextAlign.Center,
+            )
+        }
+        estado.aviso?.let {
+            Text(
+                "⚠ $it",
+                Modifier.align(Alignment.BottomCenter).safeDrawingPadding().padding(bottom = 80.dp, start = 16.dp, end = 16.dp)
+                    .background(Color(0xFFB3261E), RoundedCornerShape(16.dp)).padding(12.dp),
+                color = Color.White, fontSize = 13.sp, textAlign = TextAlign.Center,
+            )
         }
         SelectorIdioma(
             estado, vm::cambiarIdioma,
@@ -297,6 +364,31 @@ private fun Accion(estado: EstadoUi, alTocar: () -> Unit, alElegirIdioma: (Idiom
     }
 }
 
+/** Batería del teléfono: en la calle no hay dónde cargar. Se pone roja al 20% o menos. */
+@Composable
+private fun IndicadorBateria(modifier: Modifier = Modifier) {
+    val contexto = LocalContext.current
+    val bateria by produceState(initialValue = -1 to false) {
+        while (true) {
+            val intent = contexto.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+            val nivel = intent?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) ?: -1
+            val escala = intent?.getIntExtra(BatteryManager.EXTRA_SCALE, 100) ?: 100
+            val enchufado = (intent?.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) ?: 0) != 0
+            value = (if (nivel >= 0 && escala > 0) nivel * 100 / escala else -1) to enchufado
+            delay(30_000)
+        }
+    }
+    val (porcentaje, cargando) = bateria
+    if (porcentaje < 0) return
+    val baja = porcentaje <= 20 && !cargando
+    Text(
+        "${if (cargando) "⚡" else "🔋"} $porcentaje%",
+        modifier.background(if (baja) Color(0xFFB3261E) else Tinta.copy(alpha = 0.7f), RoundedCornerShape(12.dp))
+            .padding(horizontal = 10.dp, vertical = 4.dp),
+        color = Color.White, fontSize = 12.sp, fontWeight = if (baja) FontWeight.Bold else FontWeight.Normal,
+    )
+}
+
 /** Idioma de la ceremonia, siempre a la vista (arriba a la izquierda). */
 @Composable
 private fun SelectorIdioma(estado: EstadoUi, alCambiar: (Idioma) -> Unit, modifier: Modifier = Modifier) {
@@ -339,11 +431,12 @@ private fun PanelInvitacion(estado: EstadoUi, alInvitar: (Publico) -> Unit) {
                             .background(Color(0xFF35291B).copy(alpha = 0.85f))
                             .border(1.dp, Dorado.copy(alpha = 0.5f), RoundedCornerShape(14.dp))
                             .clickable { alInvitar(publico) }
-                            .padding(vertical = 8.dp),
+                            .padding(vertical = 12.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Text(publico.emoji, fontSize = 22.sp)
-                        Text(publico.etiqueta(estado.idioma), color = Pergamino, fontSize = 12.sp, maxLines = 1)
+                        Text(publico.emoji, fontSize = 30.sp)
+                        Text(publico.etiqueta(estado.idioma), color = Pergamino, fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold, maxLines = 1)
                     }
                 }
             }
@@ -369,7 +462,13 @@ private fun BotonesIdioma(alElegir: (Idioma) -> Unit) {
 }
 
 @Composable
-private fun PiePagina(estado: EstadoUi, activas: Set<String>, alElegirCasa: (Casa) -> Unit) {
+private fun PiePagina(
+    estado: EstadoUi,
+    activas: Set<String>,
+    alElegirCasa: (Casa) -> Unit,
+    compacto: Boolean = false,
+    alTocarCorto: () -> Unit = {},
+) {
     val t = textos(estado.idioma)
     // Tocar un escudo hace la ceremonia completa y termina en esa casa (para el operador).
     val sePuedeElegir = estado.fase == Fase.ESPERANDO || estado.fase == Fase.REVELADO
@@ -382,17 +481,23 @@ private fun PiePagina(estado: EstadoUi, activas: Set<String>, alElegirCasa: (Cas
                 Column(
                     Modifier.weight(1f).graphicsLayer { alpha = if (c.id in activas) 1f else 0.4f }
                         .clip(RoundedCornerShape(12.dp))
-                        .clickable(enabled = sePuedeElegir, onClickLabel = c.nombre) {
-                            haptico.performHapticFeedback(HapticFeedbackType.LongPress)
-                            alElegirCasa(c)
-                        }
+                        // Toque largo = elegir esa casa a mano (un toque normal no hace nada, para evitar accidentes).
+                        .combinedClickable(
+                            enabled = sePuedeElegir,
+                            onClick = alTocarCorto,
+                            onLongClickLabel = c.nombre,
+                            onLongClick = {
+                                haptico.performHapticFeedback(HapticFeedbackType.LongPress)
+                                alElegirCasa(c)
+                            },
+                        )
                         .semantics(mergeDescendants = true) {
                             contentDescription = "${c.nombre}: ${estado.conteo[c.id] ?: 0} ${t.participantes}" +
                                 if (c.id in activas) "" else ", ${t.noParticipa}"
                         },
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Escudo(c, Modifier.size(48.dp), describir = false, idioma = estado.idioma)
+                    Escudo(c, Modifier.size(if (compacto) 34.dp else 48.dp), describir = false, idioma = estado.idioma)
                     Text("${estado.conteo[c.id] ?: 0}", color = Pergamino, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                 }
             }

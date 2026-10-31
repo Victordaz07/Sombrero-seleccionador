@@ -4,18 +4,8 @@ import android.content.Context
 import org.json.JSONArray
 import org.json.JSONObject
 
-/**
- * Una frase que dice el sombrero.
- *
- * - [clave] es el nombre de su audio grabado: `assets/voz/<clave>.mp3`.
- * - [pausaDespues] es cuánto espera (en milisegundos) antes de la siguiente.
- */
-data class Linea(
-    val clave: String,
-    val texto: String,
-    val pausaDespues: Long = 500,
-    val esAnuncio: Boolean = false,
-)
+/** Una frase que dice el sombrero. [clave] es el nombre de su audio: `assets/voz/<clave>.mp3`. */
+data class Linea(val clave: String, val texto: String)
 
 /**
  * Una actuación completa del sombrero para una casa, grabada en un solo audio.
@@ -40,32 +30,18 @@ class Discurso(val clave: String, val segmentos: List<String>, val indiceAnuncio
     }
 }
 
-/** Frases de una casa. */
-class FrasesCasa(val virtudes: List<Linea>, val dudas: List<Linea>, val anuncio: Linea)
-
 /**
- * Todas las frases del sombrero, leídas de `assets/frases.json`.
+ * Todo lo que dice el sombrero, leído de `assets/frases.json`.
+ * Si el archivo tiene un error, [error] lo describe y la app sigue funcionando con lo que pudo leer.
  *
- * Las claves se arman igual que en `herramientas/generar_voces.py`:
- * `apertura_1`, `decision_2`, `gryffindor_virtud_3`, `ravenclaw_duda_1`, `slytherin_anuncio`...
+ * Las claves se arman igual que en `herramientas/generar_voces.py`.
  */
-class Frases(json: JSONObject) {
+class Frases(json: JSONObject, val error: String? = null) {
 
-    private val aperturas = lista(json.getJSONArray("aperturas"), "apertura")
-    private val decisiones = lista(json.getJSONArray("decisiones"), "decision")
-    private val preanuncios = lista(json.getJSONArray("preanuncios"), "preanuncio")
-    private val cierres = lista(json.getJSONArray("cierres"), "cierre")
-    val prueba = Linea("prueba", json.getString("prueba"))
-    val pruebaEn = Linea("prueba_en", json.optString("prueba_en", "Hmm... can you hear me? I am the Sorting Hat!"))
+    private val prueba = Linea("prueba", json.optString("prueba", "Hmm... ¿me escuchas bien? Soy el sombrero seleccionador."))
+    private val pruebaEn = Linea("prueba_en", json.optString("prueba_en", "Hmm... can you hear me? I am the Sorting Hat!"))
 
-    private val casas: Map<String, FrasesCasa> = CASAS.associate { casa ->
-        val c = json.getJSONObject("casas").getJSONObject(casa.id)
-        casa.id to FrasesCasa(
-            virtudes = lista(c.getJSONArray("virtudes"), "${casa.id}_virtud"),
-            dudas = lista(c.getJSONArray("dudas"), "${casa.id}_duda"),
-            anuncio = Linea("${casa.id}_anuncio", c.getString("anuncio"), esAnuncio = true),
-        )
-    }
+    fun prueba(idioma: Idioma) = if (idioma == Idioma.EN) pruebaEn else prueba
 
     /**
      * 4 discursos completos por casa en cada idioma.
@@ -75,8 +51,6 @@ class Frases(json: JSONObject) {
         Idioma.ES to leerDiscursos(json, "discursos", "anuncio", ""),
         Idioma.EN to leerDiscursos(json, "discursos_en", "anuncio_en", "_en"),
     )
-
-    fun prueba(idioma: Idioma) = if (idioma == Idioma.EN) pruebaEn else prueba
 
     /**
      * Versiones de la pregunta bilingüe y de sus respuestas; el sombrero las va alternando.
@@ -99,7 +73,7 @@ class Frases(json: JSONObject) {
         Publico.entries.associateWith { publico ->
             val lista = porTipo.optJSONArray(publico.id) ?: JSONArray()
             List(lista.length()) { i ->
-                Linea("invitacion_${publico.id}_${i + 1}$sufijo", sinEtiquetas(lista.getString(i)))
+                Linea("invitacion_${publico.id}_${i + 1}$sufijo", sinEtiquetas(lista.optString(i)))
             }
         }
     }
@@ -107,63 +81,45 @@ class Frases(json: JSONObject) {
     private fun versiones(campo: String, clave: String, porDefecto: String): List<Linea> {
         val lista = textosIdioma.optJSONArray(campo) ?: JSONArray().put(porDefecto)
         return List(lista.length()) { i ->
-            Linea(if (i == 0) clave else "${clave}_${i + 1}", sinEtiquetas(lista.getString(i)))
+            Linea(if (i == 0) clave else "${clave}_${i + 1}", sinEtiquetas(lista.optString(i)))
         }
-    }
-
-    /** Todas las frases posibles (sirve para contar cuántas tienen audio grabado). */
-    val todas: List<Linea> =
-        listOf(prueba) + aperturas + decisiones + preanuncios + cierres +
-            casas.values.flatMap { it.virtudes + it.dudas + it.anuncio }
-
-    /** Arma el guion completo que dirá el sombrero para la casa ya elegida. */
-    fun guion(casa: Casa, otras: List<Casa>): List<Linea> {
-        val frases = casas.getValue(casa.id)
-        val virtudes = frases.virtudes.shuffled()
-        val lineas = mutableListOf<Linea>()
-
-        lineas += aperturas.random().copy(pausaDespues = 900)
-        lineas += virtudes[0].copy(pausaDespues = 600)
-
-        // A veces el sombrero "duda" con una virtud de otra casa, para dar suspenso.
-        if (otras.isNotEmpty() && Math.random() < 0.6) {
-            lineas += casas.getValue(otras.random().id).dudas.random().copy(pausaDespues = 900)
-        }
-
-        lineas += virtudes[1].copy(pausaDespues = 800)
-        lineas += decisiones.random().copy(pausaDespues = 700)
-        lineas += preanuncios.random().copy(pausaDespues = 1400)
-        lineas += frases.anuncio.copy(pausaDespues = 900)
-        lineas += cierres.random().copy(pausaDespues = 0)
-        return lineas
     }
 
     companion object {
         /** Marca, dentro de un discurso, el momento en que grita el nombre de la casa. */
         const val ANUNCIO = "{ANUNCIO}"
 
-        fun cargar(context: Context): Frases =
-            Frases(JSONObject(context.assets.open("frases.json").bufferedReader().use { it.readText() }))
+        fun cargar(context: Context): Frases {
+            val texto = runCatching {
+                context.assets.open("frases.json").bufferedReader().use { it.readText() }
+            }.getOrElse { return Frases(JSONObject(), "No se encontró frases.json") }
+            return try {
+                Frases(JSONObject(texto))
+            } catch (e: Exception) {
+                Frases(JSONObject(), "frases.json tiene un error: ${e.message}")
+            }
+        }
 
         /** Quita las etiquetas de emoción de ElevenLabs ([whispers], [chuckles]...) para los subtítulos. */
-        private fun sinEtiquetas(texto: String) = texto.replace(Regex("""\[[^\]]*]\s*"""), "").trim()
+        fun sinEtiquetas(texto: String) = texto.replace(Regex("""\[[^\]]*]\s*"""), "").trim()
 
         private fun leerDiscursos(json: JSONObject, campo: String, campoAnuncio: String, sufijo: String) =
             CASAS.associate { casa ->
                 val lista = json.optJSONObject(campo)?.optJSONArray(casa.id) ?: JSONArray()
-                val anuncio = json.getJSONObject("casas").getJSONObject(casa.id).optString(campoAnuncio, casa.nombre)
-                casa.id to List(lista.length()) { i ->
-                    val crudos = lista.getJSONArray(i)
-                    val segmentos = List(crudos.length()) { crudos.getString(it) }
+                val anuncio = json.optJSONObject("casas")?.optJSONObject(casa.id)?.optString(campoAnuncio)
+                    ?.takeIf { it.isNotBlank() } ?: casa.nombre
+                val discursos = (0 until lista.length()).mapNotNull { i ->
+                    val crudos = lista.optJSONArray(i) ?: return@mapNotNull null
+                    val segmentos = List(crudos.length()) { crudos.optString(it) }
+                    // Un discurso sin {ANUNCIO} no sirve: el sombrero nunca diría la casa.
+                    if (ANUNCIO !in segmentos) return@mapNotNull null
                     Discurso(
                         clave = "${casa.id}_discurso_${i + 1}$sufijo",
                         segmentos = segmentos.map { if (it == ANUNCIO) anuncio else sinEtiquetas(it) },
                         indiceAnuncio = segmentos.indexOf(ANUNCIO),
                     )
                 }
+                casa.id to discursos
             }
-
-        private fun lista(arr: JSONArray, prefijo: String): List<Linea> =
-            List(arr.length()) { i -> Linea("${prefijo}_${i + 1}", arr.getString(i)) }
     }
 }

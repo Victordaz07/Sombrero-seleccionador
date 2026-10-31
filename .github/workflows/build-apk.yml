@@ -17,6 +17,12 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      - name: Revisar frases.json
+        run: python3 herramientas/validar_frases.py
+
+      - name: Pruebas automáticas
+        run: ./gradlew testReleaseUnitTest --no-daemon
+
       - name: Compilar APK
         run: ./gradlew assembleRelease --no-daemon
 

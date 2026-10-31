@@ -61,6 +61,20 @@ class Ajustes(context: Context) {
         get() = prefs.getStringSet("casas_activas", null) ?: CASAS.map { it.id }.toSet()
         set(v) = prefs.edit().putStringSet("casas_activas", v).apply()
 
+    /** Música de fondo (si está apagada, suena un "silencio" para que el Bluetooth no se duerma). */
+    var musica: Boolean
+        get() = prefs.getBoolean("musica", true)
+        set(v) = prefs.edit().putBoolean("musica", v).apply()
+
+    var volumenMusica: Float
+        get() = prefs.getFloat("volumen_musica", 0.35f)
+        set(v) = prefs.edit().putFloat("volumen_musica", v).apply()
+
+    /** Pantalla al máximo brillo mientras la app está abierta (para verse en la calle). */
+    var brilloMaximo: Boolean
+        get() = prefs.getBoolean("brillo_maximo", true)
+        set(v) = prefs.edit().putBoolean("brillo_maximo", v).apply()
+
     fun conteo(): Map<String, Int> = CASAS.associate { it.id to prefs.getInt("conteo_${it.id}", 0) }
 
     fun sumar(casaId: String) {

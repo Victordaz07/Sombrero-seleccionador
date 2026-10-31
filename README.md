@@ -1,138 +1,113 @@
 # 🎩 Sombrero Seleccionador
 
-App de Android para la fiesta de Halloween de la iglesia. Una persona se sienta con el sombrero puesto, alguien toca la pantalla (o un control Bluetooth) y el sombrero:
+App de Android para eventos de la iglesia: una persona se pone el sombrero, el sombrero "piensa" en voz alta, dice sus virtudes y **grita a qué casa pertenece**, mientras la pantalla se pinta con los colores de esa casa.
 
-1. "Piensa" en voz alta con una voz grave y lenta.
-2. Dice algunas **virtudes y fortalezas** de la persona.
-3. A veces duda entre dos casas, para dar suspenso.
-4. Anuncia la casa a gritos: **¡GRYFFINDOR!**, y la pantalla se pinta con los colores de esa casa.
+Funciona **sin internet**, en **español e inglés**, con voces grabadas con IA (ElevenLabs) y música de fondo.
 
-Funciona **sin internet**: usa la voz de texto a voz que ya trae el teléfono.
+## Instalar
 
-## Funciones
+1. En GitHub, pestaña **Actions** → la última ejecución de **Compilar APK** → descarga `sombrero-seleccionador-apk` (es un `.zip` con el `.apk`).
+2. Pásalo al teléfono, ábrelo y acepta "instalar apps de origen desconocido".
 
-| Función | Detalle |
+Cada vez que se sube un cambio, GitHub revisa `frases.json`, corre las pruebas y compila el APK solo.
+
+## Cómo se usa
+
+### En una fiesta
+1. La persona se sienta y tocas la pantalla (o *Comenzar selección*, o el botón de un control Bluetooth).
+2. Si está activo, el sombrero pregunta **"English… ¿o español?"** y aparecen dos botones.
+3. Dice uno de sus discursos (4 por casa y por idioma, sin repetirse) y **grita la casa**.
+4. Tocas para la siguiente persona.
+
+### En la calle 🚶
+- **Arriba a la izquierda** eliges el idioma: 🇺🇸 EN / 🇲🇽 ES.
+- **"El sombrero invita a…"**: tocas a quién va pasando (niño, niña, jovencito, jovencita, señor, señora o cualquiera) y el sombrero lo invita. Hay varias invitaciones por tipo y se van alternando.
+- Si acepta, tocas *Comenzar*: la ceremonia empieza directo en ese idioma, sin volver a preguntar.
+- **Batería** arriba al centro (se pone roja al 20%). **Brillo al máximo** mientras la app está abierta.
+
+### Botones de arriba a la derecha
+- 🎵 / 🔇 — prende o apaga la **música de fondo** (un toque).
+- ⚙ — **Ajustes** (hay que **mantener presionado**, para que nadie los abra sin querer).
+
+### Elegir tú la casa
+Mantén presionado uno de los 4 escudos de abajo: el sombrero hace la ceremonia completa y termina en esa casa (para repetir una selección y grabarla). Por defecto no suma al conteo.
+
+## Ajustes (⚙, mantener presionado)
+
+| Ajuste | Para qué |
 |---|---|
-| Voz en español | Texto a voz de Android, con tono y velocidad ajustables y opción de elegir entre las voces instaladas |
-| Sombrero animado | Se balancea, abre la boca al hablar y levanta las cejas |
-| Reparto parejo | Por defecto manda a cada persona a la casa con menos gente, para que los equipos queden balanceados |
-| Contador | Abajo se ve cuántas personas hay en cada casa (se guarda aunque cierres la app) |
-| Control remoto | El botón de **subir volumen**, o un control Bluetooth para selfies (de los baratos), activa el sombrero |
-| Elegir casas | Puedes desactivar casas en Ajustes (por ejemplo, si solo quieres 3 equipos) |
-| Pantalla siempre encendida | No se apaga durante la fiesta |
+| Idioma | Español o inglés |
+| Volumen + *Probar sonido* | Volumen multimedia (bocina del teléfono o Bluetooth) |
+| Música de fondo | Prender/apagar y su volumen. Baja sola cuando habla el sombrero |
+| Brillo al máximo | Para verse en la calle |
+| **Fijar / Soltar** | Fija la app: nadie puede salir con Atrás o Inicio |
+| Modo calle | Muestra los botones de invitación |
+| Preguntar idioma | El sombrero pregunta "English o español" antes de cada persona |
+| Repartir parejo | Manda a cada persona a la casa con menos gente |
+| Sumar elegidas a mano | Si las casas elegidas con el escudo cuentan |
+| Casas participantes / Reiniciar conteo | Para empezar de cero antes de cada evento |
 
-## Cómo conseguir el APK (sin instalar nada en tu computadora)
+## Sonido
 
-1. Sube los cambios a GitHub. El flujo **Compilar APK** se ejecuta solo.
-2. En GitHub, entra a la pestaña **Actions**, abre la última ejecución de "Compilar APK" y descarga el artefacto `sombrero-seleccionador-apk` (es un `.zip`, adentro está el `.apk`).
-3. Pasa el `.apk` al teléfono Android y ábrelo. Android te pedirá permiso para "instalar apps de origen desconocido": acéptalo.
+- Todo suena por el canal **multimedia**: bocina del teléfono o **bocina Bluetooth** (escóndela dentro del sombrero).
+- Si el volumen está muy bajo, al abrir la app se sube al 80% y aparece un aviso rojo.
+- **Música de fondo**: ambiente mágico original (libre de derechos), en bucle. Con la música apagada suena un "silencio" inaudible: así la bocina Bluetooth **no se duerme** y no se corta la primera palabra.
+- Si entra una llamada o sales de la app, el sombrero se calla y la música se pausa.
+- Si falta algún audio, esa parte la dice la voz del teléfono.
 
-## Cómo compilarlo en tu computadora
+## Voces y textos
 
-- **Android Studio:** abre la carpeta del proyecto y presiona ▶ Run.
-- **Terminal:** `./gradlew assembleRelease` y el APK queda en `app/build/outputs/apk/release/`.
+Todo lo que dice el sombrero está en **`app/src/main/assets/frases.json`**:
 
-## 🎙 Voz natural (recomendado)
+| Sección | Qué es | Audios |
+|---|---|---|
+| `discursos` / `discursos_en` | 4 discursos por casa. `{ANUNCIO}` marca dónde grita la casa | `<casa>_discurso_<n>.mp3` / `_en.mp3` |
+| `idioma` | 3 versiones de la pregunta y de cada respuesta | `pregunta_idioma*.mp3`, `respuesta_idioma_*.mp3` |
+| `invitaciones` | Modo calle, por idioma y tipo de persona | `invitacion_<tipo>_<n>_en.mp3` / `.mp3` |
 
-La voz del teléfono suena algo robótica. Para que el sombrero suene **natural y con personaje**, la app reproduce audios pregrabados en `app/src/main/assets/voz/`:
+Las etiquetas entre corchetes (`[excited]`, `[laughs]`, `[shouting]`…) son para que ElevenLabs actúe la emoción; en pantalla no se muestran. La lista completa de textos para grabar está en [`herramientas/GUION_GRABACION.md`](herramientas/GUION_GRABACION.md).
 
-1. **Discursos completos (recomendado):** 4 actuaciones distintas por casa (16 audios, unos 4,600 caracteres). Cada una se dice de corrido, así que suena como una sola actuación. La app las rota y no repite ninguna hasta usar las 4. Los subtítulos y la revelación de la casa se sincronizan con el audio (con ElevenLabs, al segundo exacto).
-2. **Frases sueltas (respaldo):** si una casa no tiene discursos, el sombrero arma uno con 61 frases sueltas. Las que no tienen audio usan la voz del teléfono.
-
-En ⚙ ves cuántos discursos y frases tienen audio.
-
-### Opción A: generarlas con IA (script incluido)
-
-Desde la carpeta del proyecto (no hace falta instalar nada, solo Python 3):
+### Herramientas
 
 ```bash
-# Ver qué se va a generar y cuántos caracteres gasta (no gasta créditos)
-python3 herramientas/generar_voces.py --simular
+python3 herramientas/validar_frases.py        # revisa frases.json y dice qué audios faltan
+python3 herramientas/generar_voces.py --solo-lista   # actualiza GUION_GRABACION.md
 
-# OpenAI: puedes dirigir la "actuación" (sombrero viejo, grave, misterioso)
-export OPENAI_API_KEY="sk-..."
-python3 herramientas/generar_voces.py --proveedor openai --voz onyx --solo prueba   # probar 1 frase
-python3 herramientas/generar_voces.py --proveedor openai --voz onyx                # todas
-
-# ElevenLabs (recomendado): crea la voz con Voice Design y copia su Voice ID
+# Generar audios con la API de ElevenLabs (o OpenAI con --proveedor openai)
 export ELEVENLABS_API_KEY="..."
-python3 herramientas/generar_voces.py --proveedor elevenlabs --voz <voice_id> --discursos --limite 4  # 1 por casa
-python3 herramientas/generar_voces.py --proveedor elevenlabs --voz <voice_id> --discursos            # los 16
+python3 herramientas/generar_voces.py --proveedor elevenlabs --voz <voice_id> --discursos --simular
+
+# Importar audios hechos a mano en la página de ElevenLabs: los reconoce aunque se llamen
+# distinto y sincroniza el grito con la pantalla (necesita: pip install faster-whisper)
+python3 herramientas/importar_voces.py --casa gryffindor audios/*.mp3              # discursos en español
+python3 herramientas/importar_voces.py --idioma en --casa gryffindor audios/*.mp3  # discursos en inglés
+python3 herramientas/importar_voces.py --especiales audios/*.mp3                   # pregunta, respuestas e invitaciones
+
+python3 herramientas/componer_musica.py       # vuelve a crear la música de fondo (necesita numpy)
 ```
 
-| Opción | Para qué |
-|---|---|
-| `--discursos` | Generar solo los 16 discursos completos |
-| `--simular` | Ver la lista y los caracteres, sin gastar |
-| `--limite 4` | Generar solo 4 audios (empieza por un discurso de cada casa). Puedes correrlo varias veces: no repite los que ya existen |
-| `--solo prueba gryffindor_anuncio` | Generar solo esas frases |
-| `--rehacer` | Volver a generar audios que ya existen (por ejemplo, si cambiaste el texto o la voz) |
-| `--efecto` | Voz un poco más grave y con eco de salón (requiere `ffmpeg`) |
-
-Después sube los `.mp3` al repo y compila de nuevo el APK.
-
-### Opción B: grabar a una persona
-
-Alguien de la iglesia con voz grave puede grabar las frases con el celular. La lista con el nombre exacto de cada archivo está en [`herramientas/GUION_GRABACION.md`](herramientas/GUION_GRABACION.md). Guárdalas en MP3 con esos nombres en `app/src/main/assets/voz/`.
-
-### Cambiar lo que dice el sombrero
-
-Todo está en `app/src/main/assets/frases.json`. En `discursos`, cada casa tiene 4 listas de frases y `{ANUNCIO}` marca dónde grita el nombre de la casa. Los discursos se generan con **Eleven v3**, que actúa las etiquetas de emoción entre corchetes (`[whispers]`, `[chuckles]`, `[thoughtful]`, `[excited]`...). Las etiquetas no se muestran en los subtítulos. Si cambias el texto de una frase o discurso, vuelve a generar su audio con `--rehacer --solo <clave>` (por ejemplo `--solo gryffindor_discurso_2`). Si agregas o quitas frases, cambian las claves: corre `--solo-lista` para actualizar el guion.
-
-## 🌎 Español / English
-
-En ⚙ → **Idioma / Language** cambias toda la ceremonia a inglés: textos de pantalla, lemas de las casas, subtítulos y discursos. Hay 16 discursos en inglés (`discursos_en` en `frases.json`, archivos `<casa>_discurso_<n>_en.mp3`). Si un discurso en inglés no tiene audio, la voz del teléfono lo lee en inglés.
-
-**Pregunta de idioma:** si está activo en ⚙ (*Preguntar idioma a cada persona*), al tocar el sombrero pregunta "…do you prefer ENGLISH… ¿o prefieres que te hable en ESPAÑOL?" y aparecen dos botones. Al elegir, responde en ese idioma y sigue la ceremonia. Con el control Bluetooth: subir volumen = idioma actual, bajar volumen = el otro. Audios: `pregunta_idioma.mp3`, `respuesta_idioma_es.mp3`, `respuesta_idioma_en.mp3` (se importan con `importar_voces.py --especiales`).
-
-Para importar audios hechos a mano en ElevenLabs (los reconoce y sincroniza el grito aunque el archivo se llame distinto):
-
-```bash
-pip install faster-whisper
-python3 herramientas/importar_voces.py --casa gryffindor audios/*.mp3              # español
-python3 herramientas/importar_voces.py --idioma en --casa gryffindor audios/*.mp3  # inglés
-```
-
-## Consejos para la fiesta
-
-- **Voz del teléfono (respaldo):** si suena en inglés o no suena, ve a *Ajustes del teléfono → Sistema → Idioma → Salida de texto a voz*, elige "Servicios de voz de Google" e instala la voz en **español**. Después, en la app, toca ⚙ y prueba las voces hasta encontrar la que más suene a sombrero. Un **tono de 0.5 a 0.7** y una **velocidad de 0.8** funcionan bien.
-- **Sonido:** conecta una **bocina Bluetooth** pequeña y escóndela dentro del sombrero. Así la voz sale del sombrero.
-- **Volumen:** la app usa el volumen *multimedia* (el mismo de la música), tanto en la bocina del teléfono como en Bluetooth. Si está muy bajo, al abrir la app se sube al 80% y aparece un aviso rojo; también se ajusta en ⚙ → *Volumen* (con el botón *Probar sonido*). Los botones de volumen del teléfono suben y bajan el volumen; solo un control Bluetooth externo activa el sombrero.
-- **Efecto de magia:** compra un control Bluetooth para selfies. Deja el teléfono en una mesa (o escondido) y activa el sombrero desde lejos con el botón, sin que nadie vea.
-- **Antes de empezar:** abre ⚙ → *Reiniciar conteo* para que el reparto empiece en cero.
-- **Elegir tú la casa:** toca uno de los 4 escudos de abajo. El sombrero hace la ceremonia completa y termina en esa casa (útil para repetir una selección y grabarla). Por defecto no suma al conteo; se cambia en ⚙.
-- Toca la pantalla para pasar a la siguiente persona.
-
-### 🚶 Modo calle
-
-Arriba a la izquierda eliges el idioma (🇺🇸 EN / 🇲🇽 ES). Abajo aparecen los botones **"El sombrero invita a…"**: niño, niña, jovencito, jovencita, señor, señora o cualquiera. Al tocar uno, el sombrero dice una invitación (va alternando variantes). Si la persona acepta, toca *Comenzar selección* (o la pantalla): la ceremonia empieza directo en ese idioma, sin volver a preguntarlo. Se desactiva en ⚙ → *Modo calle*. Audios: `invitacion_<tipo>_<n>_en.mp3` (inglés) e `invitacion_<tipo>_<n>.mp3` (español), se importan con `importar_voces.py --especiales`.
-
-## Cambiar las frases, casas o colores
-
-- `app/src/main/assets/frases.json`: todo lo que dice el sombrero (virtudes, dudas, anuncios). El anuncio está escrito como se pronuncia, por ejemplo "¡Jáfelpaf!" para Hufflepuff.
-- `app/src/main/java/com/victordaz/sombrero/Casas.kt`: nombres, colores y lemas que se ven en pantalla.
-
-## Estructura del proyecto
+## Para programadores
 
 ```
 app/src/main/java/com/victordaz/sombrero/
-├── MainActivity.kt        Pantalla completa, pantalla encendida, control remoto
-├── PantallaSombrero.kt    Interfaz (Jetpack Compose): sombrero, estrellas, escudo, subtítulos
-├── SombreroDibujo.kt      Dibujo del sombrero con boca animada
-├── SombreroViewModel.kt   Lógica: elegir casa, decir el guion paso a paso
-├── VozDelSombrero.kt      Texto a voz del teléfono (respaldo)
-├── VozGrabada.kt          Reproduce los audios de assets/voz
-├── Ajustes.kt             Preferencias y contador guardados en el teléfono
+├── MainActivity.kt        Pantalla completa, control remoto, pausa al salir, brillo
+├── PantallaSombrero.kt    Interfaz (Jetpack Compose)
 ├── AjustesDialogo.kt      Ventana de ajustes
-├── Casas.kt               Nombres y colores de las casas
-└── Frases.kt              Lee frases.json y arma el guion
-app/src/main/assets/
-├── frases.json            Todo lo que dice el sombrero
-└── voz/                   Audios .mp3 de cada frase
-herramientas/
-├── generar_voces.py       Genera los audios con OpenAI o ElevenLabs
-└── GUION_GRABACION.md     Lista de frases y nombres de archivo
+├── SombreroViewModel.kt   La ceremonia paso a paso
+├── Reparto.kt             Reparto parejo entre casas y rotación sin repetir (con pruebas)
+├── Frases.kt              Lee frases.json (si tiene un error, avisa en vez de cerrarse)
+├── VozGrabada.kt          Reproduce los audios y sincroniza subtítulos y grito
+├── VozDelSombrero.kt      Voz del teléfono (respaldo)
+├── FondoMusical.kt        Música de fondo / silencio para el Bluetooth
+├── Volumen.kt             Volumen multimedia y foco de audio
+├── Ajustes.kt             Preferencias y conteo guardados
+├── Casas.kt · Idioma.kt · Publico.kt   Datos de casas, textos de pantalla y tipos de persona
+└── SombreroDibujo.kt      Dibujo del sombrero con boca animada
+app/src/test/              Pruebas: ./gradlew testReleaseUnitTest
+app/src/main/assets/       frases.json, voz/ (audios) y musica/
+herramientas/              Scripts de voces, música y validación
+arte/                      Ícono original
 ```
 
 ---
-*Proyecto de fans para un evento privado y sin fines de lucro. Harry Potter y los nombres de las casas son marcas de sus respectivos dueños.*
+*Proyecto de fans para eventos privados y sin fines de lucro. Harry Potter y los nombres de las casas son marcas de sus respectivos dueños.*

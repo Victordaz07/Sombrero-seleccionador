@@ -33,6 +33,8 @@ data class Textos(
     val escudoDe: String,
     val volumenBajo: String,
     val invitarA: String,
+    val musica: String,
+    val mantenerPresionado: String,
 ) {
     /** "¡GRYFFINDOR!" o "GRYFFINDOR!" según el idioma. */
     fun anuncio(casa: Casa, idioma: Idioma) =
@@ -63,6 +65,8 @@ fun textos(idioma: Idioma): Textos = when (idioma) {
         escudoDe = "Escudo de",
         volumenBajo = "🔇 El volumen está muy bajo · Toca aquí para subirlo",
         invitarA = "📣 EL SOMBRERO INVITA A…",
+        musica = "Música de fondo",
+        mantenerPresionado = "Mantén presionado para usar este botón",
     )
     Idioma.EN -> Textos(
         etiquetaInicio = "THE CEREMONY",
@@ -85,5 +89,7 @@ fun textos(idioma: Idioma): Textos = when (idioma) {
         escudoDe = "Crest of",
         volumenBajo = "🔇 Volume is too low · Tap here to turn it up",
         invitarA = "📣 THE HAT INVITES…",
+        musica = "Background music",
+        mantenerPresionado = "Press and hold to use this button",
     )
 }

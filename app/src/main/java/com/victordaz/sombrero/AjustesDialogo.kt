@@ -1,5 +1,6 @@
 package com.victordaz.sombrero
 
+import android.app.Activity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -39,6 +41,7 @@ import androidx.compose.ui.unit.sp
 fun AjustesDialogo(vm: SombreroViewModel, alCerrar: () -> Unit) {
     val a = vm.estadoAjustes
     val conteo = vm.estado.conteo
+    val actividad = LocalContext.current as? Activity
     var confirmarReinicio by remember { mutableStateOf(false) }
 
     MaterialTheme(colorScheme = darkColorScheme(
@@ -66,16 +69,41 @@ fun AjustesDialogo(vm: SombreroViewModel, alCerrar: () -> Unit) {
                     Slider(a.volumen, onValueChange = vm::cambiarVolumen, valueRange = 0f..1f)
                     OutlinedButton(onClick = vm::probarVoz, modifier = Modifier.fillMaxWidth()) { Text("🔊 Probar sonido") }
 
+                    Seccion("Música de fondo")
+                    FilaSwitch("Música mágica de fondo", a.musica, vm::cambiarMusica)
+                    if (a.musica) {
+                        Text("Volumen de la música: ${(a.volumenMusica * 100).toInt()}% (baja sola cuando habla el sombrero)", fontSize = 14.sp)
+                        Slider(a.volumenMusica, onValueChange = vm::cambiarVolumenMusica, valueRange = 0f..1f)
+                    } else {
+                        Text(
+                            "Sin música suena un silencio que no se oye, para que la bocina Bluetooth no se duerma " +
+                                "y no se corte la primera palabra del sombrero.",
+                            fontSize = 12.sp, color = Color.Gray,
+                        )
+                    }
+
+                    Seccion("Calle")
+                    FilaSwitch("Brillo al máximo mientras la app está abierta", a.brilloMaximo, vm::cambiarBrilloMaximo)
+                    Text(
+                        "Fijar la app: nadie puede salir de ella con los botones de Atrás o Inicio. " +
+                            "Para soltarla, usa el botón de abajo o mantén presionados Atrás y Recientes a la vez.",
+                        fontSize = 12.sp, color = Color.Gray,
+                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedButton(onClick = { actividad?.startLockTask() }, modifier = Modifier.weight(1f)) { Text("📌 Fijar") }
+                        OutlinedButton(onClick = { actividad?.let { runCatching { it.stopLockTask() } } }, modifier = Modifier.weight(1f)) {
+                            Text("Soltar")
+                        }
+                    }
+
                     Seccion("Voz")
                     FilaSwitch(
                         "Usar voces grabadas",
                         a.usarGrabaciones, vm::cambiarUsarGrabaciones,
                     )
                     Text(
-                        "Discursos completos con audio: ${a.discursosGrabados} de ${a.discursosTotales}\n" +
-                            "Frases sueltas con audio: ${a.frasesGrabadas} de ${a.frasesTotales}\n" +
-                            "Si una casa no tiene discursos, se arma con frases sueltas; " +
-                            "las frases sin audio usan la voz del teléfono:",
+                        "Discursos con audio en ${a.idioma.nombre}: ${a.discursosGrabados} de ${a.discursosTotales}. " +
+                            "Lo que no tenga audio lo dice la voz del teléfono:",
                         fontSize = 12.sp, color = Color.Gray,
                     )
                     Text("Tono: ${"%.2f".format(a.tono)} (más bajo = más grave)", fontSize = 14.sp)
@@ -100,8 +128,8 @@ fun AjustesDialogo(vm: SombreroViewModel, alCerrar: () -> Unit) {
                     FilaSwitch("Preguntar idioma a cada persona (English / Español)", a.preguntarIdioma, vm::cambiarPreguntarIdioma)
                     FilaSwitch("Repartir parejo entre casas", a.equilibrar, vm::cambiarEquilibrar)
                     Text(
-                        "Para elegir tú la casa (por ejemplo, para repetir una selección y grabarla), toca su escudo " +
-                            "abajo en la pantalla: el sombrero hace la ceremonia completa y termina en esa casa.",
+                        "Para elegir tú la casa (por ejemplo, para repetir una selección y grabarla), mantén presionado " +
+                            "su escudo abajo en la pantalla: el sombrero hace la ceremonia completa y termina en esa casa.",
                         fontSize = 12.sp, color = Color.Gray,
                     )
                     FilaSwitch("Sumar al conteo las casas elegidas a mano", a.contarManuales, vm::cambiarContarManuales)

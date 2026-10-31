@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -24,6 +25,9 @@ data class EstadoUi(
     val idioma: Idioma = Idioma.ES,
     /** El volumen multimedia está tan bajo que casi no se escucharía. */
     val volumenBajo: Boolean = false,
+    val musica: Boolean = true,
+    /** Problema al leer frases.json (la app sigue funcionando con lo que pudo leer). */
+    val aviso: String? = null,
 )
 
 data class EstadoAjustes(
@@ -38,9 +42,10 @@ data class EstadoAjustes(
     val modoCalle: Boolean,
     val contarManuales: Boolean,
     val volumen: Float,
+    val musica: Boolean,
+    val volumenMusica: Float,
+    val brilloMaximo: Boolean,
     val usarGrabaciones: Boolean,
-    val frasesGrabadas: Int,
-    val frasesTotales: Int,
     val discursosGrabados: Int,
     val discursosTotales: Int,
     val casasActivas: Set<String>,
@@ -51,15 +56,15 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     private val ajustes = Ajustes(app)
     private val frases = Frases.cargar(app)
     private val grabada = VozGrabada(app)
-    private val volumen = Volumen(app).also {
+    private val fondo = FondoMusical(app).apply { volumen = ajustes.volumenMusica }
+    private val volumen = Volumen(app, alPerderFoco = ::detener).also {
         // Para la fiesta: si al abrir la app el volumen multimedia está bajo, se sube.
         if (it.nivel < 0.5f) it.poner(0.8f, mostrarEnPantalla = false)
     }
     private var trabajo: Job? = null
 
-    /** Discursos pendientes por casa: se reparten todos antes de repetir alguno. */
-    private val colaDiscursos = mutableMapOf<String, ArrayDeque<Discurso>>()
-    private val ultimoDiscurso = mutableMapOf<String, String>()
+    /** Discursos: se usan todos antes de repetir alguno. */
+    private val rotador = Rotador<Discurso>(clave = { it.clave })
 
     /** Última versión dicha de cada frase que tiene variantes, para no repetirla seguida. */
     private val ultimaVersion = mutableMapOf<String, String>()
@@ -81,7 +86,10 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     var estado by mutableStateOf(
-        EstadoUi(conteo = ajustes.conteo(), idioma = ajustes.idioma, volumenBajo = volumen.nivel < 0.25f),
+        EstadoUi(
+            conteo = ajustes.conteo(), idioma = ajustes.idioma, volumenBajo = volumen.nivel < 0.25f,
+            musica = ajustes.musica, aviso = frases.error,
+        ),
     )
         private set
 
@@ -89,6 +97,10 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         private set
 
     val controlRemoto get() = ajustes.controlRemoto
+
+    init {
+        fondo.sonar(ajustes.musica)
+    }
 
     /** Se llama al tocar la pantalla o al presionar el control remoto. */
     fun alTocar() {
@@ -102,8 +114,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
             Fase.IDIOMA -> elegirIdioma(estado.idioma)
             Fase.PENSANDO -> Unit // el sombrero está pensando, no lo interrumpas
             Fase.REVELADO -> {
-                trabajo?.cancel()
-                voz.callar()
+                callar()
                 invitacionReciente = false
                 estado = estado.copy(fase = Fase.ESPERANDO, casa = null, subtitulo = "", hablando = false)
             }
@@ -112,9 +123,9 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
 
     /** El sombrero pregunta en qué idioma hablar; la respuesta llega con [elegirIdioma]. */
     private fun preguntarIdioma() {
-        trabajo = lanzar {
-            val pregunta = elegirVersion("pregunta", frases.preguntasIdioma)
-            estado = estado.copy(fase = Fase.IDIOMA, casa = null, subtitulo = pregunta.texto, hablando = true)
+        val pregunta = elegirVersion("pregunta", frases.preguntasIdioma)
+        estado = estado.copy(fase = Fase.IDIOMA, casa = null, subtitulo = pregunta.texto, hablando = true)
+        lanzar {
             decir(pregunta)
             estado = estado.copy(hablando = false)
         }
@@ -123,16 +134,11 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     /** La persona eligió idioma: el sombrero responde y empieza la selección en ese idioma. */
     fun elegirIdioma(idioma: Idioma) {
         if (estado.fase != Fase.IDIOMA) return
-        trabajo?.cancel()
-        voz.callar()
         aplicarIdioma(idioma)
         seleccionar(introduccion = elegirVersion("respuesta-${idioma.codigo}", frases.respuestasIdioma(idioma)))
     }
 
     private fun empezarCeremonia() {
-        // Si el sombrero estaba invitando, se interrumpe y empieza la ceremonia.
-        trabajo?.cancel()
-        voz.callar()
         val preguntar = ajustes.preguntarIdioma && !invitacionReciente
         invitacionReciente = false
         if (preguntar) preguntarIdioma() else seleccionar()
@@ -141,31 +147,23 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     /** Modo calle: el sombrero invita a quien va pasando, en el idioma elegido en pantalla. */
     fun invitar(publico: Publico) {
         if (estado.fase == Fase.PENSANDO || estado.fase == Fase.IDIOMA) return
-        trabajo?.cancel()
-        voz.callar()
         val versiones = frases.invitaciones[estado.idioma]?.get(publico).orEmpty()
         if (versiones.isEmpty()) return
         val invitacion = elegirVersion("invitacion-${estado.idioma.codigo}-${publico.id}", versiones)
         invitacionReciente = true
         estado = estado.copy(fase = Fase.ESPERANDO, casa = null, subtitulo = invitacion.texto, hablando = true)
-        trabajo = lanzar {
+        lanzar {
             decir(invitacion)
             estado = estado.copy(hablando = false)
         }
     }
 
-    fun cambiarModoCalle(v: Boolean) {
-        ajustes.modoCalle = v; refrescarAjustes()
-    }
-
     /**
-     * El operador eligió la casa tocando su escudo (por ejemplo, para repetir una selección y grabarla).
+     * El operador eligió la casa (toque largo en su escudo), por ejemplo para repetir una selección y grabarla.
      * La ceremonia es igual que siempre, pero termina en esa casa.
      */
     fun elegirCasaManual(casa: Casa) {
         if (estado.fase == Fase.PENSANDO || estado.fase == Fase.IDIOMA) return
-        trabajo?.cancel()
-        voz.callar()
         estado = estado.copy(fase = Fase.ESPERANDO, casa = null, subtitulo = "", hablando = false)
         casaManual = casa
         empezarCeremonia()
@@ -176,25 +174,24 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         val manual = casaManual
         casaManual = null
         sumarAlConteo = manual == null || ajustes.contarManuales
-        val casa = manual ?: elegirCasa(activas)
-        val guion = frases.guion(casa, activas - casa)
+        val casa = manual ?: Reparto.elegir(activas, ajustes.conteo(), ajustes.equilibrar)
 
-        trabajo = lanzar {
-            estado = estado.copy(fase = Fase.PENSANDO, casa = null, subtitulo = "")
+        estado = estado.copy(fase = Fase.PENSANDO, casa = null, subtitulo = introduccion?.texto ?: "")
+        lanzar {
             if (introduccion != null) {
-                estado = estado.copy(subtitulo = introduccion.texto, hablando = true)
+                estado = estado.copy(hablando = true)
                 decir(introduccion)
                 estado = estado.copy(hablando = false)
                 delay(200)
             } else {
                 delay(400)
             }
-            val discurso = if (ajustes.usarGrabaciones) siguienteDiscurso(casa) else null
+            val grabados = if (ajustes.usarGrabaciones) discursosDe(casa).filter { grabada.tiene(it.clave) } else emptyList()
+            val discurso = rotador.siguiente("${estado.idioma.codigo}-${casa.id}", grabados)
             when {
                 discurso != null -> decirDiscurso(casa, discurso)
-                // En inglés no hay frases sueltas: la voz del teléfono lee un discurso completo.
-                estado.idioma == Idioma.EN -> decirDiscursoConVoz(casa, discursosDe(casa).random())
-                else -> decirGuion(casa, guion)
+                // Sin audio grabado, la voz del teléfono lee un discurso completo.
+                else -> decirDiscursoConVoz(casa, discursosDe(casa).randomOrNull())
             }
         }
     }
@@ -203,20 +200,6 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         if (estado.fase == Fase.REVELADO) return
         if (sumarAlConteo) ajustes.sumar(casa.id)
         estado = estado.copy(fase = Fase.REVELADO, casa = casa, conteo = ajustes.conteo())
-    }
-
-    /** Respaldo: arma el discurso con frases sueltas (audio grabado o voz del teléfono). */
-    private suspend fun decirGuion(casa: Casa, guion: List<Linea>) {
-        for (linea in guion) {
-            if (linea.esAnuncio) revelar(casa)
-            estado = estado.copy(
-                subtitulo = if (linea.esAnuncio) anuncio(casa) else linea.texto,
-                hablando = true,
-            )
-            decir(linea)
-            estado = estado.copy(hablando = false)
-            delay(linea.pausaDespues)
-        }
     }
 
     /** Reproduce un discurso completo y sincroniza subtítulos y revelación con el audio. */
@@ -242,15 +225,17 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         revelar(casa)
     }
 
-    /** Sin audio grabado: la voz del teléfono lee el discurso frase por frase. */
-    private suspend fun decirDiscursoConVoz(casa: Casa, discurso: Discurso) {
-        discurso.segmentos.forEachIndexed { i, texto ->
-            val esAnuncio = i == discurso.indiceAnuncio
+    /** Sin audio grabado: la voz del teléfono lee el discurso frase por frase (o solo grita la casa). */
+    private suspend fun decirDiscursoConVoz(casa: Casa, discurso: Discurso?) {
+        val segmentos = discurso?.segmentos ?: listOf(anuncio(casa))
+        val indiceAnuncio = discurso?.indiceAnuncio ?: 0
+        segmentos.forEachIndexed { i, texto ->
+            val esAnuncio = i == indiceAnuncio
             if (esAnuncio) revelar(casa)
             estado = estado.copy(subtitulo = if (esAnuncio) anuncio(casa) else texto, hablando = true)
             voz.hablar(texto, enfasis = esAnuncio)
             estado = estado.copy(hablando = false)
-            delay(if (i == discurso.indiceAnuncio - 1) 900 else 250)
+            delay(if (i == indiceAnuncio - 1) 900 else 250)
         }
         revelar(casa)
     }
@@ -266,44 +251,68 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun anuncio(casa: Casa) = textos(estado.idioma).anuncio(casa, estado.idioma)
 
-    /** Elige un discurso grabado de la casa sin repetir hasta haber usado todos. */
-    private fun siguienteDiscurso(casa: Casa): Discurso? {
-        val grabados = discursosDe(casa).filter { grabada.tiene(it.clave) }
-        if (grabados.isEmpty()) return null
-        val clave = "${estado.idioma.codigo}-${casa.id}"
-        val cola = colaDiscursos.getOrPut(clave) { ArrayDeque() }
-        if (cola.isEmpty()) {
-            val mezcla = grabados.shuffled().toMutableList()
-            // Que el primero de la nueva vuelta no sea el mismo que acaba de sonar.
-            if (mezcla.size > 1 && mezcla.first().clave == ultimoDiscurso[clave]) {
-                mezcla.add(mezcla.removeAt(0))
-            }
-            cola.addAll(mezcla)
-        }
-        return cola.removeFirst().also { ultimoDiscurso[clave] = it.clave }
-    }
-
     /** Usa el audio grabado si existe; si no, la voz del teléfono. */
     private suspend fun decir(linea: Linea) {
         val sono = ajustes.usarGrabaciones && grabada.tiene(linea.clave) && grabada.reproducir(linea.clave)
-        if (!sono) voz.hablar(linea.texto, enfasis = linea.esAnuncio)
+        if (!sono) voz.hablar(linea.texto)
     }
 
-    private fun elegirCasa(activas: List<Casa>): Casa {
-        if (!ajustes.equilibrar) return activas.random()
-        // Elige al azar entre las casas que tienen menos personas, para que queden parejas.
-        val conteo = ajustes.conteo()
-        val minimo = activas.minOf { conteo[it.id] ?: 0 }
-        return activas.filter { (conteo[it.id] ?: 0) == minimo }.random()
+    /**
+     * Corre una parte de la ceremonia. Antes espera a que la anterior termine de callarse
+     * (así nunca suenan dos audios encimados), pide el foco de audio y baja la música.
+     */
+    private fun lanzar(bloque: suspend () -> Unit) {
+        val anterior = trabajo
+        voz.callar()
+        trabajo = viewModelScope.launch {
+            anterior?.cancelAndJoin()
+            refrescarVolumen()
+            volumen.pedirFoco()
+            fondo.atenuar(true)
+            try {
+                bloque()
+            } finally {
+                fondo.atenuar(false)
+                volumen.soltarFoco()
+            }
+        }
+    }
+
+    private fun callar() {
+        trabajo?.cancel()
+        voz.callar()
+    }
+
+    /**
+     * Se interrumpe todo: la app pasó a segundo plano o entró una llamada.
+     * Si la casa ya se reveló se queda en pantalla; si no, vuelve al inicio.
+     */
+    fun detener() {
+        callar()
+        invitacionReciente = false
+        estado = if (estado.fase == Fase.REVELADO) {
+            estado.copy(hablando = false)
+        } else {
+            estado.copy(fase = Fase.ESPERANDO, casa = null, subtitulo = "", hablando = false)
+        }
+    }
+
+    fun alSalir() {
+        detener()
+        fondo.pausar()
+    }
+
+    fun alVolver() {
+        refrescarVolumen()
+        fondo.reanudar()
     }
 
     // ----- Ajustes -----
 
     fun probarVoz() {
         if (estado.fase != Fase.ESPERANDO) return
-        trabajo?.cancel()
-        trabajo = lanzar {
-            estado = estado.copy(hablando = true)
+        estado = estado.copy(hablando = true)
+        lanzar {
             // Si hay audio grabado de la respuesta de idioma, se prueba con ese (es el mismo camino que la ceremonia).
             val respuesta = frases.respuestasIdioma(estado.idioma).first()
             decir(if (grabada.tiene(respuesta.clave)) respuesta else frases.prueba(estado.idioma))
@@ -311,12 +320,12 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    /** Cambio de idioma desde Ajustes: detiene lo que esté pasando y vuelve al inicio. */
+    /** Cambio de idioma (selector de la pantalla o Ajustes): detiene lo que esté pasando y vuelve al inicio. */
     fun cambiarIdioma(nuevo: Idioma) {
         if (nuevo == ajustes.idioma) return
-        trabajo?.cancel()
-        voz.callar()
+        callar()
         casaManual = null
+        invitacionReciente = false
         estado = estado.copy(fase = Fase.ESPERANDO, casa = null, subtitulo = "", hablando = false)
         aplicarIdioma(nuevo)
     }
@@ -328,6 +337,29 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         aplicarAjustesDeVoz()
         estado = estado.copy(idioma = nuevo, vozLista = if (estado.vozLista == null) null else lista)
         refrescarAjustes()
+    }
+
+    fun alternarMusica() = cambiarMusica(!ajustes.musica)
+
+    fun cambiarMusica(v: Boolean) {
+        ajustes.musica = v
+        fondo.sonar(v)
+        estado = estado.copy(musica = v)
+        refrescarAjustes()
+    }
+
+    fun cambiarVolumenMusica(v: Float) {
+        ajustes.volumenMusica = v
+        fondo.volumen = v
+        refrescarAjustes()
+    }
+
+    fun cambiarBrilloMaximo(v: Boolean) {
+        ajustes.brilloMaximo = v; refrescarAjustes()
+    }
+
+    fun cambiarModoCalle(v: Boolean) {
+        ajustes.modoCalle = v; refrescarAjustes()
     }
 
     fun cambiarContarManuales(v: Boolean) {
@@ -395,9 +427,10 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         modoCalle = ajustes.modoCalle,
         contarManuales = ajustes.contarManuales,
         volumen = volumen.nivel,
+        musica = ajustes.musica,
+        volumenMusica = ajustes.volumenMusica,
+        brilloMaximo = ajustes.brilloMaximo,
         usarGrabaciones = ajustes.usarGrabaciones,
-        frasesGrabadas = frases.todas.count { grabada.tiene(it.clave) },
-        frasesTotales = frases.todas.size,
         discursosGrabados = frases.discursos.getValue(ajustes.idioma).values.flatten().count { grabada.tiene(it.clave) },
         discursosTotales = frases.discursos.getValue(ajustes.idioma).values.sumOf { it.size },
         casasActivas = ajustes.casasActivas,
@@ -405,17 +438,6 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun refrescarAjustes() {
         estadoAjustes = leerAjustes()
-    }
-
-    /** Corre una parte de la ceremonia con el foco de audio, para que nada más suene encima. */
-    private fun lanzar(bloque: suspend () -> Unit) = viewModelScope.launch {
-        refrescarVolumen()
-        volumen.pedirFoco()
-        try {
-            bloque()
-        } finally {
-            volumen.soltarFoco()
-        }
     }
 
     fun refrescarVolumen() {
@@ -435,5 +457,6 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
 
     override fun onCleared() {
         voz.apagar()
+        fondo.liberar()
     }
 }
