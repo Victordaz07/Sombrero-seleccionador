@@ -53,17 +53,6 @@ class Frases(json: JSONObject, val error: String? = null) {
     )
 
     /**
-     * Versiones de la pregunta bilingüe y de sus respuestas; el sombrero las va alternando.
-     * Claves: `pregunta_idioma`, `pregunta_idioma_2`... y `respuesta_idioma_es`, `respuesta_idioma_es_2`...
-     */
-    private val textosIdioma = json.optJSONObject("idioma") ?: JSONObject()
-    val preguntasIdioma = versiones("preguntas", "pregunta_idioma", "Do you prefer English... ¿o prefieres español?")
-    private val respuestasEs = versiones("respuestas_es", "respuesta_idioma_es", "¡Perfecto!")
-    private val respuestasEn = versiones("respuestas_en", "respuesta_idioma_en", "Perfect!")
-
-    fun respuestasIdioma(idioma: Idioma) = if (idioma == Idioma.EN) respuestasEn else respuestasEs
-
-    /**
      * Invitaciones del modo calle, por idioma y tipo de persona.
      * Claves: `invitacion_nino_1_en` (inglés) e `invitacion_nino_1` (español).
      */
@@ -75,13 +64,6 @@ class Frases(json: JSONObject, val error: String? = null) {
             List(lista.length()) { i ->
                 Linea("invitacion_${publico.id}_${i + 1}$sufijo", sinEtiquetas(lista.optString(i)))
             }
-        }
-    }
-
-    private fun versiones(campo: String, clave: String, porDefecto: String): List<Linea> {
-        val lista = textosIdioma.optJSONArray(campo) ?: JSONArray().put(porDefecto)
-        return List(lista.length()) { i ->
-            Linea(if (i == 0) clave else "${clave}_${i + 1}", sinEtiquetas(lista.optString(i)))
         }
     }
 

@@ -31,8 +31,7 @@ class FrasesTest {
     @Test
     fun losSubtitulosNoMuestranEtiquetasDeEmocion() {
         val textos = frases.discursos.values.flatMap { it.values }.flatten().flatMap { it.segmentos } +
-            frases.invitaciones.values.flatMap { it.values }.flatten().map { it.texto } +
-            frases.preguntasIdioma.map { it.texto }
+            frases.invitaciones.values.flatMap { it.values }.flatten().map { it.texto }
         textos.forEach { assertFalse(it, it.contains("[")) }
     }
 
@@ -49,6 +48,6 @@ class FrasesTest {
     fun unArchivoVacioNoRompeLaApp() {
         val vacio = Frases(JSONObject())
         assertTrue(vacio.discursos.getValue(Idioma.ES).getValue("gryffindor").isEmpty())
-        assertTrue(vacio.preguntasIdioma.isNotEmpty())
+        assertTrue(vacio.invitaciones.getValue(Idioma.EN).getValue(Publico.TODOS).isEmpty())
     }
 }

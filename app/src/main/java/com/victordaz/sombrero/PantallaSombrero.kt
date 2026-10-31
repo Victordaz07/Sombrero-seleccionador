@@ -100,8 +100,7 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
     }
     Box(Modifier.fillMaxSize().background(Tinta).clickable(
         interactionSource = remember { MutableInteractionSource() }, indication = null,
-        // Mientras pregunta el idioma hay que elegir con los botones, no tocando el fondo.
-        enabled = estado.fase != Fase.PENSANDO && estado.fase != Fase.IDIOMA,
+        enabled = estado.fase != Fase.PENSANDO,
         onClickLabel = if (estado.fase == Fase.REVELADO) t.botonSiguiente else t.botonComenzar,
         onClick = vm::alTocar,
     )) {
@@ -137,7 +136,7 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
                     ) {
                         Subtitulo(estado)
                         if (vm.estadoAjustes.modoCalle) PanelInvitacion(estado, vm::invitar)
-                        Accion(estado, vm::alTocar, vm::elegirIdioma)
+                        Accion(estado, vm::alTocar)
                         PiePagina(estado, vm.estadoAjustes.casasActivas, vm::elegirCasaManual, compacto = calle) {
                             pista = t.mantenerPresionado
                         }
@@ -165,7 +164,7 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
                     ) {
                         Subtitulo(estado)
                         if (vm.estadoAjustes.modoCalle) PanelInvitacion(estado, vm::invitar)
-                        Accion(estado, vm::alTocar, vm::elegirIdioma)
+                        Accion(estado, vm::alTocar)
                         PiePagina(estado, vm.estadoAjustes.casasActivas, vm::elegirCasaManual, compacto = calle) {
                             pista = t.mantenerPresionado
                         }
@@ -319,7 +318,6 @@ private fun Subtitulo(estado: EstadoUi) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(when {
-            estado.fase == Fase.IDIOMA -> "ENGLISH · ESPAÑOL"
             estado.hablando -> t.estadoHablando
             estado.fase == Fase.PENSANDO -> t.estadoPensando
             estado.fase == Fase.REVELADO -> t.estadoRevelado
@@ -334,12 +332,8 @@ private fun Subtitulo(estado: EstadoUi) {
 }
 
 @Composable
-private fun Accion(estado: EstadoUi, alTocar: () -> Unit, alElegirIdioma: (Idioma) -> Unit) {
+private fun Accion(estado: EstadoUi, alTocar: () -> Unit) {
     val t = textos(estado.idioma)
-    if (estado.fase == Fase.IDIOMA) {
-        BotonesIdioma(alElegirIdioma)
-        return
-    }
     // Mientras invita (ESPERANDO + hablando) sí se puede empezar: la persona aceptó.
     val disponible = estado.fase != Fase.PENSANDO && !(estado.hablando && estado.fase != Fase.ESPERANDO)
     OutlinedButton(
@@ -389,7 +383,7 @@ private fun IndicadorBateria(modifier: Modifier = Modifier) {
 /** Idioma de la ceremonia, siempre a la vista (arriba a la izquierda). */
 @Composable
 private fun SelectorIdioma(estado: EstadoUi, alCambiar: (Idioma) -> Unit, modifier: Modifier = Modifier) {
-    val activo = estado.fase != Fase.PENSANDO && estado.fase != Fase.IDIOMA
+    val activo = estado.fase != Fase.PENSANDO
     Row(
         modifier.background(Tinta.copy(alpha = 0.75f), RoundedCornerShape(20.dp))
             .border(1.dp, Dorado.copy(alpha = 0.4f), RoundedCornerShape(20.dp)).padding(3.dp),
@@ -436,23 +430,6 @@ private fun PanelInvitacion(estado: EstadoUi, alInvitar: (Publico) -> Unit) {
                             fontWeight = FontWeight.Bold, maxLines = 1)
                     }
                 }
-            }
-        }
-    }
-}
-
-/** Los dos botones para responder la pregunta del sombrero. */
-@Composable
-private fun BotonesIdioma(alElegir: (Idioma) -> Unit) {
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        listOf(Idioma.EN to "🇺🇸  English", Idioma.ES to "🇲🇽  Español").forEach { (idioma, etiqueta) ->
-            Button(
-                onClick = { alElegir(idioma) },
-                modifier = Modifier.weight(1f).heightIn(min = 64.dp),
-                shape = RoundedCornerShape(28.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Dorado, contentColor = Tinta),
-            ) {
-                Text(etiqueta, fontFamily = FontFamily.Serif, fontWeight = FontWeight.Bold, fontSize = 19.sp)
             }
         }
     }

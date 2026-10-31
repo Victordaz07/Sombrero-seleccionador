@@ -44,22 +44,12 @@ Haz una pausa de suspenso antes del nombre de la casa (en **negritas**) y gríta
 | `slytherin_discurso_3_en.mp3` | [curious] Hmm... a big heart? Yes, yes... [excited] But what a will of IRON! [impressed] You fall... and you get back up STRONGER! [excited] Decided! You belong to... **[shouting] SLYTHERIN!** |
 | `slytherin_discurso_4_en.mp3` | [laughs harder] HA HA! Brilliant ideas... and a little bit mischievous! [mischievously] You organize the game, you make the rules... and you look after your own! [excited] A BORN leader! Your house is... **[shouting] SLYTHERIN!** |
 
-## Pregunta de idioma e invitaciones
+## Invitaciones (modo calle)
 
-Antes de cada persona el sombrero pregunta en qué idioma hablar y responde según lo que elijan.
-Las invitaciones (`invitacion_*`) son para el modo calle: el sombrero llama a quien va pasando.
+El sombrero llama a quien va pasando, según el tipo de persona.
 
 | Archivo | Frase |
 |---|---|
-| `pregunta_idioma.mp3` | [curious] Hmm... a new head! [mischievously] Tell me, tell me... do you prefer ENGLISH... [excited] ¿o prefieres que te hable en ESPAÑOL? |
-| `pregunta_idioma_2.mp3` | [curious] Hmm... before I peek inside that head... English or Spanish? [mischievously] ¿Inglés o español? [laughs] ¡Tú escoges! |
-| `pregunta_idioma_3.mp3` | [mischievously] Ahh, another brave soul! [curious] Quick question... English... [excited] ¿o español? [laughs] ¡Dímelo rápido! |
-| `respuesta_idioma_es.mp3` | [excited] ¡Perfecto! [mischievously] Ahora sí... ¡vamos a ver a qué casa te vamos a enviar! |
-| `respuesta_idioma_es_2.mp3` | [laughs] ¡Excelente elección! [excited] Ahora déjame mirar bien dentro de esa cabeza... |
-| `respuesta_idioma_es_3.mp3` | [excited] ¡Muy bien! [mischievously] Entonces... ¡que comience la selección! |
-| `respuesta_idioma_en.mp3` | [excited] Perfect! [mischievously] Now then... let's see which house we're sending you to! |
-| `respuesta_idioma_en_2.mp3` | [laughs] Excellent choice! [excited] Now let me take a good look inside that head... |
-| `respuesta_idioma_en_3.mp3` | [excited] Very well! [mischievously] Then... let the sorting BEGIN! |
 | `invitacion_nino_1_en.mp3` | [excited] Hey, you there, young man! [mischievously] Yes, YOU! Want to know which magical house you belong to? [laughs] Come and try me on! |
 | `invitacion_nino_2_en.mp3` | [excited] Hello, family! [mischievously] Would your little adventurer like to meet a magical talking hat? [laughs] It's free! |
 | `invitacion_nino_3_en.mp3` | [laughs] HA! A brave young hero! [excited] Come closer... I want to tell you which house is YOURS! |

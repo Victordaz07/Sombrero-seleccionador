@@ -10,7 +10,7 @@ Hay dos tipos de audio:
 - Discursos: 4 actuaciones completas por casa (16 audios). Es lo recomendado: suenan
   más naturales porque se dicen de corrido. Con ElevenLabs también se guarda
   <clave>.json con el segundo exacto de cada frase, para sincronizar subtítulos y la revelación.
-- Pregunta de idioma, respuestas e invitaciones del modo calle (frases cortas).
+- Invitaciones del modo calle (frases cortas).
 
 Uso (desde la carpeta del proyecto):
 
@@ -125,14 +125,6 @@ def cargar_frases(datos):
                 clave = f"{casa}_discurso_{i + 1}{sufijo}"
                 frases.append(Frase(clave, " ".join(segmentos), segmentos, crudos.index(ANUNCIO)))
 
-    # Pregunta bilingüe antes de cada persona y sus dos respuestas.
-    # Cada una puede tener varias versiones: pregunta_idioma, pregunta_idioma_2, ...
-    idioma = datos.get("idioma", {})
-    for clave, campo in [("pregunta_idioma", "preguntas"), ("respuesta_idioma_es", "respuestas_es"),
-                         ("respuesta_idioma_en", "respuestas_en")]:
-        for i, texto in enumerate(idioma.get(campo, [])):
-            frases.append(Frase(clave if i == 0 else f"{clave}_{i + 1}", texto))
-
     # Invitaciones del modo calle: invitacion_<tipo>_<n>_en (inglés) e invitacion_<tipo>_<n> (español).
     for codigo, sufijo in [("en", "_en"), ("es", "")]:
         for tipo, lista in datos.get("invitaciones", {}).get(codigo, {}).items():
@@ -174,14 +166,13 @@ def escribir_guion(frases):
         if f.es_discurso:
             partes = [f"**{s}**" if i == f.indice_anuncio else s for i, s in enumerate(f.segmentos)]
             lineas.append(f"| `{f.clave}.mp3` | {' '.join(partes)} |")
-    especiales = [f for f in frases if f.clave.startswith(("pregunta_idioma", "respuesta_idioma", "invitacion_"))]
+    especiales = [f for f in frases if f.clave.startswith("invitacion_")]
     if especiales:
         lineas += [
             "",
-            "## Pregunta de idioma e invitaciones",
+            "## Invitaciones (modo calle)",
             "",
-            "Antes de cada persona el sombrero pregunta en qué idioma hablar y responde según lo que elijan.",
-            "Las invitaciones (`invitacion_*`) son para el modo calle: el sombrero llama a quien va pasando.",
+            "El sombrero llama a quien va pasando, según el tipo de persona.",
             "",
             "| Archivo | Frase |",
             "|---|---|",

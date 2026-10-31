@@ -11,8 +11,7 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-/** IDIOMA = el sombrero preguntó "English o español" y espera la respuesta. */
-enum class Fase { ESPERANDO, IDIOMA, PENSANDO, REVELADO }
+enum class Fase { ESPERANDO, PENSANDO, REVELADO }
 
 data class EstadoUi(
     val fase: Fase = Fase.ESPERANDO,
@@ -38,7 +37,6 @@ data class EstadoAjustes(
     val voces: List<Pair<String, String>>, // nombre interno -> nombre para mostrar
     val equilibrar: Boolean,
     val controlRemoto: Boolean,
-    val preguntarIdioma: Boolean,
     val modoCalle: Boolean,
     val contarManuales: Boolean,
     val volumen: Float,
@@ -66,9 +64,6 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
 
     /** Última versión dicha de cada frase que tiene variantes, para no repetirla seguida. */
     private val ultimaVersion = mutableMapOf<String, String>()
-
-    /** Tras una invitación el idioma ya está elegido: la ceremonia no vuelve a preguntarlo. */
-    private var invitacionReciente = false
 
     /** Casa elegida a mano para la próxima ceremonia (null = la elige el sombrero). */
     private var casaManual: Casa? = null
@@ -106,49 +101,22 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         when (estado.fase) {
             Fase.ESPERANDO -> {
                 casaManual = null
-                empezarCeremonia()
+                seleccionar()
             }
-            // Con el control remoto se confirma el idioma actual.
-            Fase.IDIOMA -> elegirIdioma(estado.idioma)
             Fase.PENSANDO -> Unit // el sombrero está pensando, no lo interrumpas
             Fase.REVELADO -> {
                 callar()
-                invitacionReciente = false
                 estado = estado.copy(fase = Fase.ESPERANDO, casa = null, subtitulo = "", hablando = false)
             }
         }
     }
 
-    /** El sombrero pregunta en qué idioma hablar; la respuesta llega con [elegirIdioma]. */
-    private fun preguntarIdioma() {
-        val pregunta = elegirVersion("pregunta", frases.preguntasIdioma)
-        estado = estado.copy(fase = Fase.IDIOMA, casa = null, subtitulo = pregunta.texto, hablando = true)
-        lanzar {
-            decir(pregunta)
-            estado = estado.copy(hablando = false)
-        }
-    }
-
-    /** La persona eligió idioma: el sombrero responde y empieza la selección en ese idioma. */
-    fun elegirIdioma(idioma: Idioma) {
-        if (estado.fase != Fase.IDIOMA) return
-        aplicarIdioma(idioma)
-        seleccionar(introduccion = elegirVersion("respuesta-${idioma.codigo}", frases.respuestasIdioma(idioma)))
-    }
-
-    private fun empezarCeremonia() {
-        val preguntar = ajustes.preguntarIdioma && !invitacionReciente
-        invitacionReciente = false
-        if (preguntar) preguntarIdioma() else seleccionar()
-    }
-
     /** Modo calle: el sombrero invita a quien va pasando, en el idioma elegido en pantalla. */
     fun invitar(publico: Publico) {
-        if (estado.fase == Fase.PENSANDO || estado.fase == Fase.IDIOMA) return
+        if (estado.fase == Fase.PENSANDO) return
         val versiones = frases.invitaciones[estado.idioma]?.get(publico).orEmpty()
         if (versiones.isEmpty()) return
         val invitacion = elegirVersion("invitacion-${estado.idioma.codigo}-${publico.id}", versiones)
-        invitacionReciente = true
         estado = estado.copy(fase = Fase.ESPERANDO, casa = null, subtitulo = invitacion.texto, hablando = true)
         lanzar {
             decir(invitacion)
@@ -161,29 +129,22 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
      * La ceremonia es igual que siempre, pero termina en esa casa.
      */
     fun elegirCasaManual(casa: Casa) {
-        if (estado.fase == Fase.PENSANDO || estado.fase == Fase.IDIOMA) return
+        if (estado.fase == Fase.PENSANDO) return
         estado = estado.copy(fase = Fase.ESPERANDO, casa = null, subtitulo = "", hablando = false)
         casaManual = casa
-        empezarCeremonia()
+        seleccionar()
     }
 
-    private fun seleccionar(introduccion: Linea? = null) {
+    private fun seleccionar() {
         val activas = CASAS.filter { it.id in ajustes.casasActivas }.ifEmpty { CASAS }
         val manual = casaManual
         casaManual = null
         sumarAlConteo = manual == null || ajustes.contarManuales
         val casa = manual ?: Reparto.elegir(activas, ajustes.conteo(), ajustes.equilibrar)
 
-        estado = estado.copy(fase = Fase.PENSANDO, casa = null, subtitulo = introduccion?.texto ?: "")
+        estado = estado.copy(fase = Fase.PENSANDO, casa = null, subtitulo = "")
         lanzar {
-            if (introduccion != null) {
-                estado = estado.copy(hablando = true)
-                decir(introduccion)
-                estado = estado.copy(hablando = false)
-                delay(200)
-            } else {
-                delay(400)
-            }
+            delay(400)
             val grabados = if (ajustes.usarGrabaciones) discursosDe(casa).filter { grabada.tiene(it.clave) } else emptyList()
             val discurso = rotador.siguiente("${estado.idioma.codigo}-${casa.id}", grabados)
             when {
@@ -291,7 +252,6 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
      */
     fun detener() {
         callar()
-        invitacionReciente = false
         estado = if (estado.fase == Fase.REVELADO) {
             estado.copy(hablando = false)
         } else {
@@ -315,9 +275,9 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         if (estado.fase != Fase.ESPERANDO) return
         estado = estado.copy(hablando = true)
         lanzar {
-            // Si hay audio grabado de la respuesta de idioma, se prueba con ese (es el mismo camino que la ceremonia).
-            val respuesta = frases.respuestasIdioma(estado.idioma).first()
-            decir(if (grabada.tiene(respuesta.clave)) respuesta else frases.prueba(estado.idioma))
+            // Se prueba con una invitación grabada (es el mismo camino que la ceremonia); si no hay, con la voz del teléfono.
+            val invitacion = frases.invitaciones[estado.idioma]?.get(Publico.TODOS)?.firstOrNull { grabada.tiene(it.clave) }
+            decir(invitacion ?: frases.prueba(estado.idioma))
             estado = estado.copy(hablando = false)
         }
     }
@@ -327,7 +287,6 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         if (nuevo == ajustes.idioma) return
         callar()
         casaManual = null
-        invitacionReciente = false
         estado = estado.copy(fase = Fase.ESPERANDO, casa = null, subtitulo = "", hablando = false)
         aplicarIdioma(nuevo)
     }
@@ -366,10 +325,6 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
 
     fun cambiarContarManuales(v: Boolean) {
         ajustes.contarManuales = v; refrescarAjustes()
-    }
-
-    fun cambiarPreguntarIdioma(v: Boolean) {
-        ajustes.preguntarIdioma = v; refrescarAjustes()
     }
 
     fun cambiarTono(v: Float) {
@@ -425,7 +380,6 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         },
         equilibrar = ajustes.equilibrar,
         controlRemoto = ajustes.controlRemoto,
-        preguntarIdioma = ajustes.preguntarIdioma,
         modoCalle = ajustes.modoCalle,
         contarManuales = ajustes.contarManuales,
         volumen = volumen.nivel,

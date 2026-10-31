@@ -14,7 +14,7 @@ Uso:
     python3 herramientas/importar_voces.py audio1.mp3 audio2.mp3 ...
     python3 herramientas/importar_voces.py --casa hufflepuff *.mp3     # solo busca entre esa casa
     python3 herramientas/importar_voces.py --idioma en *.mp3            # discursos en inglés
-    python3 herramientas/importar_voces.py --especiales *.mp3           # pregunta de idioma e invitaciones
+    python3 herramientas/importar_voces.py --especiales *.mp3           # invitaciones del modo calle
     python3 herramientas/importar_voces.py --simular *.mp3              # muestra qué haría
 """
 
@@ -103,7 +103,7 @@ def main():
     p.add_argument("audios", nargs="+", type=Path)
     p.add_argument("--casa", help="solo compara con los discursos de esta casa")
     p.add_argument("--idioma", choices=["es", "en"], default="es", help="idioma de los audios")
-    p.add_argument("--especiales", action="store_true", help="pregunta de idioma y sus respuestas")
+    p.add_argument("--especiales", action="store_true", help="invitaciones del modo calle (en inglés o español)")
     p.add_argument("--modelo", default="small", help="modelo de Whisper: tiny, base, small, medium")
     p.add_argument("--simular", action="store_true", help="muestra qué haría, sin copiar nada")
     args = p.parse_args()
@@ -115,7 +115,7 @@ def main():
         # Frases de un solo tramo: se tratan como un "discurso" sin anuncio.
         discursos = [
             Frase(f.clave, f.texto, [f.texto], 1) for f in todas
-            if f.clave.startswith(("pregunta_idioma", "respuesta_idioma", "invitacion_"))
+            if f.clave.startswith("invitacion_")
         ]
     else:
         discursos = [f for f in todas if f.es_discurso and f.en_ingles == (args.idioma == "en")]
@@ -125,7 +125,7 @@ def main():
 
     usados = {}
     for ruta in args.audios:
-        # La pregunta mezcla inglés y español: que Whisper detecte el idioma solo.
+        # Hay invitaciones en inglés y en español: que Whisper detecte el idioma solo.
         palabras = transcribir(modelo, ruta, None if args.especiales else args.idioma)
         puntajes = sorted(((parecido(d, palabras), d) for d in discursos), key=lambda x: -x[0])
         puntaje, discurso = puntajes[0]
