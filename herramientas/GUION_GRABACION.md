@@ -61,10 +61,10 @@ Las invitaciones (`invitacion_*`) son para el modo calle: el sombrero llama a qu
 | `respuesta_idioma_en_2.mp3` | [laughs] Excellent choice! [excited] Now let me take a good look inside that head... |
 | `respuesta_idioma_en_3.mp3` | [excited] Very well! [mischievously] Then... let the sorting BEGIN! |
 | `invitacion_nino_1_en.mp3` | [excited] Hey, you there, young man! [mischievously] Yes, YOU! Want to know which magical house you belong to? [laughs] Come and try me on! |
-| `invitacion_nino_2_en.mp3` | [curious] Psst... little adventurer! [excited] I can see courage in your eyes! [mischievously] Ask your mom or dad if you can try me on! |
+| `invitacion_nino_2_en.mp3` | [excited] Hello, family! [mischievously] Would your little adventurer like to meet a magical talking hat? [laughs] It's free! |
 | `invitacion_nino_3_en.mp3` | [laughs] HA! A brave young hero! [excited] Come closer... I want to tell you which house is YOURS! |
 | `invitacion_nina_1_en.mp3` | [excited] Hello there, young lady! [mischievously] Yes, YOU! Want to find out which magical house is yours? [laughs] Come and try me on! |
-| `invitacion_nina_2_en.mp3` | [curious] Psst... little star! [excited] I can see something special in you! [mischievously] Ask your mom or dad if you can try me on! |
+| `invitacion_nina_2_en.mp3` | [excited] Hello there, family! [mischievously] Would your little star like to discover her magical house? [laughs] It's free! |
 | `invitacion_nina_3_en.mp3` | [laughs] Oh my! A brilliant young princess! [excited] Come closer... let me tell you which house is YOURS! |
 | `invitacion_joven_m_1_en.mp3` | [excited] Hey, you! Yeah, the cool guy right there! [mischievously] Think you know which house you belong to? [laughs] Prove it... try me on! |
 | `invitacion_joven_m_2_en.mp3` | [curious] Hmm... I sense a future leader walking by! [excited] Come here, young man... let's find your house! |
@@ -76,7 +76,7 @@ Las invitaciones (`invitacion_*`) son para el modo calle: el sombrero llama a qu
 | `invitacion_senor_2_en.mp3` | [curious] Excuse me, sir... [excited] I've sorted thousands of heads, and yours looks VERY interesting! [laughs] Shall we? |
 | `invitacion_senor_3_en.mp3` | [laughs] Sir! Yes, you, sir! [mischievously] Brave enough to let a talking hat read your mind? |
 | `invitacion_senora_1_en.mp3` | [excited] Hello there, ma'am! [mischievously] I can tell you have a kind and wise heart! [laughs] Want to discover your house? |
-| `invitacion_senora_2_en.mp3` | [curious] Excuse me, ma'am... [excited] I've sorted thousands of heads, and yours looks WONDERFUL! [laughs] Shall we? |
+| `invitacion_senora_2_en.mp3` | [curious] Excuse me, ma'am... [excited] Would you like to discover your magical house? [laughs] It only takes a moment! |
 | `invitacion_senora_3_en.mp3` | [laughs] Oh, ma'am! Yes, you! [mischievously] Would you let a magical talking hat guess your house? |
 | `invitacion_todos_1_en.mp3` | [excited] Hey there! Yes, YOU! [mischievously] Want to find out which magical house you belong to? [laughs] Come and try me on! |
 | `invitacion_todos_2_en.mp3` | [curious] Psst... over here! [excited] A talking hat! [laughs] Don't be scared... I don't bite! Come and try me on! |

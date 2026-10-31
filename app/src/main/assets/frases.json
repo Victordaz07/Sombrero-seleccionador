@@ -357,12 +357,12 @@
     "en": {
       "nino": [
         "[excited] Hey, you there, young man! [mischievously] Yes, YOU! Want to know which magical house you belong to? [laughs] Come and try me on!",
-        "[curious] Psst... little adventurer! [excited] I can see courage in your eyes! [mischievously] Ask your mom or dad if you can try me on!",
+        "[excited] Hello, family! [mischievously] Would your little adventurer like to meet a magical talking hat? [laughs] It's free!",
         "[laughs] HA! A brave young hero! [excited] Come closer... I want to tell you which house is YOURS!"
       ],
       "nina": [
         "[excited] Hello there, young lady! [mischievously] Yes, YOU! Want to find out which magical house is yours? [laughs] Come and try me on!",
-        "[curious] Psst... little star! [excited] I can see something special in you! [mischievously] Ask your mom or dad if you can try me on!",
+        "[excited] Hello there, family! [mischievously] Would your little star like to discover her magical house? [laughs] It's free!",
         "[laughs] Oh my! A brilliant young princess! [excited] Come closer... let me tell you which house is YOURS!"
       ],
       "joven_m": [
@@ -382,7 +382,7 @@
       ],
       "senora": [
         "[excited] Hello there, ma'am! [mischievously] I can tell you have a kind and wise heart! [laughs] Want to discover your house?",
-        "[curious] Excuse me, ma'am... [excited] I've sorted thousands of heads, and yours looks WONDERFUL! [laughs] Shall we?",
+        "[curious] Excuse me, ma'am... [excited] Would you like to discover your magical house? [laughs] It only takes a moment!",
         "[laughs] Oh, ma'am! Yes, you! [mischievously] Would you let a magical talking hat guess your house?"
       ],
       "todos": [
