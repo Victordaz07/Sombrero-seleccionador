@@ -60,6 +60,9 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     private val colaDiscursos = mutableMapOf<String, ArrayDeque<Discurso>>()
     private val ultimoDiscurso = mutableMapOf<String, String>()
 
+    /** Última versión dicha de cada frase que tiene variantes, para no repetirla seguida. */
+    private val ultimaVersion = mutableMapOf<String, String>()
+
     /** Casa elegida a mano para la próxima ceremonia (null = la elige el sombrero). */
     private var casaManual: Casa? = null
 
@@ -105,7 +108,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     /** El sombrero pregunta en qué idioma hablar; la respuesta llega con [elegirIdioma]. */
     private fun preguntarIdioma() {
         trabajo = lanzar {
-            val pregunta = frases.preguntaIdioma
+            val pregunta = elegirVersion("pregunta", frases.preguntasIdioma)
             estado = estado.copy(fase = Fase.IDIOMA, casa = null, subtitulo = pregunta.texto, hablando = true)
             decir(pregunta)
             estado = estado.copy(hablando = false)
@@ -118,7 +121,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         trabajo?.cancel()
         voz.callar()
         aplicarIdioma(idioma)
-        seleccionar(introduccion = frases.respuestaIdioma(idioma))
+        seleccionar(introduccion = elegirVersion("respuesta-${idioma.codigo}", frases.respuestasIdioma(idioma)))
     }
 
     private fun empezarCeremonia() {
@@ -222,6 +225,13 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         revelar(casa)
     }
 
+    /** Elige una versión al azar, sin repetir la anterior y prefiriendo las que tienen audio grabado. */
+    private fun elegirVersion(tipo: String, versiones: List<Linea>): Linea {
+        val conAudio = versiones.filter { grabada.tiene(it.clave) }.ifEmpty { versiones }
+        val opciones = conAudio.filter { it.clave != ultimaVersion[tipo] }.ifEmpty { conAudio }
+        return opciones.random().also { ultimaVersion[tipo] = it.clave }
+    }
+
     private fun discursosDe(casa: Casa) = frases.discursos.getValue(estado.idioma).getValue(casa.id)
 
     private fun anuncio(casa: Casa) = textos(estado.idioma).anuncio(casa, estado.idioma)
@@ -265,7 +275,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         trabajo = lanzar {
             estado = estado.copy(hablando = true)
             // Si hay audio grabado de la respuesta de idioma, se prueba con ese (es el mismo camino que la ceremonia).
-            val respuesta = frases.respuestaIdioma(estado.idioma)
+            val respuesta = frases.respuestasIdioma(estado.idioma).first()
             decir(if (grabada.tiene(respuesta.clave)) respuesta else frases.prueba(estado.idioma))
             estado = estado.copy(hablando = false)
         }

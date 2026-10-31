@@ -78,16 +78,23 @@ class Frases(json: JSONObject) {
 
     fun prueba(idioma: Idioma) = if (idioma == Idioma.EN) pruebaEn else prueba
 
-    /** Pregunta bilingüe antes de cada persona y la respuesta en el idioma elegido. */
+    /**
+     * Versiones de la pregunta bilingüe y de sus respuestas; el sombrero las va alternando.
+     * Claves: `pregunta_idioma`, `pregunta_idioma_2`... y `respuesta_idioma_es`, `respuesta_idioma_es_2`...
+     */
     private val textosIdioma = json.optJSONObject("idioma") ?: JSONObject()
-    val preguntaIdioma = Linea(
-        "pregunta_idioma",
-        sinEtiquetas(textosIdioma.optString("pregunta", "Do you prefer English... ¿o prefieres español?")),
-    )
-    private val respuestaEs = Linea("respuesta_idioma_es", sinEtiquetas(textosIdioma.optString("respuesta_es", "¡Perfecto!")))
-    private val respuestaEn = Linea("respuesta_idioma_en", sinEtiquetas(textosIdioma.optString("respuesta_en", "Perfect!")))
+    val preguntasIdioma = versiones("preguntas", "pregunta_idioma", "Do you prefer English... ¿o prefieres español?")
+    private val respuestasEs = versiones("respuestas_es", "respuesta_idioma_es", "¡Perfecto!")
+    private val respuestasEn = versiones("respuestas_en", "respuesta_idioma_en", "Perfect!")
 
-    fun respuestaIdioma(idioma: Idioma) = if (idioma == Idioma.EN) respuestaEn else respuestaEs
+    fun respuestasIdioma(idioma: Idioma) = if (idioma == Idioma.EN) respuestasEn else respuestasEs
+
+    private fun versiones(campo: String, clave: String, porDefecto: String): List<Linea> {
+        val lista = textosIdioma.optJSONArray(campo) ?: JSONArray().put(porDefecto)
+        return List(lista.length()) { i ->
+            Linea(if (i == 0) clave else "${clave}_${i + 1}", sinEtiquetas(lista.getString(i)))
+        }
+    }
 
     /** Todas las frases posibles (sirve para contar cuántas tienen audio grabado). */
     val todas: List<Linea> =

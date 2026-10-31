@@ -126,11 +126,12 @@ def cargar_frases(datos):
                 frases.append(Frase(clave, " ".join(segmentos), segmentos, crudos.index(ANUNCIO)))
 
     # Pregunta bilingüe antes de cada persona y sus dos respuestas.
+    # Cada una puede tener varias versiones: pregunta_idioma, pregunta_idioma_2, ...
     idioma = datos.get("idioma", {})
-    for clave, campo in [("pregunta_idioma", "pregunta"), ("respuesta_idioma_es", "respuesta_es"),
-                         ("respuesta_idioma_en", "respuesta_en")]:
-        if campo in idioma:
-            frases.append(Frase(clave, idioma[campo]))
+    for clave, campo in [("pregunta_idioma", "preguntas"), ("respuesta_idioma_es", "respuestas_es"),
+                         ("respuesta_idioma_en", "respuestas_en")]:
+        for i, texto in enumerate(idioma.get(campo, [])):
+            frases.append(Frase(clave if i == 0 else f"{clave}_{i + 1}", texto))
 
     frases.append(Frase("prueba", datos["prueba"]))
     for campo, prefijo in [
