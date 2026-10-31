@@ -97,6 +97,7 @@ python3 herramientas/importar_voces.py --idioma en --casa gryffindor audios/*.mp
 
 - **Voz del teléfono (respaldo):** si suena en inglés o no suena, ve a *Ajustes del teléfono → Sistema → Idioma → Salida de texto a voz*, elige "Servicios de voz de Google" e instala la voz en **español**. Después, en la app, toca ⚙ y prueba las voces hasta encontrar la que más suene a sombrero. Un **tono de 0.5 a 0.7** y una **velocidad de 0.8** funcionan bien.
 - **Sonido:** conecta una **bocina Bluetooth** pequeña y escóndela dentro del sombrero. Así la voz sale del sombrero.
+- **Volumen:** la app usa el volumen *multimedia* (el mismo de la música), tanto en la bocina del teléfono como en Bluetooth. Si está muy bajo, al abrir la app se sube al 80% y aparece un aviso rojo; también se ajusta en ⚙ → *Volumen* (con el botón *Probar sonido*). Los botones de volumen del teléfono suben y bajan el volumen; solo un control Bluetooth externo activa el sombrero.
 - **Efecto de magia:** compra un control Bluetooth para selfies. Deja el teléfono en una mesa (o escondido) y activa el sombrero desde lejos con el botón, sin que nadie vea.
 - **Antes de empezar:** abre ⚙ → *Reiniciar conteo* para que el reparto empiece en cero.
 - Toca la pantalla para pasar a la siguiente persona.

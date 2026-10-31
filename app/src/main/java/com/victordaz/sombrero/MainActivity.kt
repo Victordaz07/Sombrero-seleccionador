@@ -1,6 +1,7 @@
 package com.victordaz.sombrero
 
 import android.media.AudioManager
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.WindowManager
@@ -33,26 +34,44 @@ class MainActivity : ComponentActivity() {
         setContent { PantallaSombrero(vm) }
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.refrescarVolumen()
+    }
+
     /**
      * Los controles Bluetooth para selfies envían "subir volumen" o "Enter".
      * Así alguien puede activar el sombrero a distancia sin tocar el teléfono.
+     * Los botones de volumen DEL TELÉFONO siguen subiendo y bajando el volumen.
      */
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (vm.controlRemoto && keyCode in TECLAS_DISPARADOR) {
-            if (event.repeatCount == 0) vm.alTocar()
-            return true
-        }
-        // Mientras el sombrero pregunta el idioma, bajar volumen elige el otro idioma.
-        if (vm.controlRemoto && keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && vm.estado.fase == Fase.IDIOMA) {
-            if (event.repeatCount == 0) vm.elegirIdioma(if (vm.estado.idioma == Idioma.ES) Idioma.EN else Idioma.ES)
-            return true
+        if (vm.controlRemoto) {
+            val volumen = keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
+            val desdeControl = !volumen || esDispositivoExterno(event)
+            if (desdeControl && (keyCode in TECLAS_DISPARADOR || keyCode == KeyEvent.KEYCODE_VOLUME_UP)) {
+                if (event.repeatCount == 0) vm.alTocar()
+                return true
+            }
+            // Mientras el sombrero pregunta el idioma, el otro botón del control elige el otro idioma.
+            if (desdeControl && keyCode == KeyEvent.KEYCODE_VOLUME_DOWN && vm.estado.fase == Fase.IDIOMA) {
+                if (event.repeatCount == 0) vm.elegirIdioma(if (vm.estado.idioma == Idioma.ES) Idioma.EN else Idioma.ES)
+                return true
+            }
         }
         return super.onKeyDown(keyCode, event)
     }
 
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_UP || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) vm.refrescarVolumen()
+        return super.onKeyUp(keyCode, event)
+    }
+
+    /** true si la tecla viene de un control Bluetooth o teclado, no de los botones del teléfono. */
+    private fun esDispositivoExterno(event: KeyEvent): Boolean =
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && event.device?.isExternal == true
+
     private companion object {
         val TECLAS_DISPARADOR = setOf(
-            KeyEvent.KEYCODE_VOLUME_UP,
             KeyEvent.KEYCODE_ENTER,
             KeyEvent.KEYCODE_NUMPAD_ENTER,
             KeyEvent.KEYCODE_DPAD_CENTER,

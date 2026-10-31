@@ -151,6 +151,16 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
         ) {
             Icon(Icons.Filled.Settings, t.ajustes, tint = Pergamino.copy(alpha = if (estado.fase == Fase.PENSANDO) 0.3f else 0.9f))
         }
+        if (estado.volumenBajo) {
+            Text(
+                t.volumenBajo,
+                Modifier.align(Alignment.TopCenter).safeDrawingPadding().padding(top = 8.dp, start = 56.dp, end = 56.dp)
+                    .background(Color(0xFFB3261E), RoundedCornerShape(20.dp))
+                    .clickable(onClick = vm::subirVolumen)
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center,
+            )
+        }
     }
     if (mostrarAjustes) AjustesDialogo(vm, alCerrar = { mostrarAjustes = false })
 }

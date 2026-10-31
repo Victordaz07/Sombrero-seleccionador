@@ -47,6 +47,8 @@ class VozDelSombrero(
                 override fun onError(utteranceId: String, errorCode: Int) = terminar(utteranceId)
                 override fun onStop(utteranceId: String, interrupted: Boolean) = terminar(utteranceId)
             })
+            // Canal multimedia: suena por la bocina del teléfono o por la bocina Bluetooth.
+            tts.setAudioAttributes(Volumen.ATRIBUTOS)
             lista = elegirIdioma()
         }
         // Avisamos siempre en el hilo principal y después de terminar de construir todo.

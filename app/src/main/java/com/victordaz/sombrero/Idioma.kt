@@ -31,6 +31,7 @@ data class Textos(
     val participantes: String,
     val noParticipa: String,
     val escudoDe: String,
+    val volumenBajo: String,
 ) {
     /** "¡GRYFFINDOR!" o "GRYFFINDOR!" según el idioma. */
     fun anuncio(casa: Casa, idioma: Idioma) =
@@ -59,6 +60,7 @@ fun textos(idioma: Idioma): Textos = when (idioma) {
         participantes = "participantes",
         noParticipa = "no participa",
         escudoDe = "Escudo de",
+        volumenBajo = "🔇 El volumen está muy bajo · Toca aquí para subirlo",
     )
     Idioma.EN -> Textos(
         etiquetaInicio = "THE CEREMONY",
@@ -79,5 +81,6 @@ fun textos(idioma: Idioma): Textos = when (idioma) {
         participantes = "participants",
         noParticipa = "not participating",
         escudoDe = "Crest of",
+        volumenBajo = "🔇 Volume is too low · Tap here to turn it up",
     )
 }

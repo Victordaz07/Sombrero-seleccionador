@@ -22,6 +22,8 @@ data class EstadoUi(
     val vozLista: Boolean? = null,
     val conteo: Map<String, Int> = emptyMap(),
     val idioma: Idioma = Idioma.ES,
+    /** El volumen multimedia está tan bajo que casi no se escucharía. */
+    val volumenBajo: Boolean = false,
 )
 
 data class EstadoAjustes(
@@ -33,6 +35,7 @@ data class EstadoAjustes(
     val equilibrar: Boolean,
     val controlRemoto: Boolean,
     val preguntarIdioma: Boolean,
+    val volumen: Float,
     val usarGrabaciones: Boolean,
     val frasesGrabadas: Int,
     val frasesTotales: Int,
@@ -46,6 +49,10 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     private val ajustes = Ajustes(app)
     private val frases = Frases.cargar(app)
     private val grabada = VozGrabada(app)
+    private val volumen = Volumen(app).also {
+        // Para la fiesta: si al abrir la app el volumen multimedia está bajo, se sube.
+        if (it.nivel < 0.5f) it.poner(0.8f, mostrarEnPantalla = false)
+    }
     private var trabajo: Job? = null
 
     /** Discursos pendientes por casa: se reparten todos antes de repetir alguno. */
@@ -59,7 +66,9 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         refrescarAjustes()
     }
 
-    var estado by mutableStateOf(EstadoUi(conteo = ajustes.conteo(), idioma = ajustes.idioma))
+    var estado by mutableStateOf(
+        EstadoUi(conteo = ajustes.conteo(), idioma = ajustes.idioma, volumenBajo = volumen.nivel < 0.25f),
+    )
         private set
 
     var estadoAjustes by mutableStateOf(leerAjustes())
@@ -69,6 +78,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
 
     /** Se llama al tocar la pantalla o al presionar el control remoto. */
     fun alTocar() {
+        refrescarVolumen()
         when (estado.fase) {
             Fase.ESPERANDO -> if (ajustes.preguntarIdioma) preguntarIdioma() else seleccionar()
             // Con el control remoto se confirma el idioma actual.
@@ -84,7 +94,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
 
     /** El sombrero pregunta en qué idioma hablar; la respuesta llega con [elegirIdioma]. */
     private fun preguntarIdioma() {
-        trabajo = viewModelScope.launch {
+        trabajo = lanzar {
             val pregunta = frases.preguntaIdioma
             estado = estado.copy(fase = Fase.IDIOMA, casa = null, subtitulo = pregunta.texto, hablando = true)
             decir(pregunta)
@@ -106,7 +116,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         val casa = elegirCasa(activas)
         val guion = frases.guion(casa, activas - casa)
 
-        trabajo = viewModelScope.launch {
+        trabajo = lanzar {
             estado = estado.copy(fase = Fase.PENSANDO, casa = null, subtitulo = "")
             if (introduccion != null) {
                 estado = estado.copy(subtitulo = introduccion.texto, hablando = true)
@@ -160,11 +170,13 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         }
         mostrar(0)
         estado = estado.copy(hablando = true)
-        grabada.reproducir(discurso.clave) { posicion, duracion ->
+        val sono = grabada.reproducir(discurso.clave) { posicion, duracion ->
             mostrar(discurso.segmentoEn(posicion, duracion, inicios))
         }
-        revelar(casa)
         estado = estado.copy(hablando = false)
+        // Si el audio no se pudo reproducir, que al menos lo diga la voz del teléfono.
+        if (!sono) decirDiscursoConVoz(casa, discurso)
+        revelar(casa)
     }
 
     /** Sin audio grabado: la voz del teléfono lee el discurso frase por frase. */
@@ -203,11 +215,8 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
 
     /** Usa el audio grabado si existe; si no, la voz del teléfono. */
     private suspend fun decir(linea: Linea) {
-        if (ajustes.usarGrabaciones && grabada.tiene(linea.clave)) {
-            grabada.reproducir(linea.clave)
-        } else {
-            voz.hablar(linea.texto, enfasis = linea.esAnuncio)
-        }
+        val sono = ajustes.usarGrabaciones && grabada.tiene(linea.clave) && grabada.reproducir(linea.clave)
+        if (!sono) voz.hablar(linea.texto, enfasis = linea.esAnuncio)
     }
 
     private fun elegirCasa(activas: List<Casa>): Casa {
@@ -223,9 +232,11 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     fun probarVoz() {
         if (estado.fase != Fase.ESPERANDO) return
         trabajo?.cancel()
-        trabajo = viewModelScope.launch {
+        trabajo = lanzar {
             estado = estado.copy(hablando = true)
-            decir(frases.prueba(estado.idioma))
+            // Si hay audio grabado de la respuesta de idioma, se prueba con ese (es el mismo camino que la ceremonia).
+            val respuesta = frases.respuestaIdioma(estado.idioma)
+            decir(if (grabada.tiene(respuesta.clave)) respuesta else frases.prueba(estado.idioma))
             estado = estado.copy(hablando = false)
         }
     }
@@ -306,6 +317,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         equilibrar = ajustes.equilibrar,
         controlRemoto = ajustes.controlRemoto,
         preguntarIdioma = ajustes.preguntarIdioma,
+        volumen = volumen.nivel,
         usarGrabaciones = ajustes.usarGrabaciones,
         frasesGrabadas = frases.todas.count { grabada.tiene(it.clave) },
         frasesTotales = frases.todas.size,
@@ -316,6 +328,32 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun refrescarAjustes() {
         estadoAjustes = leerAjustes()
+    }
+
+    /** Corre una parte de la ceremonia con el foco de audio, para que nada más suene encima. */
+    private fun lanzar(bloque: suspend () -> Unit) = viewModelScope.launch {
+        refrescarVolumen()
+        volumen.pedirFoco()
+        try {
+            bloque()
+        } finally {
+            volumen.soltarFoco()
+        }
+    }
+
+    fun refrescarVolumen() {
+        estado = estado.copy(volumenBajo = volumen.nivel < 0.25f)
+        if (estadoAjustes.volumen != volumen.nivel) refrescarAjustes()
+    }
+
+    fun subirVolumen() {
+        volumen.poner(1f)
+        refrescarVolumen()
+    }
+
+    fun cambiarVolumen(nivel: Float) {
+        volumen.poner(nivel, mostrarEnPantalla = false)
+        refrescarVolumen()
     }
 
     override fun onCleared() {

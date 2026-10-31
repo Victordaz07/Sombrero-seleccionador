@@ -61,6 +61,11 @@ fun AjustesDialogo(vm: SombreroViewModel, alCerrar: () -> Unit) {
                         }
                     }
 
+                    Seccion("Volumen")
+                    Text("Volumen: ${(a.volumen * 100).toInt()}% (bocina del teléfono o Bluetooth)", fontSize = 14.sp)
+                    Slider(a.volumen, onValueChange = vm::cambiarVolumen, valueRange = 0f..1f)
+                    OutlinedButton(onClick = vm::probarVoz, modifier = Modifier.fillMaxWidth()) { Text("🔊 Probar sonido") }
+
                     Seccion("Voz")
                     FilaSwitch(
                         "Usar voces grabadas",

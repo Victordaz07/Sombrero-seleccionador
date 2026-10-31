@@ -1,8 +1,8 @@
 package com.victordaz.sombrero
 
 import android.content.Context
-import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.util.Log
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -38,23 +38,20 @@ class VozGrabada(private val context: Context) {
     /**
      * Reproduce el audio y espera (sin bloquear) hasta que termine.
      * [alAvanzar] recibe la posición y la duración (en milisegundos) unas 10 veces por segundo.
+     * Devuelve false si el audio no se pudo abrir (para usar la voz del teléfono en su lugar).
      */
-    suspend fun reproducir(clave: String, alAvanzar: ((posicionMs: Int, duracionMs: Int) -> Unit)? = null) {
+    suspend fun reproducir(clave: String, alAvanzar: ((posicionMs: Int, duracionMs: Int) -> Unit)? = null): Boolean {
         val reproductor = MediaPlayer()
         try {
+            reproductor.setAudioAttributes(Volumen.ATRIBUTOS)
             context.assets.openFd("$CARPETA/$clave.mp3").use {
                 reproductor.setDataSource(it.fileDescriptor, it.startOffset, it.length)
             }
-            reproductor.setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                    .build(),
-            )
             reproductor.prepare()
         } catch (e: Exception) {
+            Log.e("Sombrero", "No se pudo abrir el audio $clave", e)
             reproductor.release()
-            return
+            return false
         }
 
         try {
@@ -77,6 +74,7 @@ class VozGrabada(private val context: Context) {
         } finally {
             reproductor.release()
         }
+        return true
     }
 
     private companion object {
