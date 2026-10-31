@@ -35,6 +35,7 @@ data class EstadoAjustes(
     val equilibrar: Boolean,
     val controlRemoto: Boolean,
     val preguntarIdioma: Boolean,
+    val contarManuales: Boolean,
     val volumen: Float,
     val usarGrabaciones: Boolean,
     val frasesGrabadas: Int,
@@ -59,6 +60,12 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     private val colaDiscursos = mutableMapOf<String, ArrayDeque<Discurso>>()
     private val ultimoDiscurso = mutableMapOf<String, String>()
 
+    /** Casa elegida a mano para la próxima ceremonia (null = la elige el sombrero). */
+    private var casaManual: Casa? = null
+
+    /** Si la ceremonia actual suma al conteo (las elegidas a mano no, salvo que se active). */
+    private var sumarAlConteo = true
+
     private val voz: VozDelSombrero = VozDelSombrero(app) {
         val lista = voz.cambiarIdioma(ajustes.idioma)
         aplicarAjustesDeVoz()
@@ -80,7 +87,10 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
     fun alTocar() {
         refrescarVolumen()
         when (estado.fase) {
-            Fase.ESPERANDO -> if (ajustes.preguntarIdioma) preguntarIdioma() else seleccionar()
+            Fase.ESPERANDO -> {
+                casaManual = null
+                empezarCeremonia()
+            }
             // Con el control remoto se confirma el idioma actual.
             Fase.IDIOMA -> elegirIdioma(estado.idioma)
             Fase.PENSANDO -> Unit // el sombrero está pensando, no lo interrumpas
@@ -111,9 +121,29 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         seleccionar(introduccion = frases.respuestaIdioma(idioma))
     }
 
+    private fun empezarCeremonia() {
+        if (ajustes.preguntarIdioma) preguntarIdioma() else seleccionar()
+    }
+
+    /**
+     * El operador eligió la casa tocando su escudo (por ejemplo, para repetir una selección y grabarla).
+     * La ceremonia es igual que siempre, pero termina en esa casa.
+     */
+    fun elegirCasaManual(casa: Casa) {
+        if (estado.fase == Fase.PENSANDO || estado.fase == Fase.IDIOMA) return
+        trabajo?.cancel()
+        voz.callar()
+        estado = estado.copy(fase = Fase.ESPERANDO, casa = null, subtitulo = "", hablando = false)
+        casaManual = casa
+        empezarCeremonia()
+    }
+
     private fun seleccionar(introduccion: Linea? = null) {
         val activas = CASAS.filter { it.id in ajustes.casasActivas }.ifEmpty { CASAS }
-        val casa = elegirCasa(activas)
+        val manual = casaManual
+        casaManual = null
+        sumarAlConteo = manual == null || ajustes.contarManuales
+        val casa = manual ?: elegirCasa(activas)
         val guion = frases.guion(casa, activas - casa)
 
         trabajo = lanzar {
@@ -138,7 +168,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun revelar(casa: Casa) {
         if (estado.fase == Fase.REVELADO) return
-        ajustes.sumar(casa.id)
+        if (sumarAlConteo) ajustes.sumar(casa.id)
         estado = estado.copy(fase = Fase.REVELADO, casa = casa, conteo = ajustes.conteo())
     }
 
@@ -246,6 +276,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         if (nuevo == ajustes.idioma) return
         trabajo?.cancel()
         voz.callar()
+        casaManual = null
         estado = estado.copy(fase = Fase.ESPERANDO, casa = null, subtitulo = "", hablando = false)
         aplicarIdioma(nuevo)
     }
@@ -257,6 +288,10 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         aplicarAjustesDeVoz()
         estado = estado.copy(idioma = nuevo, vozLista = if (estado.vozLista == null) null else lista)
         refrescarAjustes()
+    }
+
+    fun cambiarContarManuales(v: Boolean) {
+        ajustes.contarManuales = v; refrescarAjustes()
     }
 
     fun cambiarPreguntarIdioma(v: Boolean) {
@@ -317,6 +352,7 @@ class SombreroViewModel(app: Application) : AndroidViewModel(app) {
         equilibrar = ajustes.equilibrar,
         controlRemoto = ajustes.controlRemoto,
         preguntarIdioma = ajustes.preguntarIdioma,
+        contarManuales = ajustes.contarManuales,
         volumen = volumen.nivel,
         usarGrabaciones = ajustes.usarGrabaciones,
         frasesGrabadas = frases.todas.count { grabada.tiene(it.clave) },

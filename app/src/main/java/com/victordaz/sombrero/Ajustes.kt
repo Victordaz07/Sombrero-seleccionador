@@ -32,6 +32,11 @@ class Ajustes(context: Context) {
         get() = prefs.getBoolean("preguntar_idioma", true)
         set(v) = prefs.edit().putBoolean("preguntar_idioma", v).apply()
 
+    /** Si está activo, las casas elegidas a mano (tocando un escudo) también suman al conteo. */
+    var contarManuales: Boolean
+        get() = prefs.getBoolean("contar_manuales", false)
+        set(v) = prefs.edit().putBoolean("contar_manuales", v).apply()
+
     /** Si está activo, el sombrero reparte a la gente de forma pareja entre las casas. */
     var equilibrar: Boolean
         get() = prefs.getBoolean("equilibrar", true)

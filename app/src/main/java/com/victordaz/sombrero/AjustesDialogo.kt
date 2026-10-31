@@ -98,6 +98,12 @@ fun AjustesDialogo(vm: SombreroViewModel, alCerrar: () -> Unit) {
                     Seccion("Selección")
                     FilaSwitch("Preguntar idioma a cada persona (English / Español)", a.preguntarIdioma, vm::cambiarPreguntarIdioma)
                     FilaSwitch("Repartir parejo entre casas", a.equilibrar, vm::cambiarEquilibrar)
+                    Text(
+                        "Para elegir tú la casa (por ejemplo, para repetir una selección y grabarla), toca su escudo " +
+                            "abajo en la pantalla: el sombrero hace la ceremonia completa y termina en esa casa.",
+                        fontSize = 12.sp, color = Color.Gray,
+                    )
+                    FilaSwitch("Sumar al conteo las casas elegidas a mano", a.contarManuales, vm::cambiarContarManuales)
                     FilaSwitch("Activar con botón de volumen / control Bluetooth", a.controlRemoto, vm::cambiarControlRemoto)
                     Spacer(Modifier.padding(4.dp))
                     Text("Casas participantes:", fontSize = 14.sp)

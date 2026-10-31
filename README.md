@@ -100,6 +100,7 @@ python3 herramientas/importar_voces.py --idioma en --casa gryffindor audios/*.mp
 - **Volumen:** la app usa el volumen *multimedia* (el mismo de la música), tanto en la bocina del teléfono como en Bluetooth. Si está muy bajo, al abrir la app se sube al 80% y aparece un aviso rojo; también se ajusta en ⚙ → *Volumen* (con el botón *Probar sonido*). Los botones de volumen del teléfono suben y bajan el volumen; solo un control Bluetooth externo activa el sombrero.
 - **Efecto de magia:** compra un control Bluetooth para selfies. Deja el teléfono en una mesa (o escondido) y activa el sombrero desde lejos con el botón, sin que nadie vea.
 - **Antes de empezar:** abre ⚙ → *Reiniciar conteo* para que el reparto empiece en cero.
+- **Elegir tú la casa:** toca uno de los 4 escudos de abajo. El sombrero hace la ceremonia completa y termina en esa casa (útil para repetir una selección y grabarla). Por defecto no suma al conteo; se cambia en ⚙.
 - Toca la pantalla para pasar a la siguiente persona.
 
 ## Cambiar las frases, casas o colores

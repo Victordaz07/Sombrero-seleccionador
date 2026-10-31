@@ -26,6 +26,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -119,7 +120,7 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
                     ) {
                         Subtitulo(estado)
                         Accion(estado, vm::alTocar, vm::elegirIdioma)
-                        PiePagina(estado, vm.estadoAjustes.casasActivas)
+                        PiePagina(estado, vm.estadoAjustes.casasActivas, vm::elegirCasaManual)
                     }
                 }
             } else {
@@ -139,7 +140,7 @@ private fun ContenidoSombrero(vm: SombreroViewModel) {
                     ) {
                         Subtitulo(estado)
                         Accion(estado, vm::alTocar, vm::elegirIdioma)
-                        PiePagina(estado, vm.estadoAjustes.casasActivas)
+                        PiePagina(estado, vm.estadoAjustes.casasActivas, vm::elegirCasaManual)
                     }
                 }
             }
@@ -306,8 +307,11 @@ private fun BotonesIdioma(alElegir: (Idioma) -> Unit) {
 }
 
 @Composable
-private fun PiePagina(estado: EstadoUi, activas: Set<String>) {
+private fun PiePagina(estado: EstadoUi, activas: Set<String>, alElegirCasa: (Casa) -> Unit) {
     val t = textos(estado.idioma)
+    // Tocar un escudo hace la ceremonia completa y termina en esa casa (para el operador).
+    val sePuedeElegir = estado.fase == Fase.ESPERANDO || estado.fase == Fase.REVELADO
+    val haptico = LocalHapticFeedback.current
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(t.lasCuatroCasas, color = Pergamino.copy(alpha = 0.65f), fontSize = 10.sp, letterSpacing = 2.sp)
         Spacer(Modifier.height(8.dp))
@@ -315,6 +319,11 @@ private fun PiePagina(estado: EstadoUi, activas: Set<String>) {
             CASAS.forEach { c ->
                 Column(
                     Modifier.weight(1f).graphicsLayer { alpha = if (c.id in activas) 1f else 0.4f }
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable(enabled = sePuedeElegir, onClickLabel = c.nombre) {
+                            haptico.performHapticFeedback(HapticFeedbackType.LongPress)
+                            alElegirCasa(c)
+                        }
                         .semantics(mergeDescendants = true) {
                             contentDescription = "${c.nombre}: ${estado.conteo[c.id] ?: 0} ${t.participantes}" +
                                 if (c.id in activas) "" else ", ${t.noParticipa}"
