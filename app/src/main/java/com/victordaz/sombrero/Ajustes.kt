@@ -70,7 +70,6 @@ class Ajustes(context: Context) {
         get() = prefs.getBoolean("fanfarria", true)
         set(v) = prefs.edit().putBoolean("fanfarria", v).apply()
 
-
     fun conteo(): Map<String, Int> = CASAS.associate { it.id to prefs.getInt("conteo_${it.id}", 0) }
 
     fun sumar(casaId: String) {

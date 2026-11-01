@@ -18,11 +18,11 @@ class FrasesTest {
     }
 
     @Test
-    fun cadaCasaTiene4DiscursosEnCadaIdiomaYTodosGritanLaCasa() {
+    fun cadaCasaTieneAlMenos4DiscursosEnCadaIdiomaYTodosGritanLaCasa() {
         for (idioma in Idioma.entries) {
             for (casa in CASAS) {
                 val discursos = frases.discursos.getValue(idioma).getValue(casa.id)
-                assertEquals("$idioma ${casa.id}", 4, discursos.size)
+                assertTrue("$idioma ${casa.id}", discursos.size >= 4)
                 discursos.forEach { assertTrue(it.clave, it.indiceAnuncio in it.segmentos.indices) }
             }
         }

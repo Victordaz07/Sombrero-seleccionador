@@ -148,6 +148,37 @@
         "[mischievously] A noble heart, a steady word... and loads and LOADS of courage!",
         "[excited] I won't even think twice!",
         "{ANUNCIO}"
+      ],
+      [
+        "[curious] Hmm... what's this? A heartbeat like a war drum!",
+        "[excited] You don't wait for heroes... you BECOME one!",
+        "[mischievously] Climbing trees, chasing dreams, standing up for the little guy...",
+        "[laughs] Oh, I like you already!",
+        "[excited] There's only one place for a heart like yours...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[surprised] Whoa! Careful, this head is HOT!",
+        "[excited] Courage pouring out of every corner!",
+        "[impressed] And when your friends need you... you're always the first one there.",
+        "[mischievously] No hesitation. No second thoughts.",
+        "[excited] I'm sending you straight to...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[curious] Hmm... quiet on the outside...",
+        "[excited] but a ROARING lion on the inside!",
+        "[impressed] You face your fears... even the scary ones under the bed!",
+        "[laughs] HA! That takes real bravery!",
+        "[excited] Your house is...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[laughs harder] HA HA! Do you hear that? It's adventure calling YOUR name!",
+        "[mischievously] Bold, honest, and never afraid to try.",
+        "[excited] I've seen brave hearts before... but yours shines like a torch!",
+        "[excited] Welcome to...",
+        "{ANUNCIO}"
       ]
     ],
     "hufflepuff": [
@@ -176,6 +207,37 @@
         "[laughs] This head smells like fresh-baked bread!",
         "[impressed] You make everyone feel at home... and you NEVER give up!",
         "[excited] Your house is...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[curious] Mmm... let me see... oh, how lovely!",
+        "[impressed] A heart as warm as hot chocolate on a cold night!",
+        "[excited] You help without being asked, and you NEVER give up on your friends.",
+        "[laughs] Everyone needs someone like you!",
+        "[excited] You belong in...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[curious] Hmm... patience... kindness...",
+        "[excited] and a smile that makes everyone feel welcome!",
+        "[mischievously] I bet you're the one who shares the last cookie!",
+        "[impressed] Loyal to the very end.",
+        "[excited] It's clear as day...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[surprised] Oh! What a hard worker we have here!",
+        "[excited] You start something... and you FINISH it!",
+        "[impressed] Fair, honest, and always ready to lend a hand.",
+        "[laughs] The world needs more people like you!",
+        "[excited] Your house is...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[laughs] HA HA! This head is full of good friends and happy memories!",
+        "[curious] Cleverness? A little... Courage? Sure...",
+        "[excited] But your biggest treasure is your HEART!",
+        "[excited] I know exactly where you belong...",
         "{ANUNCIO}"
       ]
     ],
@@ -206,6 +268,37 @@
         "[impressed] And you're almost ALWAYS right!",
         "[excited] Wisdom! Wit! No doubt at all!",
         "{ANUNCIO}"
+      ],
+      [
+        "[curious] Ooh! So many ideas spinning in here... like stars in the sky!",
+        "[impressed] You read, you wonder, you invent...",
+        "[excited] Every question you ask opens a NEW door!",
+        "[mischievously] I can barely keep up with you!",
+        "[excited] You belong in...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[curious] Hmm... clever... very clever...",
+        "[mischievously] I bet you solve puzzles faster than anyone you know!",
+        "[impressed] A sharp mind, a creative spirit, and a love for learning.",
+        "[excited] There's no doubt about it...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[surprised] WOW! It's like a library in here!",
+        "[excited] Books, stories, wild inventions... and the BIGGEST imagination!",
+        "[impressed] You notice things others never even see.",
+        "[laughs] Brilliant!",
+        "[excited] I'm sending you to...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[curious] Tell me something... do you ever stop thinking?",
+        "[laughs] No? I didn't think so!",
+        "[impressed] Wise beyond your years...",
+        "[excited] and creative enough to change the world!",
+        "[excited] Your house is...",
+        "{ANUNCIO}"
       ]
     ],
     "slytherin": [
@@ -234,6 +327,37 @@
         "[laughs harder] HA HA! Brilliant ideas... and a little bit mischievous!",
         "[mischievously] You organize the game, you make the rules... and you look after your own!",
         "[excited] A BORN leader! Your house is...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[mischievously] Ahh... a mind full of plans... and backup plans!",
+        "[impressed] You know what you want, and you know how to get it.",
+        "[excited] Determined, clever, and full of ambition... the GOOD kind!",
+        "[laughs] Oh, you're going places!",
+        "[excited] You belong in...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[curious] Hmm... a natural leader, I see...",
+        "[excited] When you speak, people LISTEN!",
+        "[impressed] And you always protect the people you care about.",
+        "[mischievously] Smart AND loyal? What a combination!",
+        "[excited] I'm sending you to...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[laughs] HA! Trying to guess my decision, aren't you?",
+        "[mischievously] Clever... very clever!",
+        "[excited] You never give up... you just find a SMARTER way!",
+        "[impressed] That's the mind of a true champion.",
+        "[excited] Your house is...",
+        "{ANUNCIO}"
+      ],
+      [
+        "[surprised] Oh! Big dreams in this head... REALLY big dreams!",
+        "[excited] Leaders, champions, inventors... you could be any of them!",
+        "[mischievously] And I have a feeling you WILL be!",
+        "[excited] There's only one house for you...",
         "{ANUNCIO}"
       ]
     ]
